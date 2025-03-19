@@ -1,9 +1,6 @@
+import UserList from '@/layout/user-list'
 import React from 'react'
 
-export default function UserManagementPage() {
-    return (
-        <div>
-            <h1>User Management Page</h1>
-        </div>
-    )
+export default function UserListPage() {
+    return <UserList />
 }

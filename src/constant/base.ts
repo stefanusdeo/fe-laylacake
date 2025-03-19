@@ -55,4 +55,44 @@ export const listMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Laporan",
+    items: [
+      {
+        title: "Laporan Penjualan",
+        href: "/laporan-penjualan",
+        permission: ["admin", "superadmin"],
+      },
+    ],
+  },
+  {
+    title:"Toko",
+    items:[
+      {
+        title:"Toko",
+        href:"/toko",
+        permission:["admin","superadmin"]
+      }
+    ]
+  },
+  {
+    title:"Pengaturan",
+    items:[
+      {
+        title:"Role",
+        href:"/role",
+        permission:["admin","superadmin"]
+      },
+      {
+        title:"Permission",
+        href:"/permission",
+        permission:["admin","superadmin"]
+      },
+      {
+        title:"Profile",
+        href:"/profile",
+        permission:["admin","superadmin"]
+      }
+    ]
+  }
 ];

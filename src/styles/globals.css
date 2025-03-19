@@ -119,3 +119,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom Scrollbar */
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #f1f5f9;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #e2e8f0; 
+}
+
