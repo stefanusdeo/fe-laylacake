@@ -1,18 +1,17 @@
+"use client"
 import AppSidebar from '@/components/organizm/appSidebar'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import React from 'react'
+import MainComponent from './main'
 
 function LayoutBoard({ children }: { children: React.ReactNode }) {
     return (
         <div>
             <SidebarProvider>
                 <AppSidebar />
-                <main>
-                    <div className=' flex justify-between items-center gap-10'>
-                        <SidebarTrigger />
-                    </div>
+                <MainComponent>
                     {children}
-                </main>
+                </MainComponent>
             </SidebarProvider>
 
         </div>
