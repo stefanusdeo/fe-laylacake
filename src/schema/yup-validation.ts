@@ -1,0 +1,33 @@
+import * as yup from "yup";
+import { emailRegex, passwordRegex, phoneRegex, urlRegex } from "@/utils/regex";
+
+const req = "is required";
+const short = "is too short";
+const long = "is too long";
+const invalid = "is invalid";
+
+const emailSchema = yup
+  .string()
+  .email("Invalid email format")
+  .required(`Email ${req}`)
+  .max(50, `Email ${long}`)
+  .matches(emailRegex, "Invalid email format");
+
+const passwordSchema = yup
+  .string()
+  .min(8, `Password ${short}`)
+  .max(30, `Password ${long}`)
+  .matches(passwordRegex, `Invalid password format`);
+
+const phoneSchema = yup
+  .string()
+  .required(`Phone number ${req}`)
+  .min(6, `Phone number ${short}`)
+  .max(20, `Phone number ${long}`)
+  .matches(phoneRegex, `Invalid phone number format`);
+
+export const loginSchema = yup.object().shape({
+  email: emailSchema.required("Email is required"),
+  password: passwordSchema.required("Password is required"),
+  remember: yup.boolean().default(false).optional(),
+});
