@@ -8,7 +8,9 @@ function LayoutBoard({ children }: { children: React.ReactNode }) {
             <SidebarProvider>
                 <AppSidebar />
                 <main>
-                    <SidebarTrigger />
+                    <div className=' flex justify-between items-center gap-10'>
+                        <SidebarTrigger />
+                    </div>
                     {children}
                 </main>
             </SidebarProvider>
