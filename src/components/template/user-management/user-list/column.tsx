@@ -12,7 +12,7 @@ export const columnsUserList: Column<User>[] = [
     {
         label: "Name",
         renderCell: (row) => <p>{row.name}</p>,
-        className: "",
+        className: " w-fit text-left",
     },
     {
         label: "Role",
