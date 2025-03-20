@@ -1,15 +1,14 @@
 "use client"
-import { useSidebar } from '@/components/ui/sidebar'
-import { cn } from '@/lib/utils'
-import { PiCaretDoubleLeftDuotone, PiListBold } from "react-icons/pi";
-
+import { useSidebar } from '@/components/ui/sidebar';
+import { LuListMinus } from "react-icons/lu";
+import { PiCaretDoubleLeftDuotone } from "react-icons/pi";
 export default function TrigerSidebar() {
     const { toggleSidebar, open, openMobile, isMobile } = useSidebar()
     return (
         <div>
             <div className='relative text-2xl bg-white rounded-full'>
-                {isMobile ? <PiListBold color="#C6C6C6" size={25} className={` cursor-pointer`} onClick={() => toggleSidebar()} />
-                    : <PiCaretDoubleLeftDuotone className={`${open || openMobile ? "" : "rotate-180"}`} onClick={() => toggleSidebar()} />
+                {isMobile ? <LuListMinus color="" size={30} className={` cursor-pointer text-amber-400 font-bold`} onClick={() => toggleSidebar()} />
+                    : <PiCaretDoubleLeftDuotone className={`${open || openMobile ? "" : "rotate-180"} text-amber-400`} onClick={() => toggleSidebar()} />
                 }
             </div>
         </div>

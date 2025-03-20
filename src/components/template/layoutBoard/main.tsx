@@ -28,17 +28,17 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                             sideOffset={10}
                             avoidCollisions
                             arrowPadding={10}
-                            className={`w-fit max-w-xs relative p-0 ${styleShape} divide-y divide-border`}
+                            className={`w-fit max-w-60 relative p-0 ${styleShape} divide-y divide-border`}
                         >
                             <div className='px-4 py-3 space-y-0.5 select-none'>
                                 <Text className='font-semibold leading-4'>Wahyu</Text>
-                                <Text variant='span' className='text-slate-500'>wahyutricahyomulyo@gmail.com</Text>
+                                <Text variant='span' className='text-slate-500 text-ellipsis'>wahyutricahyomulyo@gmail.com</Text>
                             </div>
                             <div className='px-1 py-2'>
-                                <Button className='w-full flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>
+                                <Button className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>
                             </div>
                             <div className='px-1 py-2'>
-                                <Button className='w-full flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
+                                <Button className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
                             </div>
                         </PopoverContent>
                     </Popover>
