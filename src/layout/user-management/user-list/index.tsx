@@ -2,8 +2,8 @@ import PaginationInfo from '@/components/atoms/Table/TableInfo'
 import TablePagination from '@/components/atoms/Table/TablePagination'
 import Tables from '@/components/atoms/Table/Tables'
 import Breadcrums from '@/components/molecules/breadcrums'
-import { columnsUserList } from '@/components/template/user-list/column'
-import { users } from '@/components/template/user-list/data'
+import { columnsUserList } from '@/components/template/user-management/user-list/column'
+import { users } from '@/components/template/user-management/user-list/data'
 import { Button } from '@/components/ui/button'
 import { SearchInputGroup } from '@/components/ui/searchInput'
 import Text from '@/components/ui/text'
@@ -15,7 +15,7 @@ function UserList() {
     const [limit, setLimit] = useState(10);
     return (
         <div className='flex flex-col gap-7'>
-            <div className='flex justify-between items-center gap-5'>
+            <div className='flex justify-between items-center gap-5 select-none'>
                 <div className='flex flex-col gap-3'>
                     <Text variant='h2'>User List</Text>
                     <Breadcrums />

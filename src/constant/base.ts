@@ -15,17 +15,17 @@ export const listMenu: MenuSection[] = [
     items: [
       {
         title: "User List",
-        href: "/user-list",
+        href: "/user-management/user-list",
         permission: ["admin", "superadmin"],
       },
       {
         title: "Absensi",
-        href: "/absensi",
+        href: "/user-management/absensi",
         permission: ["admin", "superadmin"],
       },
       {
         title: "Member",
-        href: "/member",
+        href: "/user-management/member",
         permission: ["admin", "superadmin"],
       },
     ],
@@ -66,33 +66,33 @@ export const listMenu: MenuSection[] = [
     ],
   },
   {
-    title:"Toko",
-    items:[
+    title: "Toko",
+    items: [
       {
-        title:"Toko",
-        href:"/toko",
-        permission:["admin","superadmin"]
-      }
-    ]
+        title: "Toko",
+        href: "/toko",
+        permission: ["admin", "superadmin"],
+      },
+    ],
   },
   {
-    title:"Pengaturan",
-    items:[
+    title: "Pengaturan",
+    items: [
       {
-        title:"Role",
-        href:"/role",
-        permission:["admin","superadmin"]
+        title: "Role",
+        href: "/role",
+        permission: ["admin", "superadmin"],
       },
       {
-        title:"Permission",
-        href:"/permission",
-        permission:["admin","superadmin"]
+        title: "Permission",
+        href: "/permission",
+        permission: ["admin", "superadmin"],
       },
       {
-        title:"Profile",
-        href:"/profile",
-        permission:["admin","superadmin"]
-      }
-    ]
-  }
+        title: "Profile",
+        href: "/profile",
+        permission: ["admin", "superadmin"],
+      },
+    ],
+  },
 ];
