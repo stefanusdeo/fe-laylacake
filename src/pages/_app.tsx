@@ -1,4 +1,5 @@
 import LayoutBoard from "@/components/template/layoutBoard";
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -32,6 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Website</title>
       </Head>
+      <Toaster position="top-right" richColors />
       {isPublicRoute ? (
         <Component {...pageProps} />
       ) : (

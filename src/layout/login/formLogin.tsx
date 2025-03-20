@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import BeatLoader from "react-spinners/BeatLoader";
+import { toast } from "sonner";
 
 function FormLogin() {
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,11 @@ function FormLogin() {
     setLoading(true);
     console.log(data);
     // Lakukan proses autentikasi di sini
-    setTimeout(() => setLoading(false), 2000);
+    setTimeout(() => {
+      toast.success("Login Success")
+      setLoading(false)
+    }
+      , 2000);
   };
   return (
     <Form {...form}>
@@ -105,7 +110,7 @@ function FormLogin() {
               type="submit"
               className="w-full flex items-center justify-center"
             >
-              {loading ? <BeatLoader color="#010101" size={8}/> : "Sign In"}
+              {loading ? <BeatLoader color="#010101" size={8} /> : "Sign In"}
             </Button>
           </div>
         </form>

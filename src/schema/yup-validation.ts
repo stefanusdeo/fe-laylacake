@@ -31,3 +31,18 @@ export const loginSchema = yup.object().shape({
   password: passwordSchema.required("Password is required"),
   remember: yup.boolean().default(false).optional(),
 });
+
+export const editAccountSchema = yup.object().shape({
+  username: yup.string().required(`Username ${req}`),
+  phone: phoneSchema,
+});
+
+export const editPasswordSchema = yup.object().shape({
+  // OldPassword: passwordSchema.required(`Old password ${req}`),
+  NewPassword: passwordSchema
+    .required(`New password ${req}`)
+    .notOneOf([yup.ref(`OldPassword`)], `Please create a new password`),
+  PasswordConfirmation: yup.string()
+    .required(`Password confirmation is required`)
+    .oneOf([yup.ref(`NewPassword`)], `New passwords do not match`),
+});
