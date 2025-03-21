@@ -1,15 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '../ui/sidebar'
 import Text from '../ui/text'
 import { listMenu, MenuItem, MenuSection } from '@/constant/base'
 import Link from 'next/link'
-import { LuDot } from "react-icons/lu";
+import { GoDotFill } from "react-icons/go";
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { cn } from '@/lib/utils'
 
 function AppSidebar() {
     const path = usePathname()
-    const { open } = useSidebar()
+    const { open , setOpenMobile } = useSidebar()
+
+    useEffect(() => {
+        setOpenMobile(false)
+    }, [path])
     return (
         <Sidebar collapsible='icon' side='left' variant='sidebar' className=' select-none'>
             <SidebarHeader className='flex flex-col gap-3.5 pt-5 pb-3'>
@@ -29,17 +34,17 @@ function AppSidebar() {
                     }
                 </Link>
             </SidebarHeader>
-            <SidebarContent className='!bg-transparent scrollbar '>
+            <SidebarContent className='!bg-transparent scrollbar px-0'>
                 {listMenu.map((menu: MenuSection, _idx: number) => {
                     return (
-                        <SidebarGroup key={menu.title} className='py-0'>
+                        <SidebarGroup key={menu.title} className={`py-0 px-2.5`}>
                             {menu.show && <SidebarGroupLabel className='text-xs uppercase font-bold'>{menu.title}</SidebarGroupLabel>}
-                            <SidebarGroupContent className='my-2 '>
-                                <SidebarMenu>
+                            <SidebarGroupContent className=''>
+                                <SidebarMenu className=''>
                                     {menu.show && menu.items.map((item: MenuItem) => (
-                                        <SidebarMenuItem key={item.title} className={`${item.show ? "" : "hidden"}`}>
-                                            <SidebarMenuButton tooltip={item.title} size={'lg'} asChild isActive={item.href === path} className='' >
-                                                <Link href={item.href} className='flex items-center text-sm'><LuDot /> {item.title}</Link>
+                                        <SidebarMenuItem key={item.title} className={`${item.show ? "" : "hidden"} ${open ? "" : "px-1 my-2"}`}>
+                                            <SidebarMenuButton tooltip={item.title} size={'lg'} asChild isActive={item.href === path} className={cn(open ? "" :"flex justify-center w-full",' data-[active=false]:text-slate-400 px-3')} >
+                                                <Link href={item.href} className='flex items-center text-sm'><GoDotFill className='' /> {open && item.title}</Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
                                     ))}
