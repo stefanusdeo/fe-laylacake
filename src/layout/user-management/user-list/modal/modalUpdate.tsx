@@ -11,22 +11,48 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import BeatLoader from 'react-spinners/BeatLoader'
 
-function ModalCreateUser({ open, onClose }: ModalProps) {
+type TDefaultValues = {
+    fullname: string;
+    email: string;
+    phone: string;
+    role: string;
+    password: string;
+    PasswordConfirmation: string;
+}
+
+function ModalUpdateUser({ open, onClose }: ModalProps) {
+    const [loading, setLoading] = React.useState(false)
     const form = useForm({
         resolver: yupResolver(userSchema),
+        defaultValues: {
+            fullname: "Wahyu",
+            email: "wahyu@gmail.com",
+            phone: "088261919800",
+            role: "1",
+            password: "12345678",
+            PasswordConfirmation: "12345678"
+        }
     });
     const {
         register,
+        watch,
         handleSubmit,
-        formState: { errors, isDirty },
+        getValues,
+        formState: { errors, isDirty, isValid },
     } = form;
-    
-    const [loading, setLoading] = React.useState(false)
 
+    const watchedValues = watch();
+
+    // Cek apakah ada perubahan dari defaultValues
+    const isFormChanged = (Object.keys(form.getValues) as (keyof TDefaultValues)[]).some(
+        (key) => watchedValues[key] !== getValues(key)
+    );
+
+    const isButtonDisabled = !isFormChanged || !isValid || loading;
 
     return (
         <Dialog
-            title='Create New User'
+            title='Edit User'
             open={open}
             onClose={onClose}
             className='w-full max-w-xl sm:max-w-4xl'
@@ -166,11 +192,11 @@ function ModalCreateUser({ open, onClose }: ModalProps) {
                 </form>
                 <div className='flex justify-end items-center mt-6'>
                     <Button
-                        disabled={!form.formState.isValid || loading}
+                        disabled={isButtonDisabled}
                         type="submit"
                         className="w-fit flex items-center justify-center"
                     >
-                        {loading ? <BeatLoader color="#010101" size={8} /> : "Create User"}
+                        {loading ? <BeatLoader color="#010101" size={8} /> : "Save Changes"}
                     </Button>
                 </div>
             </Form>
@@ -178,4 +204,4 @@ function ModalCreateUser({ open, onClose }: ModalProps) {
     )
 }
 
-export default ModalCreateUser
+export default ModalUpdateUser

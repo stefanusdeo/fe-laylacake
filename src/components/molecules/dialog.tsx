@@ -14,7 +14,7 @@ type DialogProps = {
     children: React.ReactNode
     onClose: (open: boolean) => void
     open: boolean
-    title: string
+    title?: string
     description?: string
     className?: string
 }
@@ -23,15 +23,17 @@ function Dialog({ children, onClose, open, title, description, className }: Dial
     return (
         <Base onOpenChange={onClose} open={open} >
             <DialogContent className={cn("w-auto", className)}>
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    {description ?
-                        <DialogDescription>
-                            {description}
-                        </DialogDescription>
-                        : <Description />
-                    }
-                </DialogHeader>
+                {title || description && (
+                    <DialogHeader>
+                        <DialogTitle>{title}</DialogTitle>
+                        {description ?
+                            <DialogDescription>
+                                {description}
+                            </DialogDescription>
+                            : <Description />
+                        }
+                    </DialogHeader>
+                )}
                 <div>
                     {children}
                 </div>
