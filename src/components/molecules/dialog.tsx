@@ -5,6 +5,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 import { Description } from '@radix-ui/react-dialog'
 import React from 'react'
 
@@ -15,12 +16,13 @@ type DialogProps = {
     open: boolean
     title: string
     description?: string
+    className?: string
 }
 
-function Dialog({ children, onClose, open, title, description }: DialogProps) {
+function Dialog({ children, onClose, open, title, description, className }: DialogProps) {
     return (
-        <Base onOpenChange={onClose} open={open}>
-            <DialogContent>
+        <Base onOpenChange={onClose} open={open} >
+            <DialogContent className={cn("w-auto", className)}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     {description ?
