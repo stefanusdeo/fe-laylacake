@@ -17,7 +17,7 @@ const passwordSchema = yup
   .string()
   .min(8, `Password ${short}`)
   .max(30, `Password ${long}`)
-  .matches(passwordRegex, `Invalid password format`);
+  // .matches(passwordRegex, `Invalid password format`);
 
 const phoneSchema = yup
   .string()

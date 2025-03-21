@@ -4,6 +4,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwordInput";
 import { loginSchema } from "@/schema/yup-validation";
+import { loginAccount } from "@/store/action/auth";
 import { TFormLogin } from "@/types/loginFormTypes";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
@@ -25,15 +26,29 @@ function FormLogin() {
     formState: { errors, isDirty },
   } = form;
 
-  const onSubmit = async (data: TFormLogin) => {
+  const onSubmit = (data: TFormLogin) => {
     setLoading(true);
-    console.log(data);
-    // Lakukan proses autentikasi di sini
-    setTimeout(() => {
-      toast.success("Login Success")
-      setLoading(false)
-    }
-      , 2000);
+    const email = data.email;
+    const password = data.password;
+    const resp = new Promise((resolve, reject) => {
+      loginAccount(email, password)
+        .then((res) => {
+          if (res.data && res.message === "success") {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        }).finally(() => {
+          setLoading(false);
+        })
+    })
+
+    toast.promise(resp, {
+      loading: "Loading...",
+      success: "Login Success",
+      error: "Login Failed",
+    });
+
   };
   return (
     <Form {...form}>

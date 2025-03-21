@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const publicRoutes = ["/"]
+  const publicRoutes = ["/login"]
   const [loading, setLoading] = useState(true)
   const route = useRouter()
   const path = usePathname()
@@ -28,6 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
       route.events.off("routeChangeError", handleComplete)
     }
   }, [route])
+  
   return (
     <>
       <Head>
