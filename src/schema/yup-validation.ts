@@ -42,7 +42,20 @@ export const editPasswordSchema = yup.object().shape({
   NewPassword: passwordSchema
     .required(`New password ${req}`)
     .notOneOf([yup.ref(`OldPassword`)], `Please create a new password`),
-  PasswordConfirmation: yup.string()
+  PasswordConfirmation: yup
+    .string()
     .required(`Password confirmation is required`)
     .oneOf([yup.ref(`NewPassword`)], `New passwords do not match`),
+});
+
+export const userSchema = yup.object().shape({
+  fullname: yup.string().required(`Name ${req}`),
+  email: emailSchema.required("Email is required"),
+  phone: phoneSchema,
+  password: passwordSchema.required("Password is required"),
+  role: yup.string().required(`Role ${req}`),
+  PasswordConfirmation: yup
+    .string()
+    .required(`Password confirmation is required`)
+    .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
 });
