@@ -4,7 +4,7 @@ import * as React from "react"
 import { Check, ChevronsUpDown, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command"
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
 
@@ -51,25 +51,27 @@ export function SearchInputGroup({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[120px] p-0">
-                    {/* { options.length > 0 && <Command>
-                        <CommandGroup>
-                            {options?.map((option:SearchOption) => (
-                                <CommandItem
-                                    key={option.value}
-                                    value={option.value}
-                                    onSelect={() => {
-                                        setSelectedFilter(option)
-                                        setOpen(false)
-                                    }}
-                                >
-                                    <Check
-                                        className={cn("mr-2 h-4 w-4", selectedFilter.value === option.value ? "opacity-100" : "opacity-0")}
-                                    />
-                                    {option.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </Command>} */}
+                    <Command>
+                        <CommandList>
+                            <CommandGroup>
+                                {options.map((data: SearchOption, idx: number) => (
+                                    <CommandItem
+                                        key={idx}
+                                        value={data.value}
+                                        onSelect={() => {
+                                            setSelectedFilter(data)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn("mr-2 h-4 w-4", selectedFilter.value === data.value ? "opacity-100" : "opacity-0")}
+                                        />
+                                        {data.label}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
                 </PopoverContent>
             </Popover>
             <div className="flex w-full max-w-sm items-center rounded-r-lg">

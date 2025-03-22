@@ -5,10 +5,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useSidebar } from '@/components/ui/sidebar'
 import Text from '@/components/ui/text'
 import { PopoverArrow } from '@radix-ui/react-popover'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 function MainComponent({ children }: { children: React.ReactNode }) {
     const { open, openMobile, isMobile } = useSidebar()
+    const route = useRouter()
     const styleShape = "before:bg-white before:size-2.5 before:rotate-45 before:absolute before:-top-1.5 before:right-3 before:border-l before:border-t before:border-border"
     return (
         <main className=' relative w-full'>
@@ -28,17 +30,17 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                             sideOffset={10}
                             avoidCollisions
                             arrowPadding={10}
-                            className={`w-fit max-w-xs relative p-0 ${styleShape} divide-y divide-border`}
+                            className={`w-fit max-w-60 relative p-0 ${styleShape} divide-y divide-border`}
                         >
                             <div className='px-4 py-3 space-y-0.5 select-none'>
                                 <Text className='font-semibold leading-4'>Wahyu</Text>
-                                <Text variant='span' className='text-slate-500'>wahyutricahyomulyo@gmail.com</Text>
+                                <Text variant='span' className='text-slate-500 text-ellipsis'>wahyutricahyomulyo@gmail.com</Text>
                             </div>
                             <div className='px-1 py-2'>
-                                <Button className='w-full flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>
+                                <Button onClick={() => route.push("/account")} className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>
                             </div>
                             <div className='px-1 py-2'>
-                                <Button className='w-full flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
+                                <Button className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
                             </div>
                         </PopoverContent>
                     </Popover>

@@ -1,4 +1,4 @@
-import LayoutBoard from "@/components/template/layoutBoard";
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const publicRoutes = ["/"]
+  const publicRoutes = ["/login"]
   const [loading, setLoading] = useState(true)
   const route = useRouter()
   const path = usePathname()
@@ -27,17 +27,17 @@ export default function App({ Component, pageProps }: AppProps) {
       route.events.off("routeChangeError", handleComplete)
     }
   }, [route])
+
   return (
     <>
       <Head>
         <title>Website</title>
       </Head>
+      <Toaster position="top-right" richColors />
       {isPublicRoute ? (
         <Component {...pageProps} />
       ) : (
-        <LayoutBoard>
-          <Component {...pageProps} />
-        </LayoutBoard>
+        <Component {...pageProps} />
       )}
     </>
   );
