@@ -34,11 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Website</title>
       </Head>
       <Toaster position="top-right" richColors />
-      {isPublicRoute ? (
-        <Component {...pageProps} />
-      ) : (
-        <Component {...pageProps} />
-      )}
+      <Component {...pageProps} />
     </>
   );
 }
