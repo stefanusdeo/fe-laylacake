@@ -1,4 +1,3 @@
-import LayoutBoard from "@/components/template/layoutBoard";
 import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -28,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
       route.events.off("routeChangeError", handleComplete)
     }
   }, [route])
-  
+
   return (
     <>
       <Head>
@@ -38,9 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {isPublicRoute ? (
         <Component {...pageProps} />
       ) : (
-        <LayoutBoard>
-          <Component {...pageProps} />
-        </LayoutBoard>
+        <Component {...pageProps} />
       )}
     </>
   );

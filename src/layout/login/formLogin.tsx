@@ -7,7 +7,6 @@ import { loginSchema } from "@/schema/yup-validation";
 import { loginAccount } from "@/store/action/auth";
 import { TFormLogin } from "@/types/loginFormTypes";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import BeatLoader from "react-spinners/BeatLoader";
@@ -18,6 +17,11 @@ function FormLogin() {
 
   const form = useForm({
     resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
   });
 
   const {

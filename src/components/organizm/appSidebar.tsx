@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 function AppSidebar() {
     const path = usePathname()
-    const { open , setOpenMobile } = useSidebar()
+    const { open, setOpenMobile } = useSidebar()
 
     useEffect(() => {
         setOpenMobile(false)
@@ -43,7 +43,13 @@ function AppSidebar() {
                                 <SidebarMenu className=''>
                                     {menu.show && menu.items.map((item: MenuItem) => (
                                         <SidebarMenuItem key={item.title} className={`${item.show ? "" : "hidden"} ${open ? "" : "px-1 my-2"}`}>
-                                            <SidebarMenuButton tooltip={item.title} size={'lg'} asChild isActive={item.href === path} className={cn(open ? "" :"flex justify-center w-full",' data-[active=false]:text-slate-400 px-3')} >
+                                            <SidebarMenuButton
+                                                asChild
+                                                tooltip={item.title}
+                                                size={'lg'}
+                                                isActive={item.href === path}
+                                                className={cn(open ? "" : "flex justify-center w-full", 'data-[active=false]:text-slate-400 px-3')}
+                                            >
                                                 <Link href={item.href} className='flex items-center text-sm'><GoDotFill className='' /> {open && item.title}</Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
