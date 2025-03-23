@@ -30,7 +30,7 @@ export const listMenu: MenuSection[] = [
     items: [
       {
         title: "Outlets",
-        href: "/outlets",
+        href: "/store/outlets",
         permission: ["Kasir", "Admin", "Super Admin"],
         show: true,
       },

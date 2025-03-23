@@ -14,17 +14,55 @@ import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import ModalCreateUser from './modal/modalCreate'
 import ModalUpdateUser from './modal/modalUpdate'
-
+import { Checkbox } from '@/components/ui/checkbox'
+import { PiTrashDuotone } from 'react-icons/pi'
 
 function UserList() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    const [openModalCreate, setOpenModalCreate] = useState(false)
-    const [openModalEdit, setOpenModalEdit] = useState(false)
-    const [openModalDelete, setOpenModalDelete] = useState(false)
-    const [selectedUser, setSelectedUser] = useState<User>(users[0])
+    const [openModalCreate, setOpenModalCreate] = useState(false);
+    const [openModalEdit, setOpenModalEdit] = useState(false);
+    const [openModalDelete, setOpenModalDelete] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<number[]>([]); // hanya array of number
+    const totalList = users.length;
+
+    const handleChecked = (id: number) => {
+        setSelectedUser((prevSelected) =>
+            prevSelected.includes(id)
+                ? prevSelected.filter((val) => val !== id)
+                : [...prevSelected, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedUser.length === totalList) {
+            setSelectedUser([]);
+        } else {
+            setSelectedUser(users.map(user => user.id));
+        }
+    };
 
     const columnsUserList: Column<User>[] = [
+        {
+            label: (
+                <Checkbox
+                    className='size-5 mt-1 data-[state=unchecked]:bg-white border-border'
+                    checked={selectedUser.length === totalList}
+                    onCheckedChange={handleSelectAll}
+                />
+            ),
+            renderCell: ({ id }) => (
+                <div>
+                    <Checkbox
+                        className='size-5 mt-1 border-border'
+                        value={id}
+                        checked={selectedUser.includes(id)}
+                        onCheckedChange={() => handleChecked(id)}
+                    />
+                </div>
+            ),
+            className: cn("text-center justify-center"),
+        },
         {
             label: "No",
             renderCell: () => null,
@@ -33,7 +71,7 @@ function UserList() {
         {
             label: "Name",
             renderCell: (row) => <p>{row.name}</p>,
-            className: " w-fit text-left",
+            className: "w-fit text-left",
         },
         {
             label: "Role",
@@ -47,59 +85,96 @@ function UserList() {
         },
         {
             label: "Outlets",
-            renderCell: ({ outlets }) => <p>{outlets.map((val: UserOutlet) => val.outlet.alamat).join(" ; ")}</p>,
-            // className: "",
+            renderCell: ({ outlets }) => (
+                <p>{outlets.map((val: UserOutlet) => val.outlet.alamat).join(" ; ")}</p>
+            ),
         },
         {
             label: "",
-            renderCell: ({ id }) => <ButtonAction onDelete={() => setOpenModalDelete(true)} onEdit={() => setOpenModalEdit(true)} />,
+            renderCell: ({ id }) => (
+                <ButtonAction
+                    onDelete={() => setOpenModalDelete(true)}
+                    onEdit={() => setOpenModalEdit(true)}
+                />
+            ),
         },
     ];
 
-
+    // Modal Delete (menggunakan useMemo untuk optimasi)
     const memoModalDelete = useMemo(() => {
         if (openModalDelete) {
             return (
                 <ModalDelete
                     open={openModalDelete}
                     onClose={setOpenModalDelete}
-                    title='Delete User'
-                    description='Are you sure want to delete this user?'
+                    title="Delete User"
+                    description="Are you sure want to delete this user?"
                     onConfirm={() => setOpenModalDelete(false)}
                     onCancel={() => setOpenModalDelete(false)}
                 />
-            )
+            );
         }
-    }, [openModalDelete])
+    }, [openModalDelete]);
 
+    // Modal Create
     const memoModalCreate = useMemo(() => {
-        if (openModalCreate) return <ModalCreateUser open={openModalCreate} onClose={setOpenModalCreate} />
-    }, [openModalCreate])
+        if (openModalCreate)
+            return <ModalCreateUser open={openModalCreate} onClose={setOpenModalCreate} />;
+    }, [openModalCreate]);
 
+    // Modal Edit
     const memoModalEdit = useMemo(() => {
-        if (openModalEdit) return <ModalUpdateUser open={openModalEdit} onClose={setOpenModalEdit} />
-    }, [openModalEdit])
+        if (openModalEdit)
+            return <ModalUpdateUser open={openModalEdit} onClose={setOpenModalEdit} />;
+    }, [openModalEdit]);
 
     return (
-        <div className='flex flex-col gap-7'>
-            <div className='flex justify-between items-center gap-5 select-none'>
-                <div className='flex flex-col gap-3'>
-                    <Text variant='h2'>User List</Text>
+        <div className="flex flex-col gap-7">
+            {/* Header */}
+            <div className="flex justify-between items-center gap-5 select-none">
+                <div className="flex flex-col gap-3">
+                    <Text variant="h2">User List</Text>
                     <Breadcrums />
                 </div>
-                <Button size={'lg'} onClick={() => setOpenModalCreate(true)}><Plus /> Add User</Button>
+                <Button size="lg" onClick={() => setOpenModalCreate(true)}>
+                    <Plus /> Add User
+                </Button>
             </div>
-            <div className='w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7'>
-                <SearchInputGroup options={[{ value: "name", label: "Name" }, { value: "phone", label: "Phone" }]} className='rounded-md' />
-                <div className=''>
+
+            {/* Table Section */}
+            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
+                {/* Search Input */}
+                <SearchInputGroup
+                    options={[
+                        { value: "name", label: "Name" },
+                        { value: "phone", label: "Phone" },
+                    ]}
+                    className="rounded-md"
+                />
+
+
+                {/* Table */}
+                <div>
+                    {selectedUser.length > 0 ? (
+                        <div className="flex w-full py-4 px-10 rounded-t-lg bg-amber-100 justify-between items-center">
+                            <Text variant='h5' className='text-amber-500'>Selected {selectedUser.length} {selectedUser.length > 1 ? "users" : "user"}</Text>
+                            {selectedUser.length > 1 && (
+                                <Button size="sm" variant={"outline"}>
+                                    <PiTrashDuotone /> Delete All
+                                </Button>
+                            )}
+                        </div>
+                    ) : ""}
                     <Tables columns={columnsUserList} data={users} />
                     <div className="flex justify-between items-center p-4 border-slate-100 border-t-[2px]">
+                        {/* Pagination Info */}
                         <PaginationInfo
                             displayed={limit}
                             total={users.length ?? 0}
                             onChangeDisplayed={setLimit}
                             className=""
                         />
+                        {/* Pagination */}
                         <TablePagination
                             {...{ limit, page }}
                             onPageChange={setPage}
@@ -108,12 +183,13 @@ function UserList() {
                     </div>
                 </div>
             </div>
-            {/* for modal */}
+
+            {/* Modals */}
             {memoModalCreate}
             {memoModalEdit}
             {memoModalDelete}
         </div>
-    )
+    );
 }
 
-export default UserList
+export default UserList;

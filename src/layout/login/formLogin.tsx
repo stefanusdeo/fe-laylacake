@@ -36,8 +36,8 @@ function FormLogin() {
     const password = data.password;
     const resp = new Promise((resolve, reject) => {
       loginAccount(email, password)
-        .then((res) => {
-          if (res.data && res.message === "success") {
+        .then((res: any) => {
+          if (res?.status === 200) {
             resolve(res);
           } else {
             reject(res);

@@ -1,10 +1,25 @@
 import Text from '@/components/ui/text'
-import React from 'react'
+import { useAuthStore } from '@/store/hooks/useAuth'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
 type LayoutAuthProps = {
   children: React.ReactNode
+  restricted?: boolean
 }
 
-function LayoutAuth({ children }: LayoutAuthProps) {
+function LayoutAuth({ children, restricted = false }: LayoutAuthProps) {
+  const router = useRouter()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated && restricted) {
+      router.push("/account")
+    }
+  }, [isAuthenticated, restricted, router])
+
+  if (isAuthenticated && restricted) {
+    return null
+  }
   return (
     <div className='select-none'>
       <div className=' absolute w-full mt-10 px-10 flex items-center'>

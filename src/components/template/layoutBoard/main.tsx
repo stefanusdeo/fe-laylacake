@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useSidebar } from '@/components/ui/sidebar'
 import Text from '@/components/ui/text'
-import { PopoverArrow } from '@radix-ui/react-popover'
+import { logoutAccount } from '@/store/action/auth'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
@@ -40,7 +40,7 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                                 <Button onClick={() => route.push("/account")} className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>
                             </div>
                             <div className='px-1 py-2'>
-                                <Button className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
+                                <Button onClick={logoutAccount} className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Logout </Button>
                             </div>
                         </PopoverContent>
                     </Popover>
