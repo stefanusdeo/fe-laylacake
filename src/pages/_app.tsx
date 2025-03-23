@@ -1,20 +1,17 @@
-import LayoutAuth from "@/components/template/layoutAuth";
 import LayoutBoard from "@/components/template/layoutBoard";
 import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/store/hooks/useAuth";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const publicPaths = ["/login", "/"]
+const publicPaths = ["/login", "/", "/404"]
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  const { isAuthenticated } = useAuthStore()
 
   useEffect(() => {
     if (useAuthStore.persist.hasHydrated()) {
@@ -39,13 +36,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Website</title>
+        <title>Laylacake</title>
       </Head>
       <Toaster position="top-right" richColors />
       {isPublicPath ? (
-        <LayoutAuth restricted={true}>
-          <Component {...pageProps} />
-        </LayoutAuth>
+        <Component {...pageProps} />
       ) : (
         <LayoutBoard>
           <Component {...pageProps} />
