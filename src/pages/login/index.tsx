@@ -3,6 +3,8 @@ import FormLogin from "@/layout/login/formLogin";
 
 export default function LoginPage() {
   return (
-    <FormLogin />
+    <LayoutAuth restricted={true}>
+      <FormLogin />
+    </LayoutAuth>
   );
 }

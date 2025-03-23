@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { on } from 'events'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { AiOutlineUserDelete } from 'react-icons/ai'
 import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi'
 import { TbUserEdit } from 'react-icons/tb'
