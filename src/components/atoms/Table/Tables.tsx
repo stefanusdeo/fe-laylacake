@@ -30,7 +30,7 @@ const Tables = <T,>({
                   {columns.map((column, colIndex) => {
                     return (
                       <td key={colIndex} className={cn(column.className, "py-3.5 first:ps-7 last:pe-7 px-2 text-xs sm:text-sm font-normal text-neutral-800")}>
-                        {colIndex === 1 ? rowIndex + 1 : column.renderCell(row)}
+                        {column.label === "No" ? rowIndex + 1 : column.renderCell(row)}
                       </td>
                     )
                   })}
