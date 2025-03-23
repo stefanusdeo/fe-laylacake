@@ -6,7 +6,9 @@ export const endpoint = {
     refreshToken: "/auth/refresh",
   },
   profile: "/profile",
-  outlite: {
+  password: "/password",
+  permission: "/permissions",
+  outlet: {
     external: "/external/outlets",
     internal: "/internal/outlets",
     migrate: "/internal/outlets",

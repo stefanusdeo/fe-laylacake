@@ -36,4 +36,16 @@ export const listMenu: MenuSection[] = [
       },
     ],
   },
+  {
+    title: "Account",
+    show: false,
+    items: [
+      {
+        title: "Profile",
+        href: "/account",
+        permission: ["Kasir", "Admin", "Super Admin"],
+        show: false,
+      },
+    ],
+  },
 ];
