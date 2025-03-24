@@ -1,9 +1,25 @@
 "use client"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PiUserSquareDuotone, PiKeyDuotone } from "react-icons/pi"
+import { getProfile } from '@/store/action/profile'
+import { useProfileStore } from '@/store/hooks/useProfile'
+import { useEffect } from 'react'
+import { PiKeyDuotone, PiUserSquareDuotone } from "react-icons/pi"
 import ChangePassword from './change-password'
 import General from './general'
 function Account() {
+    const { profile } = useProfileStore()
+    async function fetchProfile() {
+        try {
+            await getProfile()
+        } catch (error) {
+            console.error('Failed to fetch profile:', error)
+        }
+    }
+    useEffect(() => {
+        if (profile) return
+        fetchProfile()
+    }, [])
+
     return (
         <Tabs defaultValue="general">
             <TabsList className='bg-transparent rounded flex gap-5'>

@@ -1,12 +1,12 @@
-import { Profile } from "@/types/profileTypes";
+import { IProfile } from "@/types/profileTypes";
 import { create } from "zustand";
 
 interface ProfileState {
-  profile: Profile | null;
-  setProfile: (profile: Profile) => void;
+  profile: IProfile | null;
+  setProfile: (profile: IProfile) => void;
 }
 
 export const useProfileStore = create<ProfileState>()((set) => ({
   profile: null,
-  setProfile: (profile: Profile) => set({ profile }),
+  setProfile: (profile: IProfile) => set({ profile }),
 }));

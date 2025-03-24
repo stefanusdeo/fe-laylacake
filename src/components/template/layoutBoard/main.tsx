@@ -5,11 +5,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useSidebar } from '@/components/ui/sidebar'
 import Text from '@/components/ui/text'
 import { logoutAccount } from '@/store/action/auth'
+import { useProfileStore } from '@/store/hooks/useProfile'
+import { getInitialsName } from '@/utils/getInitialName'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
 function MainComponent({ children }: { children: React.ReactNode }) {
     const { open, openMobile, isMobile } = useSidebar()
+    const { profile } = useProfileStore()
+
+    const nameUser = getInitialsName(profile?.name || "")
+
     const route = useRouter()
     const styleShape = "before:bg-white before:size-2.5 before:rotate-45 before:absolute before:-top-1.5 before:right-3 before:border-l before:border-t before:border-border"
     return (
@@ -21,7 +27,7 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                         <PopoverTrigger>
                             <Avatar className='size-10'>
                                 <AvatarImage src="" />
-                                <AvatarFallback className='bg-slate-300'>WT</AvatarFallback>
+                                <AvatarFallback className='bg-slate-300 uppercase'>{nameUser}</AvatarFallback>
                             </Avatar>
                         </PopoverTrigger>
                         <PopoverContent
@@ -33,8 +39,8 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                             className={`w-fit max-w-60 relative p-0 ${styleShape} divide-y divide-border`}
                         >
                             <div className='px-4 py-3 space-y-0.5 select-none'>
-                                <Text className='font-semibold leading-4'>Wahyu</Text>
-                                <Text variant='span' className='text-slate-500 text-ellipsis'>wahyutricahyomulyo@gmail.com</Text>
+                                <Text className='font-semibold leading-4 capitalize'>{profile?.name ?? ""}</Text>
+                                <Text variant='span' className='text-slate-500 text-ellipsis'>{profile?.email ?? ""}</Text>
                             </div>
                             <div className='px-1 py-2'>
                                 <Button onClick={() => route.push("/account")} className='w-full px-2.5 flex font-normal text-sm justify-start' variant={'ghost'}>Profile</Button>

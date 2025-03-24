@@ -7,10 +7,15 @@ import { GoDotFill } from "react-icons/go";
 import { usePathname } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { cn } from '@/lib/utils'
+import { useProfileStore } from '@/store/hooks/useProfile'
+import { getInitialsName } from '@/utils/getInitialName'
 
 function AppSidebar() {
     const path = usePathname()
     const { open, setOpenMobile } = useSidebar()
+    const { profile } = useProfileStore()
+
+    const nameUser = getInitialsName(profile?.name || "")
 
     useEffect(() => {
         setOpenMobile(false)
@@ -22,13 +27,13 @@ function AppSidebar() {
                 <Link href={"/account"} className={`flex gap-3.5 rounded-lg transition-all ease-linear duration-200 ${open ? "px-5 py-4 bg-slate-100 " : "px-0 py-4"}`}>
                     <Avatar className='size-10'>
                         <AvatarImage src="" />
-                        <AvatarFallback className='bg-slate-300'>WT</AvatarFallback>
+                        <AvatarFallback className='bg-slate-300 uppercase'>{nameUser}</AvatarFallback>
                     </Avatar>
                     {
                         open && (
                             <div className='flex flex-col capitalize'>
-                                <Text className='font-semibold'>Wahyu</Text>
-                                <Text variant='span' className='text-slate-500'>Super Admin</Text>
+                                <Text className='font-semibold'>{profile?.name ?? ""}</Text>
+                                <Text variant='span' className='text-slate-500 lowercase'>{profile?.email ?? ""}</Text>
                             </div>
                         )
                     }

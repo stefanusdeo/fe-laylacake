@@ -1,8 +1,6 @@
-import Text from '@/components/ui/text'
-import React from 'react'
 import Breadcrums from '@/components/molecules/breadcrums';
+import Text from '@/components/ui/text';
 import Account from '@/layout/account';
-import LayoutBoard from '@/components/template/layoutBoard';
 
 function AccountPage() {
     return (
