@@ -19,7 +19,7 @@ services:
     #   - NEXT_PUBLIC_AUTH_SECRET=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRhA0gEIMjcwNGowajeoAgCwAgA
     #   - NEXT_TELEMETRY_DISABLED=1
     ports:
-      - "3011:3000"
+      - "8010:3000"
     networks:
       - layla-network
       - mysql-layla-network
