@@ -126,9 +126,7 @@ function OutletInternal() {
                 if (res?.status === 200) {
                     reslove(res)
                     getInternalOutlets()
-                    setSelectedOutlet((prevSelected) =>
-                        prevSelected.includes(outletId) ? prevSelected.filter((val) => val !== outletId) : [...prevSelected, outletId],
-                    )
+                    if (selectedOutlet.includes(outletId)) setSelectedOutlet((prevSelected) => prevSelected.filter((val) => val !== outletId))
                     hadleCloseModalSpesific()
                 } else {
                     rejects(res)
@@ -232,6 +230,7 @@ function OutletInternal() {
             </div>
         )
     }
+    console.log(selectedOutlet)
 
     return (
         <div className="w-full space-y-7">
