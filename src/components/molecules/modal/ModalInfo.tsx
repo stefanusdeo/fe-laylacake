@@ -16,7 +16,7 @@ function ModalInfo({ open, onClose, description, title, onConfirm, onCancel }: M
     return (
         <Dialog onClose={onClose} open={open}>
             <div className=' flex flex-col gap-5 items-center justify-center'>
-                <PiWarningCircle className='text-5xl text-amber-500' />
+                <PiWarningCircle className='text-5xl text-orange-500' />
                 <div className=' flex flex-col gap-2'>
                     <Text variant='h4' className='text-center text-slate-800'>{title}</Text>
                     <Text variant='p' className='text-center text-slate-600'>{description}</Text>

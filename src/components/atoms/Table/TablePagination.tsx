@@ -54,7 +54,7 @@ function TablePagination({ limit, onPageChange, page, totalItems }: Props) {
         <button
           className={cn(
             "size-8 justify-center items-center flex disabled:cursor-not-allowed",
-            page === 1 && "text-black bg-amber-50 rounded-md"
+            page === 1 && "text-black bg-orange-50 rounded-md"
           )}
           onClick={() => handlePageChange(1)}
         >
@@ -80,7 +80,7 @@ function TablePagination({ limit, onPageChange, page, totalItems }: Props) {
         <button
           className={cn(
             "size-8 justify-center items-center flex disabled:cursor-not-allowed text-sm",
-            page === i && "text-black bg-amber-50 rounded-md"
+            page === i && "text-black bg-orange-50 rounded-md"
           )}
           onClick={() => handlePageChange(i)}
         >
@@ -106,7 +106,7 @@ function TablePagination({ limit, onPageChange, page, totalItems }: Props) {
         <button
           className={cn(
             "size-8 justify-center items-center flex disabled:cursor-not-allowed text-sm",
-            page === totalPages && "text-black bg-amber-50 rounded-md"
+            page === totalPages && "text-black bg-orange-50 rounded-md"
           )}
           onClick={() => handlePageChange(totalPages)}
         >

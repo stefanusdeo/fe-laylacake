@@ -23,7 +23,7 @@ function AppSidebar() {
     return (
         <Sidebar collapsible='icon' side='left' variant='sidebar' className=' select-none'>
             <SidebarHeader className='flex flex-col gap-3.5 pt-5 pb-3'>
-                <Text variant='h4' className='text-white size-10 p-1.5 bg-amber-400 flex items-center justify-center rounded-md'>PT</Text>
+                <Text variant='h4' className='text-white size-10 p-1.5 bg-orange-400 flex items-center justify-center rounded-md'>PT</Text>
                 <Link href={"/account"} className={`flex gap-3.5 rounded-lg transition-all ease-linear duration-200 ${open ? "px-5 py-4 bg-slate-100 " : "px-0 py-4"}`}>
                     <Avatar className='size-10'>
                         <AvatarImage src="" />

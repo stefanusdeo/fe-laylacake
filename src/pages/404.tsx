@@ -13,8 +13,8 @@ export default function NotFound() {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 dark:bg-slate-900">
             <div className="container flex max-w-md flex-col items-center justify-center gap-6 px-4 py-16 text-center">
-                <div className="rounded-full bg-amber-400/20 p-6">
-                    <AlertTriangle className="h-16 w-16 text-amber-400" />
+                <div className="rounded-full bg-orange-400/20 p-6">
+                    <AlertTriangle className="h-16 w-16 text-orange-400" />
                 </div>
                 <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">404</h1>
                 <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Page Not Found</h2>

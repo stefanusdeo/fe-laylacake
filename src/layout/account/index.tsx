@@ -12,13 +12,13 @@ function Account() {
             <TabsList className='bg-transparent rounded flex gap-5'>
                 <TabsTrigger
                     value={'general'}
-                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-amber-400'
+                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
                 >
                     <PiUserSquareDuotone size={400} /> General
                 </TabsTrigger>
                 <TabsTrigger
                     value={'password'}
-                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-amber-400'
+                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
                 >
                     <PiKeyDuotone /> Change Password
                 </TabsTrigger>

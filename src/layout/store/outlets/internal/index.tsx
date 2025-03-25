@@ -246,8 +246,8 @@ function OutletInternal() {
             {/* Table */}
             <div>
                 {selectedOutlet.length > 0 ? (
-                    <div className="flex w-full py-4 px-10 rounded-t-lg bg-amber-100 justify-between items-center">
-                        <Text variant="h5" className="text-amber-500">
+                    <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
+                        <Text variant="h5" className="text-orange-500">
                             Selected {selectedOutlet.length} {selectedOutlet.length > 1 ? "outlets" : "outlet"}
                         </Text>
                         {selectedOutlet.length > 1 && (

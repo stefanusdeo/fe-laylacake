@@ -7,8 +7,8 @@ export default function TrigerSidebar() {
     return (
         <div>
             <div className='relative text-2xl bg-white rounded-full'>
-                {isMobile ? <LuListMinus color="" size={30} className={` cursor-pointer text-amber-400 font-bold`} onClick={() => toggleSidebar()} />
-                    : <PiCaretDoubleLeftDuotone className={`${open || openMobile ? "" : "rotate-180"} text-amber-400`} onClick={() => toggleSidebar()} />
+                {isMobile ? <LuListMinus color="" size={30} className={` cursor-pointer text-orange-400 font-bold`} onClick={() => toggleSidebar()} />
+                    : <PiCaretDoubleLeftDuotone className={`${open || openMobile ? "" : "rotate-180"} text-orange-400`} onClick={() => toggleSidebar()} />
                 }
             </div>
         </div>
