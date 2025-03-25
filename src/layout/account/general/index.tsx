@@ -29,6 +29,8 @@ function General() {
     const { profile } = useProfileStore();
 
     const [loading, setLoading] = useState(false);
+    const [loadProfile, setLoadProfile] = useState<boolean>(false);
+
     const [lastProfile, setLastProfile] = useState<FormValues>({
         username: profile?.name || "",
         phone: profile?.phone_number || "",
@@ -76,7 +78,7 @@ function General() {
     };
 
     useEffect(() => {
-        setLoading(true);
+        setLoadProfile(true);
         if (profile) {
             const newProfileData = {
                 username: profile.name,
@@ -87,14 +89,15 @@ function General() {
             setLastProfile(newProfileData); // Simpan nilai terbaru agar jadi referensi perubahan
         }
         setTimeout(() => {
-            setLoading(false);
-        }, 1500);
+            setLoadProfile(false);
+        }, 1000);
     }, [profile]);
 
-    if (loading) {
+    if (loadProfile) {
         return (
-            <div className='flex justify-center items-center h-full'>
+            <div className='flex justify-center items-center h-full gap-4'>
                 <BeatLoader color="#010101" size={8} />
+                Please wait...
             </div>
         );
     }

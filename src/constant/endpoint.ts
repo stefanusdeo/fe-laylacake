@@ -12,6 +12,7 @@ export const endpoint = {
     external: "/external/outlets",
     internal: "/internal/outlets",
     migrate: "/internal/outlets",
+    multiDelete: "/internal/outlets/delete-bulk",
   },
   user_management: {
     role: "/roles",

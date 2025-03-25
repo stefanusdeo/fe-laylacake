@@ -3,6 +3,7 @@ import { endpoint } from "@/constant/endpoint";
 import { useAuthStore } from "../hooks/useAuth";
 import Cookie from "js-cookie";
 import { isAxiosError } from "axios";
+import { globalError } from "@/utils/globalErrorAxios";
 
 const { login, refreshToken } = endpoint.auth;
 
@@ -52,11 +53,6 @@ export const refreshTokenAccount = async () => {
     console.log(result);
     return result.message;
   } catch (error) {
-    if (isAxiosError(error)) {
-      const errorResponse = error.response?.data;
-      console.log(errorResponse);
-      return errorResponse;
-    }
-    return error;
+    globalError(error);
   }
 };

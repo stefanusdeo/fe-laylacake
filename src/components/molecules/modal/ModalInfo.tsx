@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 
 type ModalInfoProps = {
     title: string;
-    description: string;
+    description: string | React.ReactNode;
     onConfirm: () => void;
     onCancel: () => void;
 }

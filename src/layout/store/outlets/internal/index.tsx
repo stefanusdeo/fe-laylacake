@@ -6,40 +6,55 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { SearchInputGroup } from '@/components/ui/searchInput'
 import Text from '@/components/ui/text'
-import { cn } from '@/lib/utils'
-import { OutletData } from '@/types/outletTypes'
+import { cn, useDebounce } from '@/lib/utils'
+import { deletedMultipleOutlets, deletedSpesificOutlets, getOutletsInternal } from '@/store/action/outlets'
+import { useOutletStore } from '@/store/hooks/useOutlets'
+import { IParamsOutlet, OutletData } from '@/types/outletTypes'
 import { Trash2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
-
-const outlets: OutletData[] = [
-    {
-        id: 1,
-        name: "Regency",
-        address: "Villa tangerang indah CC5 No. 3, kec periuk, kota Tangerang.",
-        phone_number: "082113716706",
-    },
-    {
-        id: 2,
-        name: "Sepatan",
-        address: " Jl raya mauk km 19, sulang, kec sepatan kab. Tangerang",
-        phone_number: "81281965250",
-    },
-    {
-        id: 3,
-        name: "Kehakiman",
-        address: " Jl TM Taruna no 27. Tangerang",
-        phone_number: "81311506249",
-    },
-]
-
+import { useEffect, useMemo, useState, useTransition } from 'react'
+import { set } from 'react-hook-form'
+import BeatLoader from 'react-spinners/BeatLoader'
+import { toast } from 'sonner'
 
 function OutletInternal() {
+    const { outletInternal } = useOutletStore()
+
+    const [outlets, setOutlets] = useState<OutletData[]>(outletInternal?.data || [])
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
+    const [searchInput, setSearchInput] = useState("")
+    const [filter, setFilter] = useState("")
     const [selectedOutlet, setSelectedOutlet] = useState<number[]>([])
+    const [outletId, setOutletId] = useState<number | null>(null)
+    const [outletName, setOutletName] = useState("")
     const [openModalDelete, setOpenModalDelete] = useState(false);
+    const [openModalMultiOutlets, setOpenModalMultiOutlets] = useState(false);
 
-    const totalList = outlets.length
+    const search = useDebounce(searchInput, 600)
+
+    const [isPending, startTransition] = useTransition()
+
+    const getInternalOutlets = async () => {
+        const params: IParamsOutlet = { page, limit, search, filter }
+        const res = await getOutletsInternal(params)
+        if (res?.pagination) {
+            if (res?.pagination.total_page === 1) {
+                setPage(1)
+            }
+        }
+        setOutlets(res?.data || [])
+    }
+
+    useEffect(() => {
+        startTransition(() => {
+            getInternalOutlets()
+        })
+    }, [page, limit, search])
+
+    const handleSearch = (value: string, filter: string) => {
+        setSearchInput(value)
+        setFilter(filter)
+    }
 
     const handleChecked = (id: number) => {
         setSelectedOutlet((prevSelected) =>
@@ -47,12 +62,84 @@ function OutletInternal() {
         )
     }
 
+    console.log(selectedOutlet)
+
     const handleSelectAll = () => {
-        if (selectedOutlet.length === totalList) {
+        if (selectedOutlet.length === outletInternal?.pagination.total_records && outlets.length > 0) {
             setSelectedOutlet([])
         } else {
-            setSelectedOutlet(outlets.map((outlet) => outlet.id))
+            try {
+                startTransition(async () => {
+                    const res = await getOutletsInternal({ page: 0, limit: 0 })
+                    const outletsAll = res?.data || []
+                    setSelectedOutlet(outletsAll.map((outlet: OutletData) => outlet.id))
+                })
+            } catch (error) {
+                toast.error("Failed select all: missing data outlets")
+            }
         }
+    }
+
+    const handleOpenModalSpesific = (id: number, name: string) => {
+        if (id && name) {
+            setOutletId(id)
+            setOutletName(name)
+            setOpenModalDelete(true)
+        }
+    }
+
+    const hadleCloseModalSpesific = () => {
+        setOpenModalDelete(false)
+        setOutletId(null)
+        setOutletName("")
+    }
+
+    const handleMultiDelete = async () => {
+        const resp = new Promise((reslove, rejects) => {
+            const typeDel = selectedOutlet.length === outletInternal?.pagination.total_records ? "all" : "partial"
+            deletedMultipleOutlets(selectedOutlet, typeDel)
+                .then((res: any) => {
+                    if (res?.status === 200) {
+                        reslove(res)
+                        getInternalOutlets()
+                        setSelectedOutlet([])
+                        setOpenModalMultiOutlets(false)
+                    } else {
+                        rejects(res)
+                    }
+                })
+        })
+        toast.promise(resp, {
+            loading: "Deleting outlets...",
+            success: "Outlets deleted successfully",
+            error: (err: any) => `Failed to delete outlets: ${err?.message || 'Please try again'}`
+        })
+    }
+
+    const handleDeleteSpesific = async () => {
+        if (!outletId) {
+            toast.error("Failed delete: missing id outlet")
+            return
+        }
+        const resp = new Promise((reslove, rejects) => {
+            deletedSpesificOutlets(outletId).then((res: any) => {
+                if (res?.status === 200) {
+                    reslove(res)
+                    getInternalOutlets()
+                    setSelectedOutlet((prevSelected) =>
+                        prevSelected.includes(outletId) ? prevSelected.filter((val) => val !== outletId) : [...prevSelected, outletId],
+                    )
+                    hadleCloseModalSpesific()
+                } else {
+                    rejects(res)
+                }
+            })
+        })
+        toast.promise(resp, {
+            loading: "Deleting outlet...",
+            success: "Outlet deleted successfully",
+            error: (err: any) => `Failed to delete outlet: ${err?.message || 'Please try again'}`
+        })
     }
 
     const columnsOutletList: Column<OutletData>[] = [
@@ -60,7 +147,7 @@ function OutletInternal() {
             label: (
                 <Checkbox
                     className='size-5 mt-1 data-[state=unchecked]:bg-white border-border'
-                    checked={selectedOutlet.length === totalList}
+                    checked={selectedOutlet.length === outletInternal?.pagination.total_records && outlets.length > 0}
                     onCheckedChange={handleSelectAll}
                 />
             ),
@@ -98,8 +185,8 @@ function OutletInternal() {
         },
         {
             label: "Action",
-            renderCell: () => (
-                <Button variant="outline" size="icon" onClick={() => setOpenModalDelete(true)}>
+            renderCell: ({ id, name }) => (
+                <Button variant="outline" size="icon" onClick={() => handleOpenModalSpesific(id, name)}>
                     <Trash2 />
                 </Button>
             ),
@@ -108,20 +195,43 @@ function OutletInternal() {
     ]
 
     // Modal Delete (menggunakan useMemo untuk optimasi)
-    const memoModalDelete = useMemo(() => {
+    const memoModalDeleteSpesific = useMemo(() => {
         if (openModalDelete) {
             return (
                 <ModalDelete
                     open={openModalDelete}
                     onClose={setOpenModalDelete}
                     title="Delete Outlet"
-                    description={`Are you sure want to delete ${selectedOutlet.length > 1 ? selectedOutlet.length + " Outlets?" : "this outlet?"}`}
-                    onConfirm={() => setOpenModalDelete(false)}
-                    onCancel={() => setOpenModalDelete(false)}
+                    description={<span>Are you sure want to delete outlet <b>{outletName}</b>?</span>}
+                    onConfirm={handleDeleteSpesific}
+                    onCancel={hadleCloseModalSpesific}
                 />
             );
         }
     }, [openModalDelete]);
+
+    const memoModalDeleteMultiOutlets = useMemo(() => {
+        if (openModalMultiOutlets) {
+            return (
+                <ModalDelete
+                    open={openModalMultiOutlets}
+                    onClose={setOpenModalMultiOutlets}
+                    title="Delete Confirmation"
+                    description={<span>Are you sure you want to delete <b>{selectedOutlet.length + " Outlets"}</b>? This action cannot be undone.</span>}
+                    onConfirm={handleMultiDelete}
+                    onCancel={() => setOpenModalMultiOutlets(false)}
+                />
+            );
+        }
+    }, [openModalMultiOutlets]);
+
+    {
+        isPending && (
+            <div className='flex justify-center items-center h-full gap-4'>
+                <BeatLoader color="#010101" size={8} />
+            </div>
+        )
+    }
 
     return (
         <div className="w-full space-y-7">
@@ -129,10 +239,9 @@ function OutletInternal() {
             <SearchInputGroup
                 options={[
                     { value: "name", label: "Name" },
-                    { value: "address", label: "Address" },
-                    { value: "phone_number", label: "Phone Number" },
                 ]}
                 className="rounded-md"
+                onSearch={handleSearch}
             />
 
             {/* Table */}
@@ -143,7 +252,7 @@ function OutletInternal() {
                             Selected {selectedOutlet.length} {selectedOutlet.length > 1 ? "outlets" : "outlet"}
                         </Text>
                         {selectedOutlet.length > 1 && (
-                            <Button size="sm" variant="outline" onClick={() => setOpenModalDelete(true)}>
+                            <Button size="sm" variant="outline" onClick={() => setOpenModalMultiOutlets(true)}>
                                 <Trash2 className="h-4 w-4 mr-2" /> Delete All
                             </Button>
                         )}
@@ -152,12 +261,13 @@ function OutletInternal() {
                 <Tables columns={columnsOutletList} data={outlets} />
                 <div className="flex justify-between items-center p-4 border-slate-100 border-t-[2px]">
                     {/* Pagination Info */}
-                    <PaginationInfo displayed={limit} total={outlets.length} onChangeDisplayed={setLimit} className="" />
+                    <PaginationInfo displayed={limit} total={outletInternal?.pagination.total_records ?? 0} onChangeDisplayed={setLimit} className="" />
                     {/* Pagination */}
-                    <TablePagination limit={limit} page={page} onPageChange={setPage} totalItems={outlets.length} />
+                    <TablePagination limit={limit} page={page} onPageChange={setPage} totalItems={outletInternal?.pagination.total_records ?? 1} />
                 </div>
             </div>
-            {memoModalDelete}
+            {memoModalDeleteSpesific}
+            {memoModalDeleteMultiOutlets}
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
 import { useProfileStore } from "../hooks/useProfile";
+import { globalError } from "@/utils/globalErrorAxios";
 
 const { profile, password } = endpoint;
 
@@ -16,7 +17,7 @@ export const getProfile = async () => {
     useProfileStore.getState().setProfile(result);
     return result;
   } catch (error) {
-    return error;
+    globalError(error);
   }
 };
 
@@ -27,7 +28,7 @@ export const updateProfile = async (body: BodyProfile) => {
     useProfileStore.getState().setProfile(result);
     return response.data;
   } catch (error) {
-    return error;
+    globalError(error);
   }
 };
 
@@ -35,9 +36,8 @@ export const updatePassword = async (body: any) => {
   try {
     const response = await API.put(password, body);
     const result = response.data;
-    console.log(result)
     return result;
   } catch (error) {
-    return error;
+    globalError(error);
   }
 };

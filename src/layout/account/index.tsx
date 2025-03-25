@@ -7,19 +7,6 @@ import { PiKeyDuotone, PiUserSquareDuotone } from "react-icons/pi"
 import ChangePassword from './change-password'
 import General from './general'
 function Account() {
-    const { profile } = useProfileStore()
-    async function fetchProfile() {
-        try {
-            await getProfile()
-        } catch (error) {
-            console.error('Failed to fetch profile:', error)
-        }
-    }
-    useEffect(() => {
-        if (profile) return
-        fetchProfile()
-    }, [])
-
     return (
         <Tabs defaultValue="general">
             <TabsList className='bg-transparent rounded flex gap-5'>
