@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  fe-laylacak:
+    image: fe-laylacake
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # volumes:
+    #     - .:/app
+    #     - /app/node_modules
+    #     - /app/.next
+    env_file:
+      - .env
+    # environment:
+    #   - NEXT_PUBLIC_IMG_URL=https://s3.hoppasc.com/ecomkopi/
+    #   - NEXT_PUBLIC_BASE_URL=https://devkopi.hoppasc.com
+    #   - NEXT_PUBLIC_BASE_API_URL=https://devkopiapi.hoppasc.com
+    #   - NEXT_PUBLIC_AUTH_SECRET=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRhA0gEIMjcwNGowajeoAgCwAgA
+    #   - NEXT_TELEMETRY_DISABLED=1
+    ports:
+      - "3011:3000"
+    networks:
+      - layla-network
+      - mysql-layla-network
+
+
+networks:
+  layla-network:
+    external: true
+  mysql-layla-network:
+    external: true
