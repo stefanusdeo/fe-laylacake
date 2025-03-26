@@ -17,6 +17,7 @@ export const endpoint = {
   user_management: {
     role: "/roles",
     user: "/users",
+    deleteAll : "/users/delete-bulk",
   },
 };
 

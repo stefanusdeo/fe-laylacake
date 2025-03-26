@@ -62,8 +62,6 @@ function OutletInternal() {
         )
     }
 
-    console.log(selectedOutlet)
-
     const handleSelectAll = () => {
         if (selectedOutlet.length === outletInternal?.pagination.total_records && outlets.length > 0) {
             setSelectedOutlet([])
@@ -230,7 +228,6 @@ function OutletInternal() {
             </div>
         )
     }
-    console.log(selectedOutlet)
 
     return (
         <div className="w-full space-y-7">
