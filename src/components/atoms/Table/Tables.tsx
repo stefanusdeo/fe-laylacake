@@ -40,7 +40,7 @@ const Tables = <T,>({
             :
             <tr>
               <td colSpan={columns.length} className="text-center px-7 py-3.5 text-xs sm:text-sm font-normal h-20">
-                No data found
+                Data Not Found
               </td>
             </tr>
           }

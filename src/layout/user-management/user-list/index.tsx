@@ -16,12 +16,13 @@ import { Plus } from 'lucide-react'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { PiTrashDuotone } from 'react-icons/pi'
 import BeatLoader from 'react-spinners/BeatLoader'
-import ModalCreateUser from './modal/modalCreate'
 import ModalUpdateUser from './modal/modalUpdate'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 function UserList() {
     const { users } = useUserStore()
+    const router = useRouter()
 
     const [userlist, setUserList] = useState([]);
     const [page, setPage] = useState(1);
@@ -244,17 +245,13 @@ function UserList() {
         }
     }, [openModalMultiUser]);
 
-    // Modal Create
-    const memoModalCreate = useMemo(() => {
-        if (openModalCreate)
-            return <ModalCreateUser open={openModalCreate} onClose={setOpenModalCreate} />;
-    }, [openModalCreate]);
 
     // Modal Edit
     const memoModalEdit = useMemo(() => {
         if (openModalEdit)
             return <ModalUpdateUser open={openModalEdit} onClose={setOpenModalEdit} />;
     }, [openModalEdit]);
+
 
 
     return (
@@ -265,7 +262,7 @@ function UserList() {
                     <Text variant="h2">User List</Text>
                     <Breadcrums />
                 </div>
-                <Button size="lg" onClick={() => setOpenModalCreate(true)}>
+                <Button size="lg" onClick={() => router.push("/user-management/create-user")}>
                     <Plus /> Add User
                 </Button>
             </div>
@@ -318,7 +315,6 @@ function UserList() {
             </div>
 
             {/* Modals */}
-            {memoModalCreate}
             {memoModalEdit}
             {memoModalDelete}
             {memoModalDeleteMultiUser}

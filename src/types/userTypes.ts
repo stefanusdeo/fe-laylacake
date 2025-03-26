@@ -11,13 +11,9 @@ export interface Role {
   updated_at: string | null;
 }
 
-export interface Outlet {
+export interface OutletUsers {
   id: number;
   name: string;
-  alamat: string;
-  no_hp: string;
-  created_at: string | null;
-  updated_at: string | null;
 }
 
 export interface UserOutlet {
@@ -33,7 +29,7 @@ export interface User {
   role_name: string;
   role_id: number;
   status: number;
-  outlets: Outlet[];
+  outlets: OutletUsers[];
 }
 
 export type UsersResponse = {

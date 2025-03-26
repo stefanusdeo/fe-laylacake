@@ -13,11 +13,8 @@ const emailSchema = yup
   .max(50, `Email ${long}`)
   .matches(emailRegex, "Invalid email format");
 
-const passwordSchema = yup
-  .string()
-  .min(8, `Password ${short}`)
-  .max(30, `Password ${long}`)
-  // .matches(passwordRegex, `Invalid password format`);
+const passwordSchema = yup.string().min(8, `Password ${short}`).max(30, `Password ${long}`);
+// .matches(passwordRegex, `Invalid password format`);
 
 const phoneSchema = yup
   .string()
@@ -64,4 +61,5 @@ export const userSchema = yup.object().shape({
     .string()
     .required(`Password confirmation is required`)
     .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
+  outlet_ids: yup.mixed().optional(),
 });

@@ -22,6 +22,12 @@ export const listMenu: MenuSection[] = [
         permission: ["Admin", "Super Admin"],
         show: true,
       },
+      {
+        title: "Create User",
+        href: "/user-management/create-user",
+        permission: ["Admin", "Super Admin"],
+        show: false,
+      },
     ],
   },
   {
