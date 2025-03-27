@@ -15,6 +15,8 @@ import BeatLoader from 'react-spinners/BeatLoader'
 import { set } from 'react-hook-form'
 import { rejects } from 'assert'
 import { toast } from 'sonner'
+import Text from '@/components/ui/text'
+import ClipLoader from 'react-spinners/ClipLoader'
 
 function OutletExternal() {
     const { outletExternal } = useOutletStore()
@@ -136,12 +138,12 @@ function OutletExternal() {
         }
     }, [openModalInfo])
 
-    {
-        isPending && (
-            <div className='flex justify-center items-center h-full gap-4'>
-                <BeatLoader color="#010101" size={8} />
-            </div>
-        )
+    if (isPending) {
+        return (
+            <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+                <ClipLoader loading={isPending} size={15} /> Getting outlet list...
+            </Text>
+        );
     }
 
     return (

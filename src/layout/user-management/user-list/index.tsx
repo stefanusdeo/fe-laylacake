@@ -13,15 +13,15 @@ import { deleteAllUsers, deleteUser, getListUsers } from '@/store/action/user-ma
 import { useUserStore } from '@/store/hooks/useUsers'
 import { IParamUsers, User, UserOutlet } from '@/types/userTypes'
 import { Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { PiTrashDuotone } from 'react-icons/pi'
-import BeatLoader from 'react-spinners/BeatLoader'
-import ModalUpdateUser from './modal/modalUpdate'
+import ClipLoader from 'react-spinners/ClipLoader'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+import ModalUpdateUser from './modal/modalUpdate'
 
 function UserList() {
-    const { users } = useUserStore()
+    const { users, setIdUser, id_user } = useUserStore()
     const router = useRouter()
 
     const [userlist, setUserList] = useState([]);
@@ -151,6 +151,15 @@ function UserList() {
         })
     }
 
+    const handleGetRouteEdit = (id: number) => {
+        setIdUser(id)
+        if (id) {
+            router.push(`/user-management/edit-user`)
+        } else {
+            toast.error("Failed get route edit: missing users")
+        }
+    }
+
     const columnsUserList: Column<User>[] = [
         {
             label: (
@@ -208,7 +217,7 @@ function UserList() {
             renderCell: ({ id, name }) => (
                 <ButtonAction
                     onDelete={() => handleOpenModalDelete(id, name)}
-                    onEdit={() => setOpenModalEdit(true)}
+                    onEdit={() => handleGetRouteEdit(id)}
                 />
             ),
         },
@@ -279,9 +288,9 @@ function UserList() {
                 />
 
                 {loading ? (
-                    <div className='flex justify-center items-center h-full gap-4'>
-                        <BeatLoader color="#010101" size={8} />
-                    </div>
+                    <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+                        <ClipLoader loading={loading} size={15} /> Getting users list...
+                    </Text>
                 ) : (
                     <div>
                         {selectedUser.length > 0 ? (

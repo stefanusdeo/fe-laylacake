@@ -82,3 +82,31 @@ export const deleteUser = async (userId: number) => {
     globalError(error);
   }
 };
+
+export const getDetailUser = async (userId: number) => {
+  try {
+    const response = await API.get(`${user}/${userId}`);
+    const result = {
+      status: response.status,
+      message: response.data.message,
+      data: response.data.data,
+    };
+    return result;
+  } catch (error) {
+    globalError(error);
+  }
+};
+
+export const updateUser = async (userId: number, body: UserFormBody) => {
+  try {
+    const response = await API.put(`${user}/${userId}`, body);
+    const result = {
+      status: response.status,
+      message: response.data.message,
+      data: null,
+    };
+    return result;
+  } catch (error) {
+    globalError(error);
+  }
+};

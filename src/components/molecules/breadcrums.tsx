@@ -49,7 +49,7 @@ export function BreadcrumbWithDropdown() {
                     <LuDot className="text-2xl"/>
                 </BreadcrumbSeparator>
 
-                {matchedMenuSection && matchedMenuSection.items.length > 1 ? (
+                {matchedMenuSection && matchedMenuSection.items.filter(item => item.show).length > 1 ? (
                     <BreadcrumbItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger className="flex items-center gap-1 focus-visible:outline-0">
@@ -57,11 +57,13 @@ export function BreadcrumbWithDropdown() {
                                 <ChevronDown className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                                {matchedMenuSection.items.map((item) => (
-                                    <DropdownMenuItem key={item.href}>
-                                        <BreadcrumbLink href={item.href}>{item.title}</BreadcrumbLink>
-                                    </DropdownMenuItem>
-                                ))}
+                                {matchedMenuSection.items
+                                    .filter(item => item.show) // Filter hanya item dengan show = true
+                                    .map((item) => (
+                                        <DropdownMenuItem key={item.href}>
+                                            <BreadcrumbLink href={item.href}>{item.title}</BreadcrumbLink>
+                                        </DropdownMenuItem>
+                                    ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </BreadcrumbItem>

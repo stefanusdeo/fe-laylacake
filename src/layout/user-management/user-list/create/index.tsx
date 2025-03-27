@@ -190,7 +190,7 @@ function CreatedUser() {
                         </div>
                         {form.watch("role") === "3" &&
                             <div className='my-6 border-t border-slate-300 py-5 flex flex-col gap-2'>
-                                <div className='flex justify-between items-center'>
+                                <div className='flex flex-wrap gap-3 justify-between items-center'>
                                     <Text variant='span' className='font-semibold'>My Outlets</Text>
                                     <div className='flex flex-wrap items-center gap-2'>
                                         <SearchOutlets value={findOutlet} setValue={setFindOutlet} />
@@ -204,22 +204,24 @@ function CreatedUser() {
                                         </Button>
                                     </div>
                                 </div>
-                                <div className='flex flex-wrap gap-2 mt-4 border border-border p-4 rounded-lg min-h-40'>
-                                    {outlets.length > 0 ? outlets.map((outlet, index) => (
-                                        <Badge
-                                            key={index}
-                                            variant={"outline"}
-                                            className="flex items-center rounded-sm gap-2 h-fit py-1 px-2 text-sm"
-                                            action={() => {
-                                                const newOutlets = outlets.filter((_, i) => i !== index);
-                                                setOutlets(newOutlets);
-                                                // Update the hidden outlet_ids value when an outlet is removed
-                                                form.setValue("outlet_ids", JSON.stringify(newOutlets.map(outlet => outlet.id)));
-                                            }}
-                                            icon={<Trash2 size={14} className='text-slate-500' />}
-                                            label={outlet.name} />
-                                    )) : (
-                                        <div className='flex justify-center items-center w-full gap-2'>
+                                <div className='flex flex-wrap items-start justify-start gap-x-2 gap-y-2 mt-4 border border-border p-4 rounded-lg min-h-20'>
+                                    {outlets.length > 0 ? (
+                                        outlets.map((outlet, index) => (
+                                            <Badge
+                                                key={index}
+                                                variant="outline"
+                                                className="flex items-center rounded-sm gap-1 h-auto py-1 px-2 text-sm"
+                                                action={() => {
+                                                    const newOutlets = outlets.filter((_, i) => i !== index);
+                                                    setOutlets(newOutlets);
+                                                    form.setValue("outlet_ids", newOutlets.map(outlet => outlet.id));
+                                                }}
+                                                icon={<Trash2 size={14} className='text-slate-500' />}
+                                                label={outlet.name}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className='flex justify-center items-center w-full gap-2 mt-3'>
                                             <Text variant='span'>No Outlet Added</Text>
                                         </div>
                                     )}

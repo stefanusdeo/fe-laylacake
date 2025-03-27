@@ -63,3 +63,16 @@ export const userSchema = yup.object().shape({
     .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
   outlet_ids: yup.mixed().optional(),
 });
+
+export const userUpdateSchema = yup.object().shape({
+  fullname: yup.string().required(`Name ${req}`),
+  email: emailSchema.required("Email is required"),
+  phone: phoneSchema,
+  password: passwordSchema.optional(), // Password tidak wajib diisi
+  role: yup.string().required(`Role ${req}`),
+  PasswordConfirmation: yup
+    .string()
+    .optional() // Password confirmation juga tidak wajib diisi
+    .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
+  outlet_ids: yup.mixed().optional(),
+});

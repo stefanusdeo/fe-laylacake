@@ -28,6 +28,12 @@ export const listMenu: MenuSection[] = [
         permission: ["Admin", "Super Admin"],
         show: false,
       },
+      {
+        title: "Edit User",
+        href: "/user-management/edit-user",
+        permission: ["Admin", "Super Admin"],
+        show: false,
+      },
     ],
   },
   {

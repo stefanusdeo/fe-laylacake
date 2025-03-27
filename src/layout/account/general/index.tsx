@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import Text from '@/components/ui/text';
 import { editAccountSchema } from '@/schema/yup-validation';
 import { BodyProfile, updateProfile } from '@/store/action/profile';
 import { useProfileStore } from '@/store/hooks/useProfile';
@@ -8,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import BeatLoader from 'react-spinners/BeatLoader';
+import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
 
 type FormValues = {
@@ -95,10 +97,9 @@ function General() {
 
     if (loadProfile) {
         return (
-            <div className='flex justify-center items-center h-full gap-4'>
-                <BeatLoader color="#010101" size={8} />
-                Please wait...
-            </div>
+            <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+                <ClipLoader loading={loadProfile} size={15} /> Getting profile...
+            </Text>
         );
     }
 
