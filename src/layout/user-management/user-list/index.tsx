@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { PiTrashDuotone } from 'react-icons/pi'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { toast } from 'sonner'
-import ModalUpdateUser from './modal/modalUpdate'
 
 function UserList() {
     const { users, setIdUser, id_user } = useUserStore()
@@ -254,15 +253,6 @@ function UserList() {
         }
     }, [openModalMultiUser]);
 
-
-    // Modal Edit
-    const memoModalEdit = useMemo(() => {
-        if (openModalEdit)
-            return <ModalUpdateUser open={openModalEdit} onClose={setOpenModalEdit} />;
-    }, [openModalEdit]);
-
-
-
     return (
         <div className="flex flex-col gap-7">
             {/* Header */}
@@ -324,7 +314,6 @@ function UserList() {
             </div>
 
             {/* Modals */}
-            {memoModalEdit}
             {memoModalDelete}
             {memoModalDeleteMultiUser}
         </div>
