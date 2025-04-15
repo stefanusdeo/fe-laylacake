@@ -46,6 +46,12 @@ export const listMenu: MenuSection[] = [
         permission: ["Kasir", "Admin", "Super Admin"],
         show: true,
       },
+      {
+        title: "Cashier",
+        href: "/store/cashier",
+        permission: ["Kasir", "Admin", "Super Admin"],
+        show: true,
+      },
     ],
   },
   {
@@ -57,6 +63,24 @@ export const listMenu: MenuSection[] = [
         href: "/account",
         permission: ["Kasir", "Admin", "Super Admin"],
         show: false,
+      },
+    ],
+  },
+  {
+    title: "Transaction management",
+    show: true,
+    items: [
+      {
+        title: "Transaction List",
+        href: "/transaction",
+        permission: ["Kasir", "Admin", "Super Admin"],
+        show: true,
+      },
+      {
+        title: "Payment Method",
+        href: "/payment-method",
+        permission: ["Kasir", "Admin", "Super Admin"],
+        show: true,
       },
     ],
   },

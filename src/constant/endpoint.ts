@@ -17,7 +17,13 @@ export const endpoint = {
   user_management: {
     role: "/roles",
     user: "/users",
-    deleteAll : "/users/delete-bulk",
+    deleteAll: "/users/delete-bulk",
+  },
+  payment_method: {
+    external: "/external/payment-methods",
+    internal: "/internal/payment-methods",
+    migrate: "/internal/payment-methods",
+    multiDelete: "/internal/payment-methods/delete-bulk",
   },
 };
 
