@@ -1,4 +1,3 @@
-import { env } from "process";
 
 export const endpoint = {
   auth: {
@@ -24,6 +23,13 @@ export const endpoint = {
     internal: "/internal/payment-methods",
     migrate: "/internal/payment-methods",
     multiDelete: "/internal/payment-methods/delete-bulk",
+  },
+  transactions: {
+    base: "/transactions",
+    migrate: "/transactions/migrate",
+    multiDelete: "/transactions/delete-bulk",
+    print: "/transactions/print/",
+    create_manual: "/transactions-manual",
   },
 };
 

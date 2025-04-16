@@ -1,8 +1,6 @@
 export interface PaymentMethodData {
   id: number;
   name: string;
-  address: string;
-  phone_number: string;
 }
 export type PaymentMethodResponse = {
   data: PaymentMethodData[];

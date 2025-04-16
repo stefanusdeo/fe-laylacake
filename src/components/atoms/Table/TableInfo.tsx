@@ -26,7 +26,7 @@ const PaginationInfo = ({
     <div className={cn("flex items-center space-x-2 w-full", className)}>
       <span className="text-sm text-neutral-800">Displaying</span>
       <Select value={String(displayed)} onValueChange={handleValueChange}>
-        <SelectTrigger className="h-5 w-[70px] text-sm py-0 focus-visible:border-border focus-visible:outline-0 focus-visible:ring-0 ">
+        <SelectTrigger className="!h-10 w-[70px] text-sm py-0 focus-visible:border-border focus-visible:outline-0 focus-visible:ring-0 ">
           <SelectValue placeholder={String(displayed)} />
         </SelectTrigger>
         <SelectContent className="w-fit min-w-fit">
