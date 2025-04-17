@@ -15,10 +15,11 @@ import {
     ShoppingBag,
     User,
 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
+import { pdf } from "@react-pdf/renderer"
+import { saveAs } from "file-saver"
 
 import Tables from "@/components/atoms/Table/Tables"
-import PrintReceipt from "@/components/template/print/print-receipt"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,12 +28,12 @@ import { Separator } from "@/components/ui/separator"
 import Text from "@/components/ui/text"
 import { getDetailTrx, printTransaction } from "@/store/action/transactions"
 import { useTransactionStore } from "@/store/hooks/useTransactions"
-import "@/styles/print.css"
 import type { ITransactionDetail, ITransactionItem } from "@/types/transactionTypes"
 import { useRouter } from "next/navigation"
 import { RiUserLocationLine } from "react-icons/ri"
 import ClipLoader from "react-spinners/ClipLoader"
 import { toast } from "sonner"
+import TransactionPDF from "@/components/template/pdf/transaction-pdf"
 
 interface Column<T> {
     label: string
@@ -43,12 +44,12 @@ interface Column<T> {
 export default function TransactionDetails() {
     const router = useRouter()
     const { id_transaction } = useTransactionStore()
-    const printRef = useRef<HTMLDivElement>(null)
 
     const [loading, setLoading] = useState(false)
     const [transactionData, setTransactionData] = useState<ITransactionDetail | null>(null)
     const [trxId, setTrxId] = useState(id_transaction)
     const [isPrinting, setIsPrinting] = useState(false)
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const [isProductsOpen, setIsProductsOpen] = useState(true)
     const [isPaymentOpen, setIsPaymentOpen] = useState(true)
@@ -127,18 +128,40 @@ export default function TransactionDetails() {
             })
             return
         }
+
         setIsPrinting(true)
+
         try {
             // First call the API to log the print action or send to a physical printer if needed
             const res = await printTransaction(trxId)
-            setTimeout(() => {
+
+            // Generate PDF with react-pdf
+            const pdfDoc = <TransactionPDF transaction={transactionData} />
+
+            // Generate blob
+            const blob = await pdf(pdfDoc).toBlob()
+
+            // Create object URL from blob
+            const blobUrl = URL.createObjectURL(blob)
+
+            // Open PDF in new window and print it
+            const printWindow = window.open(blobUrl)
+
+            if (printWindow) {
+                printWindow.onload = () => {
+                    setTimeout(() => {
+                        printWindow.print()
+                        setIsPrinting(false)
+                    }, 500)
+                }
+            } else {
+                // If popup blocked, fallback to traditional print
+                URL.revokeObjectURL(blobUrl)
                 window.print()
                 setIsPrinting(false)
-            }, 500)
-            
-            if (res?.status === 200) {
-                // Then trigger browser print
+            }
 
+            if (res?.status === 200) {
                 toast.success("Transaction printed successfully", {
                     duration: 5000,
                 })
@@ -148,6 +171,43 @@ export default function TransactionDetails() {
             toast.error("Failed to print transaction", {
                 duration: 5000,
             })
+            console.error("Print error:", error)
+        }
+    }
+
+    const handleDownload = async () => {
+        if (!transactionData) {
+            toast.error("Transaction not found", {
+                duration: 5000,
+            })
+            return
+        }
+
+        setIsDownloading(true)
+
+        try {
+            // Generate PDF with react-pdf
+            const filename = `receipt-${transactionData.code}.pdf`
+
+            // Create PDF document
+            const pdfDoc = <TransactionPDF transaction={transactionData} />
+
+            // Generate blob
+            const blob = await pdf(pdfDoc).toBlob()
+
+            // Save file using FileSaver
+            saveAs(blob, filename)
+
+            setIsDownloading(false)
+            toast.success("Receipt downloaded successfully", {
+                duration: 5000,
+            })
+        } catch (error) {
+            setIsDownloading(false)
+            toast.error("Failed to download receipt", {
+                duration: 5000,
+            })
+            console.error("Download error:", error)
         }
     }
 
@@ -224,9 +284,15 @@ export default function TransactionDetails() {
                                 {isPrinting ? <ClipLoader loading={true} size={14} /> : <Printer className="h-4 w-4" />}
                                 <span className="hidden sm:inline">{isPrinting ? "Printing..." : "Print"}</span>
                             </Button>
-                            <Button variant="outline" size="sm" className="flex items-center gap-1">
-                                <Download className="h-4 w-4" />
-                                <span className="hidden sm:inline">Download</span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={handleDownload}
+                                disabled={isDownloading || !transactionData}
+                            >
+                                {isDownloading ? <ClipLoader loading={true} size={14} /> : <Download className="h-4 w-4" />}
+                                <span className="hidden sm:inline">{isDownloading ? "Downloading..." : "Download"}</span>
                             </Button>
                         </div>
                     </div>
@@ -412,11 +478,6 @@ export default function TransactionDetails() {
                     </Collapsible>
                 </div>
             )}
-
-            {/* Printable Receipt Component - Hidden until print is triggered */}
-            <div ref={printRef}>
-                <PrintReceipt transaction={transactionData} />
-            </div>
         </div>
     )
 }
