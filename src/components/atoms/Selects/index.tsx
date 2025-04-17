@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
+import { cn } from '../../../lib/utils';
 
 export interface SelectOption {
     value: string
@@ -39,7 +40,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     value,
     onChange,
     name,
-    className = "w-[180px]",
+    className,
     disabled = false,
     isLoading = false,
     emptyMessage = "No options available",
@@ -54,7 +55,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             name={name}
             disabled={disabled || isLoading || !hasOptions}
         >
-            <SelectTrigger className={className}>
+            <SelectTrigger className={cn("min-w-fit", className)}>
                 {isLoading ? (
                     <div className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin" />

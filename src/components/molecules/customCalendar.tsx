@@ -313,9 +313,12 @@ export function CustomCalendar({
                             showOutsideDays={true}
                             fixedWeeks={true}
                             styles={{
-                                caption: { display: "none" },
-                                caption_label: { display: "none" },
+                                caption: { display: "block" },
+                                caption_label: { display: "block" },
+                                nav_button_next: { display: "none" },
+                                nav_button_previous: { display: "none" },
                                 caption_dropdowns: { display: "none" },
+                                months:{gap:"15px"}
                             }}
                         />
                     )}

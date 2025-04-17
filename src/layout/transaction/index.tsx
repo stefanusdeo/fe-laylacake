@@ -20,11 +20,12 @@ import { PaymentMethodData } from '@/types/paymentTypes';
 import { IParamTransaction, Transaction } from '@/types/transactionTypes';
 import { fr } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import { DateRange } from 'react-day-picker';
 import { PiTrashDuotone } from 'react-icons/pi';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
+import ModalMigrate from './modal/migrate';
 
 export default function Transactions() {
   const router = useRouter()
@@ -39,6 +40,7 @@ export default function Transactions() {
 
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalMultiTrx, setOpenModalMultiTrx] = useState(false);
+  const [openModalMigrate, setOpenModalMigrate] = useState(false);
 
   const [trxlist, setTrxlist] = useState<any>([])
   const [selectedTrx, setSelectedTrx] = useState<number[]>([])
@@ -269,6 +271,13 @@ export default function Transactions() {
     },
   ];
 
+  const memoModalMigrate = useMemo(() => {
+    if (openModalMigrate) {
+      return <ModalMigrate onClose={setOpenModalMigrate} open={openModalMigrate} />
+    }
+    return null
+  }, [openModalMigrate])
+
   return (
     <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
       <div id='filter' className="flex justify-between items-start gap-5 select-none">
@@ -298,7 +307,7 @@ export default function Transactions() {
             className='!h-10'
           />
         </div>
-        <Button>Add Transaction</Button>
+        <Button onClick={() => setOpenModalMigrate(true)}>Add Transaction</Button>
       </div>
       <div id='table'>
         {loading ? (
@@ -336,6 +345,7 @@ export default function Transactions() {
           </div>
         )}
       </div>
+      {memoModalMigrate}
     </div>
   )
 }
