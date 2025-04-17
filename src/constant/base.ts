@@ -77,6 +77,12 @@ export const listMenu: MenuSection[] = [
         show: true,
       },
       {
+        title: "Transaction Detail",
+        href: "/transaction/detail",
+        permission: ["Kasir", "Admin", "Super Admin"],
+        show: false,
+      },
+      {
         title: "Payment Method",
         href: "/payment-method",
         permission: ["Kasir", "Admin", "Super Admin"],

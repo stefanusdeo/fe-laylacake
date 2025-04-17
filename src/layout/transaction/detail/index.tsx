@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { format, parseISO } from "date-fns"
 import {
     Calendar,
@@ -11,141 +13,59 @@ import {
     MapPin,
     Printer,
     ShoppingBag,
-    User
+    User,
 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import Tables from "@/components/atoms/Table/Tables"
+import PrintReceipt from "@/components/template/print/print-receipt"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
-import { ITransactionItem } from "@/types/transactionTypes"
+import Text from "@/components/ui/text"
+import { getDetailTrx, printTransaction } from "@/store/action/transactions"
+import { useTransactionStore } from "@/store/hooks/useTransactions"
+import "@/styles/print.css"
+import type { ITransactionDetail, ITransactionItem } from "@/types/transactionTypes"
+import { useRouter } from "next/navigation"
 import { RiUserLocationLine } from "react-icons/ri"
+import ClipLoader from "react-spinners/ClipLoader"
+import { toast } from "sonner"
+
+interface Column<T> {
+    label: string
+    renderCell: (row: T) => React.ReactNode
+    className?: string
+}
 
 export default function TransactionDetails() {
+    const router = useRouter()
+    const { id_transaction } = useTransactionStore()
+    const printRef = useRef<HTMLDivElement>(null)
+
+    const [loading, setLoading] = useState(false)
+    const [transactionData, setTransactionData] = useState<ITransactionDetail | null>(null)
+    const [trxId, setTrxId] = useState(id_transaction)
+    const [isPrinting, setIsPrinting] = useState(false)
+
     const [isProductsOpen, setIsProductsOpen] = useState(true)
     const [isPaymentOpen, setIsPaymentOpen] = useState(true)
     const [isDetailsOpen, setIsDetailsOpen] = useState(true)
 
-    // Sample transaction data
-    const transaction = {
-        id: 231,
-        code: "LC0535814TJVeh",
-        created_at: "2025-04-02T11:13:16+07:00",
-        status: 1,
-        time: "11:13",
-        discount: 0,
-        total_price: 168000,
-        money_change: 0,
-        pay: 168000,
-        transaction_items: [
-            {
-                code_item: "25",
-                item_name: "BROWNIES CLASSIC",
-                price: 80000,
-                quantity: 1,
-                discount_code: "DT24",
-                quantity_discount: 1,
-                discount_percentage: 0,
-                discount_nominal: 30000,
-                sub_total: 50000,
-            },
-            {
-                code_item: "45",
-                item_name: "BUTTERFLY CAKEE",
-                price: 85000,
-                quantity: 2,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 170000,
-            },
-            {
-                code_item: "136",
-                item_name: "Rotii Sobek Chocoberry",
-                price: 15000,
-                quantity: 1,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 15000,
-            },
-            {
-                code_item: "ACSPMSK",
-                item_name: "PIRING MAS KOTAK",
-                price: 6000,
-                quantity: 1,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 6000,
-            },
-            {
-                code_item: "ACSBA5",
-                item_name: "BALON ANGKA 5",
-                price: 5000,
-                quantity: 1,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 5000,
-            },
-            {
-                code_item: "ACSBA1",
-                item_name: "BALON ANGKA 1",
-                price: 5000,
-                quantity: 1,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 5000,
-            },
-            {
-                code_item: "ACSSNDK",
-                item_name: "SENDOK",
-                price: 2000,
-                quantity: 1,
-                discount_code: "",
-                quantity_discount: 0,
-                discount_percentage: 0,
-                discount_nominal: 0,
-                sub_total: 2000,
-            },
-        ],
-        staff: {
-            id: 2,
-            email: "kasir1@gmail.com",
-            name: "dono",
-            phone_number: "089787343423",
-        },
-        outlet: {
-            id: 1,
-            name: "Regency",
-            address: " Villa tangerang indah CC5 No. 3, kec periuk, kota Tangerang.",
-            phone_number: "082113716706",
-            migration_id: 1,
-        },
-        payment_method: {
-            id: 1,
-            name: "Cash",
-        },
-    }
-
     // Format date
-    const formattedDate = format(parseISO(transaction.created_at), "dd MMMM yyyy")
+    const formattedDate = transactionData ? format(parseISO(transactionData?.created_at ?? ""), "dd MMMM yyyy") : ""
 
     // Calculate total items
-    const totalItems = transaction.transaction_items.reduce((sum, item) => sum + item.quantity, 0)
+    const totalItems = transactionData
+        ? transactionData?.transaction_items.reduce((sum, item) => sum + item.quantity, 0)
+        : 0
 
     // Calculate total discount
-    const totalDiscount = transaction.transaction_items.reduce((sum, item) => sum + item.discount_nominal, 0)
+    const totalDiscount = transactionData
+        ? transactionData?.transaction_items.reduce((sum, item) => sum + item.discount_nominal, 0)
+        : 0
 
     const columnsItemList: Column<ITransactionItem>[] = [
         {
@@ -198,212 +118,304 @@ export default function TransactionDetails() {
             renderCell: (row) => <p>{row.sub_total.toLocaleString("id-ID")}</p>,
             className: "text-right",
         },
-    ];
+    ]
 
+    const handlePrint = async () => {
+        if (!transactionData || !trxId) {
+            toast.error("Transaction not found", {
+                duration: 5000,
+            })
+            return
+        }
+        setIsPrinting(true)
+        try {
+            // First call the API to log the print action or send to a physical printer if needed
+            const res = await printTransaction(trxId)
+            setTimeout(() => {
+                window.print()
+                setIsPrinting(false)
+            }, 500)
+            
+            if (res?.status === 200) {
+                // Then trigger browser print
+
+                toast.success("Transaction printed successfully", {
+                    duration: 5000,
+                })
+            }
+        } catch (error) {
+            setIsPrinting(false)
+            toast.error("Failed to print transaction", {
+                duration: 5000,
+            })
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        if (id_transaction) {
+            setTrxId(id_transaction)
+            const getDetail = async () => {
+                try {
+                    const res = await getDetailTrx(id_transaction)
+                    if (res?.status === 200) {
+                        setTransactionData(res.data)
+                    }
+                } catch (error) {
+                    toast.error("Transaction record could not be found.", {
+                        duration: 5000,
+                    })
+                    setLoading(false)
+                } finally {
+                    setLoading(false)
+                }
+            }
+            getDetail()
+        } else {
+            toast.error("Transaction not found", {
+                description: "Redirecting to the previous page...",
+                duration: 5000,
+            })
+
+            router.back()
+        }
+    }, [id_transaction])
+
+    // Handle print media change to reset state after printing
+    useEffect(() => {
+        const mediaQueryList = window.matchMedia("print")
+
+        const handlePrintChange = (mql: MediaQueryListEvent) => {
+            if (!mql.matches && isPrinting) {
+                // Print dialog was closed
+                setIsPrinting(false)
+            }
+        }
+
+        mediaQueryList.addEventListener("change", handlePrintChange)
+
+        return () => {
+            mediaQueryList.removeEventListener("change", handlePrintChange)
+        }
+    }, [isPrinting])
 
     return (
         <div className="min-h-screen pb-10">
-            <div className=" mx-auto space-y-5">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-primary">Transaction Details</h1>
-                        <p className="text-muted-foreground">Transaction info overview</p>
+            {loading ? (
+                <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+                    <ClipLoader loading={loading} size={15} /> Please wait...
+                </Text>
+            ) : (
+                <div className=" mx-auto space-y-5">
+                    {/* Header */}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-primary">Transaction Details</h1>
+                            <p className="text-muted-foreground">Transaction info overview</p>
+                        </div>
+                        <div className="flex gap-2 md:mt-0">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                                onClick={handlePrint}
+                                disabled={isPrinting || !transactionData}
+                            >
+                                {isPrinting ? <ClipLoader loading={true} size={14} /> : <Printer className="h-4 w-4" />}
+                                <span className="hidden sm:inline">{isPrinting ? "Printing..." : "Print"}</span>
+                            </Button>
+                            <Button variant="outline" size="sm" className="flex items-center gap-1">
+                                <Download className="h-4 w-4" />
+                                <span className="hidden sm:inline">Download</span>
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex gap-2 md:mt-0">
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <Printer className="h-4 w-4" />
-                            <span className="hidden sm:inline">Print</span>
-                        </Button>
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <Download className="h-4 w-4" />
-                            <span className="hidden sm:inline">Download</span>
-                        </Button>
-                    </div>
+
+                    {/* Transaction Summary Card */}
+                    <Card className="border-accent border rounded-lg shadow-none bg-white">
+                        <CardHeader className="pb-4">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Transaction #{transactionData?.code}</CardTitle>
+                                    <CardDescription className="flex items-center mt-1">
+                                        <Calendar className="h-4 w-4 mr-1" />
+                                        {formattedDate}
+                                        <span className="mx-2">•</span>
+                                        <Clock className="h-4 w-4 mr-1" />
+                                        {transactionData?.time}
+                                    </CardDescription>
+                                </div>
+                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                                    <Check className="h-3.5 w-3.5 mr-1" />
+                                    Completed
+                                </Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium text-muted-foreground">Payment Method</p>
+                                    <p className="font-medium">{transactionData?.payment_method.name}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium text-muted-foreground">Items</p>
+                                    <p className="font-medium">{totalItems} items</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium text-muted-foreground">Total Amount</p>
+                                    <p className="font-medium text-lg">Rp {transactionData?.total_price.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Products Section */}
+                    <Collapsible open={isProductsOpen} onOpenChange={setIsProductsOpen}>
+                        <Card className="border-accent border rounded-lg shadow-none bg-white overflow-hidden">
+                            <CollapsibleTrigger asChild>
+                                <CardHeader className="cursor-pointer select-none">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center">
+                                            <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
+                                            <CardTitle className="text-lg font-bold">Products</CardTitle>
+                                        </div>
+                                        {isProductsOpen ? (
+                                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                </CardHeader>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <CardContent className="p-0">
+                                    <Tables data={transactionData?.transaction_items ?? []} columns={columnsItemList} />
+                                </CardContent>
+                            </CollapsibleContent>
+                        </Card>
+                    </Collapsible>
+
+                    {/* Payment Details */}
+                    <Collapsible open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
+                        <Card className="border-accent border rounded-lg shadow-none bg-white">
+                            <CollapsibleTrigger asChild>
+                                <CardHeader className="cursor-pointer select-none">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center">
+                                            <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
+                                            <CardTitle className="text-lg font-bold">Payment Details</CardTitle>
+                                        </div>
+                                        {isPaymentOpen ? (
+                                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                </CardHeader>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">Subtotal</span>
+                                            <span>Rp {(transactionData?.total_price ?? 0 + totalDiscount).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">Discount</span>
+                                            <span className="text-red-500">-Rp {totalDiscount.toLocaleString()}</span>
+                                        </div>
+                                        <Separator />
+                                        <div className="flex justify-between items-center font-bold">
+                                            <span>Total</span>
+                                            <span>Rp {transactionData?.total_price.toLocaleString()}</span>
+                                        </div>
+                                        <Separator />
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">Payment ({transactionData?.payment_method.name})</span>
+                                            <span>Rp {transactionData?.pay.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">Change</span>
+                                            <span>Rp {transactionData?.money_change.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </CollapsibleContent>
+                        </Card>
+                    </Collapsible>
+
+                    {/* Staff and Outlet Details */}
+                    <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+                        <Card className="border-accent border rounded-lg shadow-none bg-white">
+                            <CollapsibleTrigger asChild>
+                                <CardHeader className="cursor-pointer select-none">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center">
+                                            <RiUserLocationLine className="h-5 w-5 mr-2 text-primary" />
+                                            <CardTitle className="text-lg font-bold">Staff & Outlet Information</CardTitle>
+                                        </div>
+                                        {isDetailsOpen ? (
+                                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                                        ) : (
+                                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                                        )}
+                                    </div>
+                                </CardHeader>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <CardContent>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <h3 className="font-semibold text-primary flex items-center">
+                                                <User className="h-4 w-4 mr-2" />
+                                                Staff Information
+                                            </h3>
+                                            <div className="space-y-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Name</span>
+                                                    <span className="font-medium capitalize">{transactionData?.staff.name}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Email</span>
+                                                    <span className="font-medium">{transactionData?.staff.email}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Phone</span>
+                                                    <span className="font-medium">{transactionData?.staff.phone_number}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <h3 className="font-semibold text-primary flex items-center">
+                                                <MapPin className="h-4 w-4 mr-2" />
+                                                Outlet Information
+                                            </h3>
+                                            <div className="space-y-2">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Name</span>
+                                                    <span className="font-medium capitalize">{transactionData?.outlet.name}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Address</span>
+                                                    <span className="font-medium">{transactionData?.outlet.address}</span>
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm text-muted-foreground">Phone</span>
+                                                    <span className="font-medium">{transactionData?.outlet.phone_number}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </CollapsibleContent>
+                        </Card>
+                    </Collapsible>
                 </div>
+            )}
 
-                {/* Transaction Summary Card */}
-                <Card className="border-accent border rounded-lg shadow-none bg-white">
-                    <CardHeader className="pb-4">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <CardTitle className="text-xl font-bold">Transaction #{transaction.code}</CardTitle>
-                                <CardDescription className="flex items-center mt-1">
-                                    <Calendar className="h-4 w-4 mr-1" />
-                                    {formattedDate}
-                                    <span className="mx-2">•</span>
-                                    <Clock className="h-4 w-4 mr-1" />
-                                    {transaction.time}
-                                </CardDescription>
-                            </div>
-                            <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                                <Check className="h-3.5 w-3.5 mr-1" />
-                                Completed
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Payment Method</p>
-                                <p className="font-medium">{transaction.payment_method.name}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Items</p>
-                                <p className="font-medium">{totalItems} items</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Total Amount</p>
-                                <p className="font-medium text-lg">Rp {transaction.total_price.toLocaleString()}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Products Section */}
-                <Collapsible open={isProductsOpen} onOpenChange={setIsProductsOpen}>
-                    <Card className="border-accent border rounded-lg shadow-none bg-white overflow-hidden">
-                        <CollapsibleTrigger asChild>
-                            <CardHeader className="cursor-pointer select-none">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
-                                        <CardTitle className="text-lg font-bold">Products</CardTitle>
-                                    </div>
-                                    {isProductsOpen ? (
-                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                                    ) : (
-                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                                    )}
-                                </div>
-                            </CardHeader>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <CardContent className="p-0">
-                                <Tables
-                                    data={transaction.transaction_items}
-                                    columns={columnsItemList}
-                                />
-                            </CardContent>
-                        </CollapsibleContent>
-                    </Card>
-                </Collapsible>
-
-                {/* Payment Details */}
-                <Collapsible open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
-                    <Card className="border-accent border rounded-lg shadow-none bg-white">
-                        <CollapsibleTrigger asChild>
-                            <CardHeader className="cursor-pointer select-none">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <ShoppingBag className="h-5 w-5 mr-2 text-primary" />
-                                        <CardTitle className="text-lg font-bold">Payment Details</CardTitle>
-                                    </div>
-                                    {isPaymentOpen ? (
-                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                                    ) : (
-                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                                    )}
-                                </div>
-                            </CardHeader>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground">Subtotal</span>
-                                        <span>Rp {(transaction.total_price + totalDiscount).toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground">Discount</span>
-                                        <span className="text-red-500">-Rp {totalDiscount.toLocaleString()}</span>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex justify-between items-center font-bold">
-                                        <span>Total</span>
-                                        <span>Rp {transaction.total_price.toLocaleString()}</span>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground">Payment ({transaction.payment_method.name})</span>
-                                        <span>Rp {transaction.pay.toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-muted-foreground">Change</span>
-                                        <span>Rp {transaction.money_change.toLocaleString()}</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </CollapsibleContent>
-                    </Card>
-                </Collapsible>
-
-                {/* Staff and Outlet Details */}
-                <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                    <Card className="border-accent border rounded-lg shadow-none bg-white">
-                        <CollapsibleTrigger asChild>
-                            <CardHeader className="cursor-pointer select-none">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <RiUserLocationLine className="h-5 w-5 mr-2 text-primary" />
-                                        <CardTitle className="text-lg font-bold">Staff & Outlet Information</CardTitle>
-                                    </div>
-                                    {isDetailsOpen ? (
-                                        <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                                    ) : (
-                                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                                    )}
-                                </div>
-                            </CardHeader>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <h3 className="font-semibold text-primary flex items-center">
-                                            <User className="h-4 w-4 mr-2" />
-                                            Staff Information
-                                        </h3>
-                                        <div className="space-y-2">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Name</span>
-                                                <span className="font-medium">{transaction.staff.name}</span>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Email</span>
-                                                <span className="font-medium">{transaction.staff.email}</span>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Phone</span>
-                                                <span className="font-medium">{transaction.staff.phone_number}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-4">
-                                        <h3 className="font-semibold text-primary flex items-center">
-                                            <MapPin className="h-4 w-4 mr-2" />
-                                            Outlet Information
-                                        </h3>
-                                        <div className="space-y-2">
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Name</span>
-                                                <span className="font-medium">{transaction.outlet.name}</span>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Address</span>
-                                                <span className="font-medium">{transaction.outlet.address}</span>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm text-muted-foreground">Phone</span>
-                                                <span className="font-medium">{transaction.outlet.phone_number}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </CollapsibleContent>
-                    </Card>
-                </Collapsible>
+            {/* Printable Receipt Component - Hidden until print is triggered */}
+            <div ref={printRef}>
+                <PrintReceipt transaction={transactionData} />
             </div>
         </div>
     )

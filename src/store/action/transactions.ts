@@ -9,7 +9,7 @@ import { globalError } from "@/utils/globalErrorAxios";
 import { useTransactionStore } from "../hooks/useTransactions";
 import { format } from "date-fns";
 
-const { base, migrate, multiDelete, print, create_manual } = endpoint.transactions;
+const { base, migrate, multiDelete, print } = endpoint.transactions;
 
 export const getListTransactions = async (params: IParamTransaction) => {
   const {
@@ -111,6 +111,16 @@ export const deleteMultiTrx = async (body: IDeleteMultiTransaction) => {
       data: null,
     };
     return resp;
+  } catch (error) {
+    globalError(error);
+  }
+};
+
+export const printTransaction = async (trxId: number) => {
+  try {
+    const response = await API.get(`${print}/${trxId}`);
+    const result = response.data;
+    return result;
   } catch (error) {
     globalError(error);
   }

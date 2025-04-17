@@ -28,7 +28,7 @@ export const endpoint = {
     base: "/transactions",
     migrate: "/transactions/migrate",
     multiDelete: "/transactions/delete-bulk",
-    print: "/transactions/print/",
+    print: "/transactions/print",
     create_manual: "/transactions-manual",
   },
 };

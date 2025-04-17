@@ -1,0 +1,39 @@
+@media print {
+  /* Hide everything except the print component */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-only,
+  .print-only * {
+    visibility: visible !important;
+    display: block !important;
+  }
+
+  .print-only {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Adjust page settings */
+  @page {
+    size: 80mm auto; /* Width for thermal receipt printer */
+    margin: 0mm;
+  }
+
+  /* Typography adjustments for better print quality */
+  .print-only {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.3;
+    color: #000;
+  }
+
+  /* Ensure borders print clearly */
+  .print-only .border-t,
+  .print-only .border-b,
+  .print-only .border-dashed {
+    border-color: #000 !important;
+  }
+}
