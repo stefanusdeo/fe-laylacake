@@ -1,4 +1,4 @@
-export type Transaction = {
+export type TTransactionData = {
   id: number;
   code: string;
   time: string; // format jam seperti "15:47"
@@ -9,7 +9,7 @@ export type Transaction = {
 };
 
 export type TransactionsResponse = {
-  data: Transaction[];
+  data: TTransactionData[];
   message: string;
   pagination: {
     total_records: number;
@@ -83,3 +83,16 @@ export interface IParamTransaction {
   payment_method?: string;
   type?: string;
 }
+
+export interface IDeleteMultiTransaction {
+  type: "all" | "partial"; // 'all' untuk semua, 'partial' untuk yang dipilih
+  trx_ids?: number[]; // wajib jika type === 'partial'
+  filters: {
+    type_trx?: number; // optional: 1 (otomatis), 2 (manual)
+    start_date: string; // format: YYYY-MM-DD, required
+    end_date: string; // format: YYYY-MM-DD, required
+    outlet_id?: number; // optional
+    payment_method?: number; // optional
+  };
+}
+

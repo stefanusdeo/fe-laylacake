@@ -1,6 +1,10 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
-import { IMigrateTransactionBody, IParamTransaction } from "@/types/transactionTypes";
+import {
+  IDeleteMultiTransaction,
+  IMigrateTransactionBody,
+  IParamTransaction,
+} from "@/types/transactionTypes";
 import { globalError } from "@/utils/globalErrorAxios";
 import { useTransactionStore } from "../hooks/useTransactions";
 import { format } from "date-fns";
@@ -63,8 +67,13 @@ export const getDetailTrx = async (trxId: number) => {
 };
 
 export const migrateTransactions = async (body: IMigrateTransactionBody) => {
+  const requestBody = {
+    ...body,
+    start_date: format(body.start_date, "yyyy-MM-dd"),
+    end_date: format(body.end_date, "yyyy-MM-dd"),
+  };
   try {
-    const response = await API.post(migrate, body);
+    const response = await API.post(migrate, requestBody);
     const result = response.data;
     const resp = {
       status: response.status,
@@ -77,9 +86,24 @@ export const migrateTransactions = async (body: IMigrateTransactionBody) => {
   }
 };
 
-export const deleteMultiTrx = async (ids: number[]) => {
+export const delTransaction = async (trxId: number) => {
   try {
-    const response = await API.delete(multiDelete, { data: { ids } });
+    const response = await API.delete(`${base}/${trxId}`);
+    const result = response.data;
+    const resp = {
+      status: response.status,
+      message: result.message,
+      data: null,
+    };
+    return resp;
+  } catch (error) {
+    globalError(error);
+  }
+};
+
+export const deleteMultiTrx = async (body: IDeleteMultiTransaction) => {
+  try {
+    const response = await API.post(multiDelete, body);
     const result = response.data;
     const resp = {
       status: response.status,

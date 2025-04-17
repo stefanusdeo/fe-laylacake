@@ -15,7 +15,9 @@ import { IParamUsers, User, UserOutlet } from '@/types/userTypes'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useState, useTransition } from 'react'
+import { AiOutlineUserDelete } from 'react-icons/ai'
 import { PiTrashDuotone } from 'react-icons/pi'
+import { TbUserEdit } from 'react-icons/tb'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { toast } from 'sonner'
 
@@ -215,6 +217,8 @@ function UserList() {
             label: "",
             renderCell: ({ id, name }) => (
                 <ButtonAction
+                    iconsEdit={<TbUserEdit />}
+                    iconsDelete={<AiOutlineUserDelete />}
                     onDelete={() => handleOpenModalDelete(id, name)}
                     onEdit={() => handleGetRouteEdit(id)}
                 />

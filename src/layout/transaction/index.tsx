@@ -11,13 +11,13 @@ import Text from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { getOutletsInternal } from '@/store/action/outlets';
 import { getPaymentInternal } from '@/store/action/payment-method';
-import { getListTransactions } from '@/store/action/transactions';
+import { deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
 import { useOutletStore } from '@/store/hooks/useOutlets';
 import { usePaymentStore } from '@/store/hooks/usePayment';
 import { useTransactionStore } from '@/store/hooks/useTransactions';
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
-import { IParamTransaction, Transaction } from '@/types/transactionTypes';
+import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
 import { fr } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
@@ -26,6 +26,9 @@ import { PiTrashDuotone } from 'react-icons/pi';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
 import ModalMigrate from './modal/migrate';
+import ModalDelete from '@/components/molecules/modal/ModalDelete';
+import { MdOutlineClear } from 'react-icons/md';
+import { Plus } from 'lucide-react';
 
 export default function Transactions() {
   const router = useRouter()
@@ -42,7 +45,7 @@ export default function Transactions() {
   const [openModalMultiTrx, setOpenModalMultiTrx] = useState(false);
   const [openModalMigrate, setOpenModalMigrate] = useState(false);
 
-  const [trxlist, setTrxlist] = useState<any>([])
+  const [trxlist, setTrxlist] = useState<TTransactionData[]>([])
   const [selectedTrx, setSelectedTrx] = useState<number[]>([])
   const [trxId, setTrxId] = useState<number | null>(null)
   const [trxCode, setTrxCode] = useState<string | null>(null)
@@ -113,6 +116,7 @@ export default function Transactions() {
 
   };
 
+  // fetch data filter
   useEffect(() => {
     if (outletInternal?.data?.length === 0 || !outletInternal?.data || outletOptions.length === 0 || !outletOptions) {
       fetchOutlet()
@@ -123,15 +127,15 @@ export default function Transactions() {
     }
   }, [])
 
+  // fetch data transactions
   useEffect(() => {
     if (dateRange?.from && dateRange?.to) {
       fetchTransactions(dateRange?.from?.toISOString(), dateRange?.to?.toISOString())
       return
-    } else {
+    } else if (openModalMigrate === false) {
       fetchTransactions()
     }
-
-  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect])
+  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, openModalMigrate])
 
   const handleChecked = (id: number) => {
     setSelectedTrx((prevSelected) =>
@@ -144,10 +148,27 @@ export default function Transactions() {
       setSelectedTrx([])
     } else {
       try {
+        const params: IParamTransaction = {
+          page: 0,
+          limit: 0,
+        }
+
+        if (dateRange?.from && dateRange?.to) {
+          params.start_date = dateRange?.from?.toISOString()
+          params.end_date = dateRange?.to?.toISOString()
+        }
+
+        if (outletSelect) {
+          params.outlet_id = Number(outletSelect)
+        }
+
+        if (methodSelect) {
+          params.payment_method = methodSelect
+        }
         startTransition(async () => {
-          const res = await getListTransactions({ page: 0, limit: 0, start_date: dateRange?.from?.toISOString(), end_date: dateRange?.to?.toISOString() })
+          const res = await getListTransactions(params)
           const allTransactions = res?.data || []
-          setSelectedTrx(allTransactions.map((value: Transaction) => value.id))
+          setSelectedTrx(allTransactions.map((value: TTransactionData) => value.id))
         })
       } catch (error) {
         toast.error("Failed select all: missing data transactions")
@@ -174,26 +195,64 @@ export default function Transactions() {
       toast.error("Failed delete: missing id outlet")
       return
     }
-    // const resp = new Promise((reslove, rejects) => {
-    //   deleteUser(trxId).then((res: any) => {
-    //     if (res?.status === 200) {
-    //       reslove(res)
-    //       getUsersList()
-    //       if (selectedUser.includes(trxId)) setSelectedUser((prevSelected) => prevSelected.filter((val) => val !== trxId))
-    //       hadleCloseModalDelete()
-    //     } else {
-    //       rejects(res)
-    //     }
-    //   })
-    // })
-    // toast.promise(resp, {
-    //   loading: "Deleting outlet...",
-    //   success: "Outlet deleted successfully",
-    //   error: (err: any) => `Failed to delete outlet: ${err?.message || 'Please try again'}`
-    // })
+    const resp = new Promise((reslove, rejects) => {
+      delTransaction(trxId).then((res: any) => {
+        if (res?.status === 200) {
+          reslove(res)
+          fetchTransactions()
+          if (selectedTrx.includes(trxId)) setSelectedTrx((prevSelected) => prevSelected.filter((val) => val !== trxId))
+          hadleCloseModalDelete()
+        } else {
+          rejects(res)
+        }
+      })
+    })
+    toast.promise(resp, {
+      loading: "Deleting transaction...",
+      success: "Transaction deleted successfully.",
+      error: (err: any) => `Failed to delete transaction: ${err?.message || 'Please try again'}`
+    })
   }
 
-  const handleGetRouteEdit = (id: number) => {
+  const handleMultiDelete = async () => {
+    const resp = new Promise((reslove, rejects) => {
+      const typeDel = selectedTrx.length === trxlist.length ? "all" : "partial"
+
+      const requestBody: IDeleteMultiTransaction = {
+        type: typeDel,
+        trx_ids: selectedTrx,
+        filters:{
+          start_date: dateRange?.from?.toISOString(),
+          end_date: dateRange?.to?.toISOString(),
+          outlet_id: Number(outletSelect),
+          payment_method: Number(methodSelect),
+        }
+      }
+
+      if (typeDel === "all") {
+        delete requestBody.trx_ids
+      }
+
+      deleteMultiTrx(requestBody)
+        .then((res: any) => {
+          if (res?.status === 200) {
+            reslove(res)
+            fetchTransactions()
+            setSelectedTrx([])
+            setOpenModalMultiTrx(false)
+          } else {
+            rejects(res)
+          }
+        })
+    })
+    toast.promise(resp, {
+      loading: "Deleting transactions...",
+      success: "Transactions deleted successfully",
+      error: (err: any) => `Failed to delete transactions: ${err?.message || 'Please try again'}`
+    })
+  }
+
+  const handleGetRouteDetail = (id: number) => {
     setIdTransaction(id)
     if (id) {
       router.push(`/transaction/detail`)
@@ -202,13 +261,19 @@ export default function Transactions() {
     }
   }
 
-  const columnsTrxList: Column<Transaction>[] = [
+  const handleResetFilter = () => {
+    setDateRange(undefined)
+    setOutletSelect("")
+    setMethodSelect("")
+  }
+
+  const columnsTrxList: Column<TTransactionData>[] = [
     {
       label: (
         <Checkbox
           className='size-5 mt-1 data-[state=unchecked]:bg-white border-border'
           checked={selectedTrx.length === transactions?.pagination.total_records && trxlist.length > 0}
-          onCheckedChange={handleSelectAll}
+          onCheckedChange={isDateRangeComplete || selectedTrx.length === transactions?.pagination.total_records ? handleSelectAll : () => toast.warning("Please select date range to select all", { duration: 3000 })}
         />
       ),
       renderCell: ({ id }) => (
@@ -265,7 +330,7 @@ export default function Transactions() {
       renderCell: ({ id, code }) => (
         <ButtonAction
           onDelete={() => handleOpenModalDelete(id, code)}
-        // onEdit={() => handleGetRouteEdit(id)}
+          onDetail={() => handleGetRouteDetail(id)}
         />
       ),
     },
@@ -275,13 +340,42 @@ export default function Transactions() {
     if (openModalMigrate) {
       return <ModalMigrate onClose={setOpenModalMigrate} open={openModalMigrate} />
     }
-    return null
   }, [openModalMigrate])
+
+  const memoModalDelete = useMemo(() => {
+    if (openModalDelete) {
+      return (
+        <ModalDelete
+          open={openModalDelete}
+          onClose={setOpenModalDelete}
+          title="Delete Transaction"
+          description={<span>Are you sure you want to delete the transaction with code <b>{trxCode}</b>?</span>}
+          onConfirm={handleDeleteSpesific}
+          onCancel={hadleCloseModalDelete}
+        />
+      );
+    }
+  }, [openModalDelete]);
+
+  const memoModalMultiTrx = useMemo(() => {
+    if (openModalMultiTrx) {
+      return (
+        <ModalDelete
+          open={openModalMultiTrx}
+          onClose={setOpenModalMultiTrx}
+          title="Delete Confirmation"
+          description={<span>Are you sure you want to delete <b>{selectedTrx.length + " Transactions"}</b>? This action cannot be undone.</span>}
+          onConfirm={handleMultiDelete}
+          onCancel={() => setOpenModalMultiTrx(false)}
+        />
+      );
+    }
+  }, [openModalMultiTrx])
 
   return (
     <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
       <div id='filter' className="flex justify-between items-start gap-5 select-none">
-        <div className='flex flex-wrap gap-4'>
+        <div className='flex flex-wrap gap-2.5 items-center'>
           <CustomCalendar
             mode="range"
             placeholder="Chose a date range"
@@ -306,8 +400,11 @@ export default function Transactions() {
             onChange={setMethodSelect}
             className='!h-10'
           />
+          {isDateRangeComplete || outletSelect || methodSelect ? (
+            <Button size={"icon"} variant={"ghost"} onClick={handleResetFilter}><MdOutlineClear /></Button>
+          ) : null}
         </div>
-        <Button onClick={() => setOpenModalMigrate(true)}>Add Transaction</Button>
+        <Button onClick={() => setOpenModalMigrate(true)}><Plus /> Add Transaction</Button>
       </div>
       <div id='table'>
         {loading ? (
@@ -346,6 +443,8 @@ export default function Transactions() {
         )}
       </div>
       {memoModalMigrate}
+      {memoModalDelete}
+      {memoModalMultiTrx}
     </div>
   )
 }

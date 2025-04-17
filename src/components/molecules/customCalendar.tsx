@@ -143,6 +143,10 @@ export function CustomCalendar({
         }
     }, [singleDate, multipleDates, dateRange, onDateChange, mode])
 
+    React.useEffect(() => {
+        if (defaultValue === undefined) handleReset()
+    }, [defaultValue])
+
     // Fungsi untuk menampilkan tanggal yang dipilih berdasarkan mode
     const getSelectedDateDisplay = () => {
         if (mode === "single" && singleDate) {
@@ -318,7 +322,7 @@ export function CustomCalendar({
                                 nav_button_next: { display: "none" },
                                 nav_button_previous: { display: "none" },
                                 caption_dropdowns: { display: "none" },
-                                months:{gap:"15px"}
+                                months: { gap: "15px" }
                             }}
                         />
                     )}

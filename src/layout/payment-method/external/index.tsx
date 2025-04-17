@@ -9,8 +9,7 @@ import Text from '@/components/ui/text'
 import { cn, useDebounce } from '@/lib/utils'
 import { getPaymentExternal, migratePayment } from '@/store/action/payment-method'
 import { usePaymentStore } from '@/store/hooks/usePayment'
-import { IParamsOutlet, OutletData } from '@/types/outletTypes'
-import { PaymentMethodData } from '@/types/paymentTypes'
+import { IParamsPayment, PaymentMethodData } from '@/types/paymentTypes'
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { TbPackageExport } from "react-icons/tb"
 import ClipLoader from 'react-spinners/ClipLoader'
@@ -33,7 +32,7 @@ function PaymentMethodsExternal() {
     const [isPending, startTransition] = useTransition()
 
     const getExternalPayment = async () => {
-        const params: IParamsOutlet = { page, limit, search, filter }
+        const params: IParamsPayment = { page, limit, search, filter }
         const res = await getPaymentExternal(params)
         if (res?.pagination) {
             if (res?.pagination.total_page === 1) {
@@ -88,8 +87,8 @@ function PaymentMethodsExternal() {
         })
     }
 
-    // Columns Outlet List
-    const columnsOutletList: Column<OutletData>[] = [
+    // Columns Payment List
+    const columnsPaymentList: Column<PaymentMethodData>[] = [
         {
             label: "No",
             renderCell: () => null,
@@ -152,7 +151,7 @@ function PaymentMethodsExternal() {
 
             {/* Table */}
             <div>
-                <Tables columns={columnsOutletList} data={paymentMethods} />
+                <Tables columns={columnsPaymentList} data={paymentMethods} />
             </div>
             {memoModalInfo}
         </div>
