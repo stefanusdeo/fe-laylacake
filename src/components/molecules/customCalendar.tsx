@@ -212,7 +212,7 @@ export function CustomCalendar({
                         )}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="center">
                     {/* Custom Header - Selalu ditampilkan terlepas dari status pemilihan tanggal */}
                     <div className="p-3 w-full border-b">
                         <div className="flex items-center justify-between gap-1.5">
@@ -322,7 +322,7 @@ export function CustomCalendar({
                                 nav_button_next: { display: "none" },
                                 nav_button_previous: { display: "none" },
                                 caption_dropdowns: { display: "none" },
-                                months: { gap: "15px" }
+                                months: { gap: "15px" },
                             }}
                         />
                     )}

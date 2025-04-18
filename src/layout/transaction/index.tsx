@@ -5,6 +5,7 @@ import TablePagination from '@/components/atoms/Table/TablePagination';
 import Tables from '@/components/atoms/Table/Tables';
 import ButtonAction from '@/components/molecules/buttonAction';
 import { CustomCalendar } from '@/components/molecules/customCalendar';
+import ModalDelete from '@/components/molecules/modal/ModalDelete';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Text from '@/components/ui/text';
@@ -18,17 +19,15 @@ import { useTransactionStore } from '@/store/hooks/useTransactions';
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
 import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
-import { fr } from 'date-fns/locale';
+import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { DateRange } from 'react-day-picker';
+import { MdOutlineClear } from 'react-icons/md';
 import { PiTrashDuotone } from 'react-icons/pi';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
 import ModalMigrate from './modal/migrate';
-import ModalDelete from '@/components/molecules/modal/ModalDelete';
-import { MdOutlineClear } from 'react-icons/md';
-import { Plus } from 'lucide-react';
 
 export default function Transactions() {
   const router = useRouter()
@@ -192,7 +191,7 @@ export default function Transactions() {
 
   const handleDeleteSpesific = async () => {
     if (!trxId) {
-      toast.error("Failed delete: missing id outlet")
+      toast.error("Failed delete: missing id transactions")
       return
     }
     const resp = new Promise((reslove, rejects) => {
@@ -221,7 +220,7 @@ export default function Transactions() {
       const requestBody: IDeleteMultiTransaction = {
         type: typeDel,
         trx_ids: selectedTrx,
-        filters:{
+        filters: {
           start_date: dateRange?.from?.toISOString(),
           end_date: dateRange?.to?.toISOString(),
           outlet_id: Number(outletSelect),
@@ -257,7 +256,7 @@ export default function Transactions() {
     if (id) {
       router.push(`/transaction/detail`)
     } else {
-      toast.error("Failed get route edit: missing users")
+      toast.error("Failed get route edit: missing transactions")
     }
   }
 
@@ -373,14 +372,15 @@ export default function Transactions() {
   }, [openModalMultiTrx])
 
   return (
-    <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
-      <div id='filter' className="flex justify-between items-start gap-5 select-none">
-        <div className='flex flex-wrap gap-2.5 items-center'>
+    <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-7">
+      <div id='filter' className="flex max-sm:flex-col md:justify-between items-start gap-2.5 md:gap-5 select-none">
+        <div className='w-full flex flex-wrap gap-2.5 items-center'>
           <CustomCalendar
             mode="range"
             placeholder="Chose a date range"
             onDateChange={(range) => setDateRange(range as DateRange)}
             defaultValue={dateRange}
+            className=' max-sm:w-full '
           />
           <CustomSelect
             options={outletOptions}
@@ -389,7 +389,7 @@ export default function Transactions() {
             isLoading={isLoadingOutlet}
             value={outletSelect}
             onChange={setOutletSelect}
-            className='!h-10'
+            className='!h-10 max-sm:w-full'
           />
           <CustomSelect
             options={methodOptions}
@@ -398,13 +398,13 @@ export default function Transactions() {
             isLoading={isLoadingMethod}
             value={methodSelect}
             onChange={setMethodSelect}
-            className='!h-10'
+            className='!h-10 max-sm:w-full'
           />
           {isDateRangeComplete || outletSelect || methodSelect ? (
-            <Button size={"icon"} variant={"ghost"} onClick={handleResetFilter}><MdOutlineClear /></Button>
+            <Button size={"default"} variant={"outline"} onClick={handleResetFilter} className='max-sm:w-full'><MdOutlineClear /> <span className='md:hidden block'>Clear</span></Button>
           ) : null}
         </div>
-        <Button onClick={() => setOpenModalMigrate(true)}><Plus /> Add Transaction</Button>
+        <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:w-full'><Plus /> <span className=''>Add Transaction</span></Button>
       </div>
       <div id='table'>
         {loading ? (
@@ -424,13 +424,13 @@ export default function Transactions() {
               </div>
             ) : ""}
             <Tables columns={columnsTrxList} data={trxlist} />
-            <div className="flex justify-between items-center p-4 border-slate-100 border-t-[2px]">
+            <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
               {/* Pagination Info */}
               <PaginationInfo
                 displayed={limit}
                 total={transactions?.pagination.total_records ?? 0}
                 onChangeDisplayed={setLimit}
-                className=""
+                className="w-auto"
               />
               {/* Pagination */}
               <TablePagination

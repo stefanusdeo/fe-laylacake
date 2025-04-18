@@ -22,7 +22,7 @@ type DialogProps = {
 function Dialog({ children, onClose, open, title, description, className }: DialogProps) {
     return (
         <Base onOpenChange={onClose} open={open} >
-            <DialogContent className={cn("w-auto", className)}>
+            <DialogContent className={cn("w-auto", className)} style={{maxHeight:"85vh"}}>
                 {title || description && (
                     <DialogHeader>
                         <DialogTitle>{title}</DialogTitle>

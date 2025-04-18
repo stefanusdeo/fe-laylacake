@@ -40,7 +40,7 @@ export function BreadcrumbWithDropdown() {
 
     return (
         <Breadcrumb>
-            <BreadcrumbList>
+            <BreadcrumbList className=" max-sm:text-xs">
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>

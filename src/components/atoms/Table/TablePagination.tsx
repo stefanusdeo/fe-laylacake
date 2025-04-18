@@ -132,7 +132,7 @@ function TablePagination({ limit, onPageChange, page, totalItems }: Props) {
   );
 
   return (
-    <Pagination className="justify-end">
+    <Pagination className="justify-end m-0 w-fit">
       <PaginationContent className="">{pages}</PaginationContent>
     </Pagination>
   );

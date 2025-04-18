@@ -20,7 +20,6 @@ import { pdf } from "@react-pdf/renderer"
 import { saveAs } from "file-saver"
 
 import Tables from "@/components/atoms/Table/Tables"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -34,6 +33,7 @@ import { RiUserLocationLine } from "react-icons/ri"
 import ClipLoader from "react-spinners/ClipLoader"
 import { toast } from "sonner"
 import TransactionPDF from "@/components/template/pdf/transaction-pdf"
+import Badge from "@/components/atoms/Badge"
 
 interface Column<T> {
     label: string
@@ -299,9 +299,9 @@ export default function TransactionDetails() {
 
                     {/* Transaction Summary Card */}
                     <Card className="border-accent border rounded-lg shadow-none bg-white">
-                        <CardHeader className="pb-4">
-                            <div className="flex justify-between items-center">
-                                <div>
+                        <CardHeader className="pb-2">
+                            <div className="flex flex-wrap justify-between gap-3 items-center">
+                                <div className="space-y-2">
                                     <CardTitle className="text-xl font-bold">Transaction #{transactionData?.code}</CardTitle>
                                     <CardDescription className="flex items-center mt-1">
                                         <Calendar className="h-4 w-4 mr-1" />
@@ -311,10 +311,7 @@ export default function TransactionDetails() {
                                         {transactionData?.time}
                                     </CardDescription>
                                 </div>
-                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                                    <Check className="h-3.5 w-3.5 mr-1" />
-                                    Completed
-                                </Badge>
+                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100 gap-1" label={"Completed"} icon={<Check className="h-3.5 w-3.5 mr-1" />} iconSide="left" />
                             </div>
                         </CardHeader>
                         <CardContent className="pb-4">
