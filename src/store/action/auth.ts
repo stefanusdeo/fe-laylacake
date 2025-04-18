@@ -1,56 +1,61 @@
+// actions/auth.ts
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
 import { useAuthStore } from "../hooks/useAuth";
-import Cookie from "js-cookie";
-import { isAxiosError } from "axios";
+import { useUserStore } from "../hooks/useUsers";
+import { useProfileStore } from "../hooks/useProfile";
 import { globalError } from "@/utils/globalErrorAxios";
-
-const { login, refreshToken } = endpoint.auth;
-
-export const logoutAccount = async () => {
-  useAuthStore.getState().logout();
-  Cookie.remove("access_token");
-};
+import { isAxiosError } from "axios";
+import Cookie from "js-cookie";
 
 export const loginAccount = async (email: string, password: string) => {
-  const body = {
-    email,
-    password,
-  };
-
   try {
-    const response = await API.post(login, body);
-    const result = response.data;
+    // Reset state awal
+    useUserStore.getState().resetUser();
+    useProfileStore.getState().resetProfile();
 
-    if (result.data && result.message === "success") {
+    const { data: result } = await API.post(endpoint.auth.login, {
+      email,
+      password,
+    });
+
+    if (result?.data && result.message === "success") {
       const { access_token, refresh_token } = result.data;
       Cookie.set("access_token", access_token);
       API.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       useAuthStore.getState().setAuth(access_token, refresh_token);
     }
+
     return result;
   } catch (error) {
     if (isAxiosError(error)) {
-      const errorResponse = error.response?.data;
-      console.log(errorResponse);
-      return errorResponse;
+      return error.response?.data;
     }
-    return error;
+    return { message: "Unexpected error", error };
   }
 };
 
+export const logoutAccount = async () => {
+  useAuthStore.getState().logout();
+  useUserStore.getState().resetUser();
+  useProfileStore.getState().resetProfile();
+  Cookie.remove("access_token");
+  Cookie.remove("role")
+  delete API.defaults.headers.common["Authorization"];
+};
+
 export const refreshTokenAccount = async () => {
-  const tokenRefresh = useAuthStore.getState().refreshToken;
+  const refresh_token = useAuthStore.getState().refreshToken;
   try {
-    const response = await API.post(refreshToken, {
-      refresh_token: tokenRefresh,
+    const { data: result } = await API.post(endpoint.auth.refreshToken, {
+      refresh_token,
     });
-    const result = response.data;
-    const { access_token, refresh_token } = result.data;
+
+    const { access_token, refresh_token: newRefresh } = result.data;
     Cookie.set("access_token", access_token);
     API.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-    useAuthStore.getState().setAuth(access_token, refresh_token);
-    console.log(result);
+    useAuthStore.getState().setAuth(access_token, newRefresh);
+
     return result.message;
   } catch (error) {
     globalError(error);

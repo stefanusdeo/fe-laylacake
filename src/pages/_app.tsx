@@ -7,7 +7,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const publicPaths = ["/login", "/", "/404"]
+const publicPaths = ["/login", "/", "/403", "/404"]
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()

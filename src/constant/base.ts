@@ -37,7 +37,7 @@ export const listMenu: MenuSection[] = [
       {
         title: "Payment Method",
         href: "/payment-method",
-        permission: ["Kasir", "Admin", "Super Admin"],
+        permission: ["Admin", "Super Admin"],
         show: true,
       },
     ],
@@ -49,7 +49,7 @@ export const listMenu: MenuSection[] = [
       {
         title: "Outlets",
         href: "/store/outlets",
-        permission: ["Kasir", "Admin", "Super Admin"],
+        permission: ["Admin", "Super Admin"],
         show: true,
       },
     ],
@@ -92,3 +92,25 @@ export const listMenu: MenuSection[] = [
     ],
   },
 ];
+
+// utils/sidebar.ts
+
+export function getFilteredMenu(profileRole: string | undefined): MenuSection[] {
+  if (!profileRole) return [];
+
+  return listMenu
+    .map((section) => {
+      const filteredItems = section.items.filter(
+        (item) => item.permission.includes(profileRole) && item.show
+      );
+
+      if (filteredItems.length === 0) return null;
+
+      return {
+        ...section,
+        show: true,
+        items: filteredItems,
+      };
+    })
+    .filter(Boolean) as MenuSection[];
+}
