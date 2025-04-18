@@ -1,5 +1,5 @@
 import { getFilteredMenu, MenuItem, MenuSection } from '@/constant/base'
-import { cn, useWithDevice } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { useProfileStore } from '@/store/hooks/useProfile'
 import { getInitialsName } from '@/utils/getInitialName'
 import Link from 'next/link'
@@ -23,8 +23,7 @@ import Text from '../ui/text'
 
 function AppSidebar() {
     const path = usePathname()
-    const { open, setOpenMobile, setOpen } = useSidebar()
-    const { widthDevice } = useWithDevice()
+    const { open, setOpenMobile } = useSidebar()
     const { profile } = useProfileStore()
 
     const nameUser = getInitialsName(profile?.name || "")
@@ -32,14 +31,6 @@ function AppSidebar() {
     useEffect(() => {
         setOpenMobile(false)
     }, [path])
-
-    useEffect(() => {
-        if (widthDevice > 767 && widthDevice <= 1056) {
-            setOpen(false)
-        } else if (widthDevice > 1056) {
-            setOpen(true)
-        }
-    }, [widthDevice])
 
     const filteredMenu = getFilteredMenu(profile?.role_name)
 

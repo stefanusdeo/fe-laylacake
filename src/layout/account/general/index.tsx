@@ -106,79 +106,90 @@ function General() {
     return (
         <Form {...form}>
             <form onSubmit={handleSubmit(handleChangeProfile)}>
-                <div className='grid grid-cols-2 gap-5 mb-5'>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                    {/* Username */}
                     <FormField
                         control={form.control}
                         name="username"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm">Name</FormLabel>
+                                <FormLabel className="text-sm md:text-base font-medium">Name</FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         disabled={profile?.role_name === "Kasir"}
                                         type="text"
                                         placeholder="Please input your name"
-                                        className={`text-base ${formState.errors.username ? "border-red-500" : ""}`}
+                                        className={`text-sm md:text-base ${formState.errors.username ? "border-red-500" : ""}`}
                                     />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-xs text-red-500" />
                             </FormItem>
                         )}
                     />
+
+                    {/* Email */}
                     <div>
-                        <FormItem className='select-none'>
-                            <FormLabel className="text-sm">E-mail</FormLabel>
+                        <FormItem className="select-none">
+                            <FormLabel className="text-sm md:text-base font-medium">E-mail</FormLabel>
                             <FormControl>
                                 <Input
                                     type="text"
                                     placeholder="Please input your E-mail"
                                     value={profile?.email || ""}
                                     disabled
+                                    className="text-sm md:text-base"
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs text-red-500" />
                         </FormItem>
                     </div>
+
+                    {/* Phone */}
                     <FormField
                         control={form.control}
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm">Phone number</FormLabel>
+                                <FormLabel className="text-sm md:text-base font-medium">Phone number</FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         disabled={profile?.role_name === "Kasir"}
                                         type="text"
                                         placeholder="Please input your phone number"
-                                        className={`text-base ${formState.errors.phone ? "border-red-500" : ""}`}
+                                        className={`text-sm md:text-base ${formState.errors.phone ? "border-red-500" : ""}`}
                                     />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-xs text-red-500" />
                             </FormItem>
                         )}
                     />
+
+                    {/* Role */}
                     <div>
-                        <FormItem className='select-none'>
-                            <FormLabel className="text-sm">Role</FormLabel>
+                        <FormItem className="select-none">
+                            <FormLabel className="text-sm md:text-base font-medium">Role</FormLabel>
                             <FormControl>
                                 <Input
                                     type="text"
                                     value={profile?.role_name || ""}
                                     disabled
+                                    className="text-sm md:text-base"
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs text-red-500" />
                         </FormItem>
                     </div>
                 </div>
-                <div className='flex justify-end items-center'>
+
+                {/* Submit */}
+                <div className="flex justify-end items-center">
                     {profile?.role_name !== "Kasir" && (
                         <Button
                             disabled={isButtonDisabled}
                             type="submit"
-                            className="w-fit flex items-center justify-center"
+                            className="w-full sm:w-fit flex items-center justify-center text-sm md:text-base"
                         >
                             {loading ? <BeatLoader color="#010101" size={8} /> : "Save Changes"}
                         </Button>

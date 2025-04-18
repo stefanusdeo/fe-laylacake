@@ -57,7 +57,7 @@ export function middleware(request: NextRequest) {
   // If no access token, redirect to login
   if (!accessToken) {
     const url = new URL("/login", request.url);
-    url.searchParams.set("from", pathname);
+    url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);
   }
 
