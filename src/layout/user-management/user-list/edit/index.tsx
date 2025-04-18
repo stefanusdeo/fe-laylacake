@@ -143,12 +143,12 @@ function EditUser() {
     }, [watch(), originalValues]);
 
     return (
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-5 md:gap-7">
             <div className="flex flex-col gap-3">
-                <Text variant="h2">Edit User</Text>
+                <Text variant="h2" className=' max-sm:text-2xl'>Edit User</Text>
                 <Breadcrums />
             </div>
-            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
+            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:p-5 space-y-7 mb-10">
                 {loading ? (
                     <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
                         <ClipLoader loading={loading} size={15} /> Please wait...
@@ -156,45 +156,44 @@ function EditUser() {
                 ) : (
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleChangeUser)}>
-                            {/* Form Fields */}
                             <div className='grid sm:grid-cols-2 gap-4'>
                                 <FormField control={form.control} name="fullname" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm">Full name</FormLabel>
+                                        <FormLabel className="text-sm md:text-base">Full name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} placeholder="Please input your full name" />
+                                            <Input {...field} placeholder="Please input your full name" className="text-sm md:text-base" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="email" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm">E-mail</FormLabel>
+                                        <FormLabel className="text-sm md:text-base">E-mail</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="email" placeholder="Please input your email" />
+                                            <Input {...field} type="email" placeholder="Please input your email" className="text-sm md:text-base" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="phone" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm">Phone number</FormLabel>
+                                        <FormLabel className="text-sm md:text-base">Phone number</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" placeholder="Please input your phone number" />
+                                            <Input {...field} type="text" placeholder="Please input your phone number" className="text-sm md:text-base" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
                                 <FormField control={form.control} name="role" render={({ field }) => (
                                     <FormItem className='w-full'>
-                                        <FormLabel>Role</FormLabel>
+                                        <FormLabel className="text-sm md:text-base">Role</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl className='w-full'>
-                                                <SelectTrigger>
+                                            <FormControl className='w-full text-sm md:text-base'>
+                                                <SelectTrigger className="text-sm md:text-base">
                                                     <SelectValue placeholder="Select a role user" />
                                                 </SelectTrigger>
                                             </FormControl>
-                                            <SelectContent>
+                                            <SelectContent className="text-sm md:text-base">
                                                 <SelectItem value="1">Super Admin</SelectItem>
                                                 <SelectItem value="2">Admin</SelectItem>
                                                 <SelectItem value="3">Kasir</SelectItem>
@@ -204,57 +203,52 @@ function EditUser() {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-sm">Password</FormLabel>
-                                            <FormControl>
-                                                <PasswordInput {...field} placeholder="Please input your password" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="PasswordConfirmation"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-sm">Password Confirmation</FormLabel>
-                                            <FormControl>
-                                                <PasswordInput {...field} placeholder="Please input your password confirmation" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FormField control={form.control} name="password" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-sm md:text-base">Password</FormLabel>
+                                        <FormControl>
+                                            <PasswordInput {...field} placeholder="Please input your password" className="text-sm md:text-base" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="PasswordConfirmation" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-sm md:text-base">Password Confirmation</FormLabel>
+                                        <FormControl>
+                                            <PasswordInput {...field} placeholder="Please input your password confirmation" className="text-sm md:text-base" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
                             </div>
 
                             {form.watch("role") === "3" && (
-                                <div className='my-6 border-t border-slate-300 py-5 flex flex-col gap-2'>
-                                    <div className='flex flex-wrap gap-3 justify-between items-center'>
-                                        <Text variant='span' className='font-semibold'>My Outlets</Text>
-                                        <div className='flex flex-wrap items-center gap-2'>
+                                <div className='my-6 border-t border-slate-300 py-4 sm:py-5 flex flex-col gap-3 sm:gap-4'>
+                                    <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4'>
+                                        <span className='font-semibold text-sm md:text-base'>My Outlets</span>
+
+                                        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-2'>
                                             <SearchOutlets value={findOutlet} setValue={setFindOutlet} />
                                             <Button
                                                 variant={"outline"}
                                                 type='button'
                                                 disabled={!findOutlet}
                                                 onClick={handleAddOutlet}
+                                                className="text-sm md:text-base px-3 py-2"
                                             >
-                                                <Plus /> Add Outlet
+                                                <Plus size={16} className="mr-1" /> Add Outlet
                                             </Button>
                                         </div>
                                     </div>
-                                    <div className='flex flex-wrap items-start justify-start gap-x-2 gap-y-2 mt-4 border border-border p-4 rounded-lg min-h-20'>
+
+                                    <div className='flex flex-wrap items-start justify-start gap-x-2 gap-y-2 mt-4 border border-border p-3 sm:p-4 rounded-lg min-h-20'>
                                         {outlets.length > 0 ? (
                                             outlets.map((outlet, index) => (
                                                 <Badge
                                                     key={index}
                                                     variant="outline"
-                                                    className="flex items-center rounded-sm gap-1 h-auto py-1 px-2 text-sm"
+                                                    className="flex items-center rounded-sm gap-1 h-auto py-1 px-2 text-xs md:text-sm"
                                                     action={() => {
                                                         const newOutlets = outlets.filter((_, i) => i !== index);
                                                         setOutlets(newOutlets);
@@ -266,10 +260,11 @@ function EditUser() {
                                             ))
                                         ) : (
                                             <div className='flex justify-center items-center w-full gap-2 mt-3'>
-                                                <Text variant='span'>No Outlet Added</Text>
+                                                <span className="text-sm md:text-base">No Outlet Added</span>
                                             </div>
                                         )}
                                     </div>
+
                                     <input
                                         type="hidden"
                                         name="outlet_ids"
@@ -278,12 +273,11 @@ function EditUser() {
                                 </div>
                             )}
 
-                            {/* Button Submit */}
                             <div className='flex justify-end items-center mt-6'>
                                 <Button
                                     disabled={!isFormChanged}
                                     type="submit"
-                                    className="w-fit flex items-center justify-center"
+                                    className="w-full md:w-fit flex items-center justify-center text-sm md:text-base px-4 py-2"
                                 >
                                     {loading ? <BeatLoader color="#ffffff" size={8} /> : "Update User"}
                                 </Button>

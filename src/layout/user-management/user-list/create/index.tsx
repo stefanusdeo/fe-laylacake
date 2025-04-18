@@ -90,15 +90,16 @@ function CreatedUser() {
         }
     }, [state.success])
     return (
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-5 md:gap-7">
             <div className="flex flex-col gap-3">
-                <Text variant="h2">Create User</Text>
+                <Text variant="h2" className=' max-sm:text-2xl'>Create User</Text>
                 <Breadcrums />
             </div>
-            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
+            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:p-5 space-y-7 mb-10">
                 <Form {...form}>
                     <form action={submitAction}>
-                        <div className='grid sm:grid-cols-2 gap-4'>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Fullname */}
                             <FormField
                                 control={form.control}
                                 name="fullname"
@@ -112,6 +113,8 @@ function CreatedUser() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Email */}
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -125,6 +128,8 @@ function CreatedUser() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Phone */}
                             <FormField
                                 control={form.control}
                                 name="phone"
@@ -138,14 +143,16 @@ function CreatedUser() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Role */}
                             <FormField
                                 control={form.control}
                                 name="role"
                                 render={({ field }) => (
-                                    <FormItem className='w-full'>
+                                    <FormItem className="w-full">
                                         <FormLabel>Role</FormLabel>
                                         <Select onValueChange={field.onChange}>
-                                            <FormControl className='w-full'>
+                                            <FormControl className="w-full">
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a role user" />
                                                 </SelectTrigger>
@@ -161,6 +168,8 @@ function CreatedUser() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Password */}
                             <FormField
                                 control={form.control}
                                 name="password"
@@ -174,6 +183,8 @@ function CreatedUser() {
                                     </FormItem>
                                 )}
                             />
+
+                            {/* Confirm Password */}
                             <FormField
                                 control={form.control}
                                 name="PasswordConfirmation"
@@ -188,15 +199,19 @@ function CreatedUser() {
                                 )}
                             />
                         </div>
-                        {form.watch("role") === "3" &&
-                            <div className='my-6 border-t border-slate-300 py-5 flex flex-col gap-2'>
-                                <div className='flex flex-wrap gap-3 justify-between items-center'>
-                                    <Text variant='span' className='font-semibold'>My Outlets</Text>
-                                    <div className='flex flex-wrap items-center gap-2'>
+
+                        {/* Outlet Section (role == 3) */}
+                        {form.watch("role") === "3" && (
+                            <div className="my-6 border-t border-slate-300 py-5 flex flex-col gap-2">
+                                <div className="flex flex-wrap gap-3 justify-between items-center">
+                                    <Text variant="span" className="font-semibold">
+                                        My Outlets
+                                    </Text>
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <SearchOutlets value={findOutlet} setValue={setFindOutlet} />
                                         <Button
-                                            variant={"outline"}
-                                            type='button'
+                                            variant="outline"
+                                            type="button"
                                             disabled={!findOutlet}
                                             onClick={handleAddOutlet}
                                         >
@@ -204,7 +219,8 @@ function CreatedUser() {
                                         </Button>
                                     </div>
                                 </div>
-                                <div className='flex flex-wrap items-start justify-start gap-x-2 gap-y-2 mt-4 border border-border p-4 rounded-lg min-h-20'>
+
+                                <div className="flex flex-wrap items-start justify-start gap-x-2 gap-y-2 mt-4 border border-border p-4 rounded-lg min-h-20">
                                     {outlets.length > 0 ? (
                                         outlets.map((outlet, index) => (
                                             <Badge
@@ -214,31 +230,34 @@ function CreatedUser() {
                                                 action={() => {
                                                     const newOutlets = outlets.filter((_, i) => i !== index);
                                                     setOutlets(newOutlets);
-                                                    form.setValue("outlet_ids", newOutlets.map(outlet => outlet.id));
+                                                    form.setValue("outlet_ids", newOutlets.map((outlet) => outlet.id));
                                                 }}
-                                                icon={<Trash2 size={14} className='text-slate-500' />}
+                                                icon={<Trash2 size={14} className="text-slate-500" />}
                                                 label={outlet.name}
                                             />
                                         ))
                                     ) : (
-                                        <div className='flex justify-center items-center w-full gap-2 mt-3'>
-                                            <Text variant='span'>No Outlet Added</Text>
+                                        <div className="flex justify-center items-center w-full gap-2 mt-3">
+                                            <Text variant="span">No Outlet Added</Text>
                                         </div>
                                     )}
                                 </div>
-                                {/* Hidden input to store outlet IDs */}
+
+                                {/* Hidden Input */}
                                 <input
                                     type="hidden"
                                     name="outlet_ids"
-                                    value={JSON.stringify(outlets.map(outlet => outlet.id))}
+                                    value={JSON.stringify(outlets.map((outlet) => outlet.id))}
                                 />
                             </div>
-                        }
-                        <div className='flex justify-end items-center mt-6'>
+                        )}
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end items-center mt-6">
                             <Button
                                 disabled={state.loading || !form.formState.isValid}
                                 type="submit"
-                                className="w-fit flex items-center justify-center"
+                                className="w-full sm:w-fit flex items-center justify-center"
                             >
                                 {state.loading ? <BeatLoader color="#ffffff" size={8} /> : "Create User"}
                             </Button>
@@ -246,6 +265,7 @@ function CreatedUser() {
                     </form>
                 </Form>
             </div>
+
         </div>
     )
 }

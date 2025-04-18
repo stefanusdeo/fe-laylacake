@@ -258,19 +258,19 @@ function UserList() {
     }, [openModalMultiUser]);
 
     return (
-        <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-5 md:gap-7">
             {/* Header */}
-            <div className="flex justify-between items-center gap-5 select-none">
+            <div className="flex flex-wrap justify-between items-center gap-5 select-none">
                 <div className="flex flex-col gap-3">
-                    <Text variant="h2">User List</Text>
+                    <Text variant="h2" className=' max-sm:text-2xl'>User List</Text>
                     <Breadcrums />
                 </div>
-                <Button size="lg" onClick={() => router.push("/user-management/create-user")}>
-                    <Plus /> Add User
+                <Button size="lg" className='text-sm md:text-base max-sm:w-full' onClick={() => router.push("/user-management/create-user")}>
+                    <Plus className='text-sm md:text-base' /> <span>Add User</span>
                 </Button>
             </div>
             {/* Table Section */}
-            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg px-5 py-5 space-y-7">
+            <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:p-5 space-y-7">
                 {/* Search Input */}
                 <SearchInputGroup
                     options={[
@@ -298,13 +298,13 @@ function UserList() {
                             </div>
                         ) : ""}
                         <Tables columns={columnsUserList} data={userlist} />
-                        <div className="flex justify-between items-center p-4 border-slate-100 border-t-[2px]">
+                        <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
                             {/* Pagination Info */}
                             <PaginationInfo
                                 displayed={limit}
                                 total={users?.pagination.total_records ?? 0}
                                 onChangeDisplayed={setLimit}
-                                className=""
+                                className="w-auto"
                             />
                             {/* Pagination */}
                             <TablePagination

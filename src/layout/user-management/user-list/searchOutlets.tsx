@@ -64,27 +64,28 @@ export function SearchOutlets({ value, setValue }: ISearchOutlets) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-auto min-w-[290px] justify-start gap-4"
+                    className="w-full sm:w-auto min-w-[240px] max-w-full text-sm md:text-base justify-start gap-3"
                 >
                     <LiaStoreAltSolid className="opacity-50" />
                     {value ? value.name : "Choose an Outlet"}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="p-0">
+
+            <PopoverContent align="start" className="p-0 w-[80vw] sm:w-[300px]">
                 <Command className="w-full">
                     <CommandInput
                         value={searchQuery}
                         placeholder="Search Outlets..."
-                        className="h-9"
+                        className="h-9 text-sm md:text-base"
                         onValueChange={(query) => setSearchQuery(query)}
                     />
                     <CommandList>
                         {isLoading ? (
-                            <Text variant="span" className="flex items-center gap-2 py-3 px-4">
+                            <Text variant="span" className="flex items-center gap-2 py-3 px-4 text-sm md:text-base">
                                 <ClipLoader loading={isLoading} size={15} /> Please wait...
                             </Text>
                         ) : outlets.length === 0 ? (
-                            <CommandEmpty>Outlet not found.</CommandEmpty>
+                            <CommandEmpty className="text-sm md:text-base">Outlet not found.</CommandEmpty>
                         ) : (
                             <CommandGroup>
                                 {outlets.map((outlet: OutletData) => (
@@ -92,11 +93,10 @@ export function SearchOutlets({ value, setValue }: ISearchOutlets) {
                                         key={outlet.id}
                                         value={outlet.name}
                                         onSelect={() => {
-                                            setValue(
-                                                value?.id === outlet.id ? null : { id: outlet.id, name: outlet.name }
-                                            );
+                                            setValue(value?.id === outlet.id ? null : { id: outlet.id, name: outlet.name });
                                             setOpen(false);
                                         }}
+                                        className="text-sm md:text-base"
                                     >
                                         {outlet.name}
                                         <Check
@@ -113,5 +113,6 @@ export function SearchOutlets({ value, setValue }: ISearchOutlets) {
                 </Command>
             </PopoverContent>
         </Popover>
+
     )
 }
