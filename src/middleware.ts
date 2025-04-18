@@ -29,7 +29,7 @@ const pathPermissions: Record<string, Role[]> = {
   "/payment-method": ["Super Admin"],
 
   // Store section
-  "/store/outlets": ["Admin"],
+  "/store/outlets": ["Super Admin"],
 
   // Account section
   "/account": ["Kasir", "Admin", "Super Admin"],

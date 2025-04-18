@@ -31,6 +31,7 @@ import ModalMigrate from './modal/migrate';
 import Cookie from "js-cookie"
 import { useProfileStore } from '@/store/hooks/useProfile';
 import { TbListDetails } from 'react-icons/tb';
+import Breadcrums from '@/components/molecules/breadcrums';
 
 export default function Transactions() {
   const { profile } = useProfileStore()
@@ -384,81 +385,89 @@ export default function Transactions() {
   }, [openModalMultiTrx])
 
   return (
-    <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-7">
-      <div id='filter' className="flex max-sm:flex-col md:justify-between items-start gap-2.5 md:gap-5 select-none">
-        <div className='w-full flex flex-wrap gap-2.5 items-center'>
-          <CustomCalendar
-            mode="range"
-            placeholder="Chose a date range"
-            onDateChange={(range) => setDateRange(range as DateRange)}
-            defaultValue={dateRange}
-            className=' max-sm:w-full '
-          />
-          <CustomSelect
-            options={outletOptions}
-            label="Outlet"
-            placeholder={outletOptions.length > 0 ? "Select a outlet" : "No data available"}
-            isLoading={isLoadingOutlet}
-            value={outletSelect}
-            onChange={setOutletSelect}
-            className='!h-10 max-sm:w-full'
-          />
-          <CustomSelect
-            options={methodOptions}
-            label="Method"
-            placeholder={methodOptions.length > 0 ? "Select a method" : "No data available"}
-            isLoading={isLoadingMethod}
-            value={methodSelect}
-            onChange={setMethodSelect}
-            className='!h-10 max-sm:w-full'
-          />
-          {isDateRangeComplete || outletSelect || methodSelect ? (
-            <Button size={"default"} variant={"outline"} onClick={handleResetFilter} className='max-sm:w-full'><MdOutlineClear /> <span className='md:hidden block'>Clear</span></Button>
-          ) : null}
+    <div className='flex flex-col gap-5 md:gap-7'>
+      <div className="flex flex-wrap justify-between items-center gap-5 select-none">
+        <div className="flex flex-col gap-3">
+          <Text variant='h2' className=' max-sm:text-2xl'>Transaction List</Text>
+          <Breadcrums />
         </div>
-        {roleUser && roleUser !== "Kasir" && (
+        {roleUser && roleUser === "Super Admin" && (
           <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:w-full'><Plus /> <span className=''>Add Transaction</span></Button>
         )}
       </div>
-      <div id='table'>
-        {loading ? (
-          <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
-            <ClipLoader loading={loading} size={15} /> Getting transaction list...
-          </Text>
-        ) : (
-          <div>
-            {selectedTrx.length > 0 ? (
-              <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
-                <Text variant='h5' className='text-orange-500'>Selected {selectedTrx.length} {selectedTrx.length > 1 ? "transactions" : "transaction"}</Text>
-                {selectedTrx.length > 1 && (
-                  <Button size="sm" variant={"outline"} onClick={() => setOpenModalMultiTrx(true)}>
-                    <PiTrashDuotone /> Delete All
-                  </Button>
-                )}
-              </div>
-            ) : ""}
-            <Tables columns={columnsTrxList} data={trxlist} />
-            <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
-              {/* Pagination Info */}
-              <PaginationInfo
-                displayed={limit}
-                total={transactions?.pagination.total_records ?? 0}
-                onChangeDisplayed={setLimit}
-                className="w-auto"
-              />
-              {/* Pagination */}
-              <TablePagination
-                {...{ limit, page }}
-                onPageChange={setPage}
-                totalItems={transactions?.pagination.total_records ?? 0}
-              />
-            </div>
+      <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-7">
+        <div id='filter' className="flex max-sm:flex-col md:justify-between items-start gap-2.5 md:gap-5 select-none">
+          <div className='w-full flex flex-wrap gap-2.5 items-center'>
+            <CustomCalendar
+              mode="range"
+              placeholder="Chose a date range"
+              onDateChange={(range) => setDateRange(range as DateRange)}
+              defaultValue={dateRange}
+              className=' max-sm:w-full '
+            />
+            <CustomSelect
+              options={outletOptions}
+              label="Outlet"
+              placeholder={outletOptions.length > 0 ? "Select a outlet" : "No data available"}
+              isLoading={isLoadingOutlet}
+              value={outletSelect}
+              onChange={setOutletSelect}
+              className='!h-10 max-sm:w-full'
+            />
+            <CustomSelect
+              options={methodOptions}
+              label="Method"
+              placeholder={methodOptions.length > 0 ? "Select a method" : "No data available"}
+              isLoading={isLoadingMethod}
+              value={methodSelect}
+              onChange={setMethodSelect}
+              className='!h-10 max-sm:w-full'
+            />
+            {isDateRangeComplete || outletSelect || methodSelect ? (
+              <Button size={"default"} variant={"outline"} onClick={handleResetFilter} className='max-sm:w-full'><MdOutlineClear /> <span className='md:hidden block'>Clear</span></Button>
+            ) : null}
           </div>
-        )}
+        </div>
+        <div id='table'>
+          {loading ? (
+            <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+              <ClipLoader loading={loading} size={15} /> Getting transaction list...
+            </Text>
+          ) : (
+            <div>
+              {selectedTrx.length > 0 ? (
+                <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
+                  <Text variant='h5' className='text-orange-500'>Selected {selectedTrx.length} {selectedTrx.length > 1 ? "transactions" : "transaction"}</Text>
+                  {selectedTrx.length > 1 && (
+                    <Button size="sm" variant={"outline"} onClick={() => setOpenModalMultiTrx(true)}>
+                      <PiTrashDuotone /> Delete All
+                    </Button>
+                  )}
+                </div>
+              ) : ""}
+              <Tables columns={columnsTrxList} data={trxlist} />
+              <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
+                {/* Pagination Info */}
+                <PaginationInfo
+                  displayed={limit}
+                  total={transactions?.pagination.total_records ?? 0}
+                  onChangeDisplayed={setLimit}
+                  className="w-auto"
+                />
+                {/* Pagination */}
+                <TablePagination
+                  {...{ limit, page }}
+                  onPageChange={setPage}
+                  totalItems={transactions?.pagination.total_records ?? 0}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        {memoModalMigrate}
+        {memoModalDelete}
+        {memoModalMultiTrx}
       </div>
-      {memoModalMigrate}
-      {memoModalDelete}
-      {memoModalMultiTrx}
     </div>
   )
 }

@@ -19,6 +19,8 @@ import { useForm } from 'react-hook-form';
 import BeatLoader from 'react-spinners/BeatLoader';
 import { toast } from 'sonner';
 import { SearchOutlets } from '../searchOutlets';
+import { useProfileStore } from '@/store/hooks/useProfile';
+import Cookie from "js-cookie"
 
 interface State {
     loading: boolean
@@ -57,7 +59,10 @@ async function handleCreateUser(prevState: State, formData: FormData): Promise<S
 }
 
 function CreatedUser() {
+    const { profile } = useProfileStore()
     const router = useRouter()
+
+    const roleUser = Cookie.get('role') ?? profile?.role_name
     const { outletInternal } = useOutletStore()
     const form = useForm({
         resolver: yupResolver(userSchema),
@@ -158,9 +163,13 @@ function CreatedUser() {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="1">Super Admin</SelectItem>
-                                                <SelectItem value="2">Admin</SelectItem>
-                                                <SelectItem value="3">Kasir</SelectItem>
+                                                {roleUser === "Super Admin" && <SelectItem value="2">Admin</SelectItem>}
+                                                {roleUser === "Admin" && (
+                                                    <>
+                                                        <SelectItem value="2">Admin</SelectItem>
+                                                        <SelectItem value="3">Kasir</SelectItem>
+                                                    </>
+                                                )}
                                             </SelectContent>
                                         </Select>
                                         <input type="hidden" name="role" value={field.value} />
