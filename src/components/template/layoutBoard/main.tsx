@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useSidebar } from '@/components/ui/sidebar'
 import Text from '@/components/ui/text'
+import { cn, useWithDevice } from '@/lib/utils'
 import { logoutAccount } from '@/store/action/auth'
 import { useProfileStore } from '@/store/hooks/useProfile'
 import { getInitialsName } from '@/utils/getInitialName'
@@ -13,14 +14,17 @@ import React from 'react'
 function MainComponent({ children }: { children: React.ReactNode }) {
     const { open, openMobile, isMobile } = useSidebar()
     const { profile } = useProfileStore()
+    const { widthDevice } = useWithDevice()
 
     const nameUser = getInitialsName(profile?.name || "")
 
+    const widthTab = widthDevice >= 768 && widthDevice <= 832
+
     const route = useRouter()
-    const styleShape = "before:bg-white before:size-2.5 before:rotate-45 before:absolute before:-top-1.5 before:right-3 before:border-l before:border-t before:border-border"
+    const styleShape = "before:bg-white  before:size-2.5 before:rotate-45 before:absolute before:-top-1.5 before:right-3 before:border-l before:border-t before:border-border"
     return (
-        <main className=' relative w-full'>
-            <header className={` ${open ? "w-[calc(100%-18rem)]" : "w-[calc(100%-4rem)]"} ${isMobile && "w-full"} z-50 backdrop-blur-sm px-4 md:px-10 py-5 fixed flex justify-between items-center gap-10`}>
+        <main className='relative w-full overflow-hidden'>
+            <header className={` ${open  ? "w-[calc(100%-18rem)]" : "w-[calc(100%-4rem)]"} ${isMobile && "w-full"} z-50 backdrop-blur-sm px-4 md:px-10 py-5 fixed flex justify-between items-center gap-10`}>
                 <TrigerSidebar />
                 <div>
                     <Popover>
@@ -52,7 +56,7 @@ function MainComponent({ children }: { children: React.ReactNode }) {
                     </Popover>
                 </div>
             </header>
-            <div className='px-4 md:px-10 mt-20 md:mt-24'>
+            <div className={cn('px-4 md:px-10 mt-20 md:mt-24 pb-5 w-full',)}>
                 {children}
             </div>
         </main>
