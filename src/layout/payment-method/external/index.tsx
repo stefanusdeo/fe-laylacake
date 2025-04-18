@@ -97,7 +97,7 @@ function PaymentMethodsExternal() {
         {
             label: "Name",
             renderCell: (row) => <p>{row.name}</p>,
-            className: "w-full text-left",
+            className: "md:w-full text-left",
         },
         {
             label: "Move",

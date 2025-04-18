@@ -165,7 +165,7 @@ function OutletExternal() {
             {/* Table */}
             <div>
                 <Tables columns={columnsOutletList} data={outlets} />
-                <div className="flex justify-between items-center p-4 border-slate-100 border-t-[2px]">
+                <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
                     {/* Pagination Info */}
                     <PaginationInfo displayed={limit} total={outletExternal?.pagination.total_records ?? 0} onChangeDisplayed={setLimit} className="" />
                     {/* Pagination */}

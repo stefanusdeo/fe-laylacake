@@ -10,7 +10,7 @@ const Tables = <T,>({
 }: TableProps<T>) => {
   return (
     <div className="overflow-x-auto scrollbar">
-      <table className={cn("w-full min-w-[600px] border-collapse", className)}>
+      <table className={cn("w-full table-auto border-collapse", className)}>
         {/* Header */}
         <thead className="">
           <tr className="bg-slate-100 select-none">
@@ -26,7 +26,7 @@ const Tables = <T,>({
           {data?.length > 0 ?
             data.map((row, rowIndex) => {
               return (
-                <tr key={rowIndex} className=" hover:bg-slate-50/50">
+                <tr key={rowIndex} className=" hover:bg-slate-50/50 w-fit">
                   {columns.map((column, colIndex) => {
                     return (
                       <td key={colIndex} className={cn(column.className, "py-3.5 first:ps-7 last:pe-7 px-2 text-xs sm:text-sm font-normal text-neutral-800")}>

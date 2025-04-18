@@ -10,21 +10,21 @@ function Outlets() {
             <TabsList className='bg-transparent rounded flex gap-5'>
                 <TabsTrigger
                     value={'external'}
-                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
+                    className='flex items-center gap-2 text-sm md:text-base py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
                 >
                     <AiOutlineAppstoreAdd size={400} /> Outlets List
                 </TabsTrigger>
                 <TabsTrigger
                     value={'internal'}
-                    className='flex items-center gap-2 py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
+                    className='flex items-center gap-2 text-sm md:text-base py-5 px-1.5 rounded-none font-normal text-slate-400 border-b-2 data-[state=active]:text-slate-700 data-[state=active]:border-orange-400'
                 >
                     <LiaStoreAltSolid /> My Outlets
                 </TabsTrigger>
             </TabsList>
-            <TabsContent className='my-10 p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'external'}>
+            <TabsContent className='my-5 md:my-10 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'external'}>
                 <OutletExternal/>
             </TabsContent>
-            <TabsContent className='my-10 p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'internal'}>
+            <TabsContent className='my-5 md:my-10 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'internal'}>
                 <OutletInternal/>
             </TabsContent>
         </Tabs>

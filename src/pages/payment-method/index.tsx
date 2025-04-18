@@ -8,11 +8,11 @@ function PaymentMethodPage() {
         <div className='flex flex-col gap-7'>
             <div className='flex justify-between items-center gap-5 select-none'>
                 <div className='flex flex-col gap-3'>
-                    <Text variant='h2'>Payment Method</Text>
+                    <Text variant='h2' className=' max-sm:text-2xl'>Payment Method</Text>
                     <Breadcrums />
                 </div>
             </div>
-            <div className='my-5'>
+            <div className='md:my-5'>
                 <PaymentMethod />
             </div>
         </div>

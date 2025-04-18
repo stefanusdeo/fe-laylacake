@@ -44,7 +44,7 @@ export function SearchInputGroup({
                         variant="ghost"
                         role="combobox"
                         aria-expanded={open}
-                        className="min-w-[120px] justify-between rounded-r-none border-r hover:bg-transparent"
+                        className="min-w-[120px] text-sm md:text-base justify-between rounded-r-none border-r hover:bg-transparent"
                     >
                         {selectedFilter.label}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -74,14 +74,14 @@ export function SearchInputGroup({
                     </Command>
                 </PopoverContent>
             </Popover>
-            <div className="flex w-full max-w-sm items-center rounded-r-lg">
+            <div className="flex w-full max-w-sm items-center rounded-r-lg text-sm md:text-base">
                 <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 <Input
                     type="search"
                     placeholder={placeholder}
                     value={searchValue}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="border-0 h-10 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-r-lg"
+                    className="text-sm md:text-base border-0 h-10 focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-r-lg"
                 />
             </div>
         </div>
