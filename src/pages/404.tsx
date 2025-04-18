@@ -21,10 +21,10 @@ export default function NotFound() {
                 <p className="text-slate-600 dark:text-slate-400">
                     Sorry, the page you are looking for cannot be found or has been moved.
                 </p>
-                <div className="flex flex-col gap-2 sm:flex-row">
+                <div className="flex flex-col-reverse gap-2 sm:flex-row">
                     <Button onClick={goBack}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to home
+                        Go Back
                     </Button>
                     <Button variant="outline" asChild className="border-slate-300 dark:border-slate-700">
                         <Link href={"/login"}>Contact Us</Link>

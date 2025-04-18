@@ -116,6 +116,7 @@ function General() {
                                 <FormControl>
                                     <Input
                                         {...field}
+                                        disabled={profile?.role_name === "Kasir"}
                                         type="text"
                                         placeholder="Please input your name"
                                         className={`text-base ${formState.errors.username ? "border-red-500" : ""}`}
@@ -148,6 +149,7 @@ function General() {
                                 <FormControl>
                                     <Input
                                         {...field}
+                                        disabled={profile?.role_name === "Kasir"}
                                         type="text"
                                         placeholder="Please input your phone number"
                                         className={`text-base ${formState.errors.phone ? "border-red-500" : ""}`}
@@ -172,13 +174,15 @@ function General() {
                     </div>
                 </div>
                 <div className='flex justify-end items-center'>
-                    <Button
-                        disabled={isButtonDisabled}
-                        type="submit"
-                        className="w-fit flex items-center justify-center"
-                    >
-                        {loading ? <BeatLoader color="#010101" size={8} /> : "Save Changes"}
-                    </Button>
+                    {profile?.role_name !== "Kasir" && (
+                        <Button
+                            disabled={isButtonDisabled}
+                            type="submit"
+                            className="w-fit flex items-center justify-center"
+                        >
+                            {loading ? <BeatLoader color="#010101" size={8} /> : "Save Changes"}
+                        </Button>
+                    )}
                 </div>
             </form>
         </Form>

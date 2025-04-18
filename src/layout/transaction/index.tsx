@@ -28,9 +28,15 @@ import { PiTrashDuotone } from 'react-icons/pi';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
 import ModalMigrate from './modal/migrate';
+import Cookie from "js-cookie"
+import { useProfileStore } from '@/store/hooks/useProfile';
+import { TbListDetails } from 'react-icons/tb';
 
 export default function Transactions() {
+  const { profile } = useProfileStore()
   const router = useRouter()
+
+  const roleUser = Cookie.get('role') ?? profile?.role_name
 
   const { outletInternal } = useOutletStore()
   const { paymentInternal } = usePaymentStore()
@@ -268,21 +274,23 @@ export default function Transactions() {
 
   const columnsTrxList: Column<TTransactionData>[] = [
     {
-      label: (
+      label: roleUser && roleUser !== "Kasir" ? (
         <Checkbox
           className='size-5 mt-1 data-[state=unchecked]:bg-white border-border'
           checked={selectedTrx.length === transactions?.pagination.total_records && trxlist.length > 0}
           onCheckedChange={isDateRangeComplete || selectedTrx.length === transactions?.pagination.total_records ? handleSelectAll : () => toast.warning("Please select date range to select all", { duration: 3000 })}
         />
-      ),
+      ) : "",
       renderCell: ({ id }) => (
         <div>
-          <Checkbox
-            className='size-5 mt-1 border-border'
-            value={id}
-            checked={selectedTrx.includes(id)}
-            onCheckedChange={() => handleChecked(id)}
-          />
+          {roleUser && roleUser !== "Kasir" && (
+            <Checkbox
+              className='size-5 mt-1 border-border'
+              value={id}
+              checked={selectedTrx.includes(id)}
+              onCheckedChange={() => handleChecked(id)}
+            />
+          )}
         </div>
       ),
       className: cn("text-center justify-center"),
@@ -327,10 +335,14 @@ export default function Transactions() {
     {
       label: "",
       renderCell: ({ id, code }) => (
-        <ButtonAction
-          onDelete={() => handleOpenModalDelete(id, code)}
-          onDetail={() => handleGetRouteDetail(id)}
-        />
+        <div>
+          {roleUser && roleUser !== "Kasir" ? (
+            <ButtonAction
+              onDelete={() => handleOpenModalDelete(id, code)}
+              onDetail={() => handleGetRouteDetail(id)}
+            />
+          ) : <Button size={"sm"} variant={"outline"} onClick={() => handleGetRouteDetail(id)}><TbListDetails /> Detail</Button>}
+        </div>
       ),
     },
   ];
@@ -404,7 +416,9 @@ export default function Transactions() {
             <Button size={"default"} variant={"outline"} onClick={handleResetFilter} className='max-sm:w-full'><MdOutlineClear /> <span className='md:hidden block'>Clear</span></Button>
           ) : null}
         </div>
-        <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:w-full'><Plus /> <span className=''>Add Transaction</span></Button>
+        {roleUser && roleUser !== "Kasir" && (
+          <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:w-full'><Plus /> <span className=''>Add Transaction</span></Button>
+        )}
       </div>
       <div id='table'>
         {loading ? (

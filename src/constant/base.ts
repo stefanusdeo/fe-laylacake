@@ -31,13 +31,13 @@ export const listMenu: MenuSection[] = [
       {
         title: "Cashier",
         href: "/cashier",
-        permission: ["Kasir", "Admin", "Super Admin"],
+        permission: ["Kasir"],
         show: true,
       },
       {
         title: "Payment Method",
         href: "/payment-method",
-        permission: ["Admin", "Super Admin"],
+        permission: ["Super Admin"],
         show: true,
       },
     ],
@@ -49,7 +49,7 @@ export const listMenu: MenuSection[] = [
       {
         title: "Outlets",
         href: "/store/outlets",
-        permission: ["Admin", "Super Admin"],
+        permission: ["Admin"],
         show: true,
       },
     ],
