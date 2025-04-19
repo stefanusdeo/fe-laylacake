@@ -56,15 +56,16 @@ export function middleware(request: NextRequest) {
 
   // If no access token, redirect to login
   if (!accessToken) {
-    const url = new URL("/login", request.url);
-    url.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(url);
+    return null;
   }
 
   let userRole: Role | undefined;
 
   try {
     // Decode the JWT token to get user information
+    if (!accessToken) {
+      throw new Error("Access token not found");
+    }
     const decodedToken = jwtDecode<DecodedToken>(accessToken);
 
     // Map role_id to actual role string
@@ -74,9 +75,7 @@ export function middleware(request: NextRequest) {
     const currentTime = Math.floor(Date.now() / 1000);
     if (decodedToken.exp < currentTime) {
       // Token is expired, redirect to login
-      const url = new URL("/login", request.url);
-      url.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(url);
+      return null;
     }
 
     // If role_id doesn't map to a valid role
@@ -114,13 +113,17 @@ export function middleware(request: NextRequest) {
 // Configure which paths the middleware applies to
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (images, etc.)
-     */
-    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
+    "/transaction/:path*",
+    "/cashier/:path*",
+    "/payment-method/:path*",
+    "/store/outlets/:path*",
+    "/account/:path*",
+    "/user-management/user-list/:path*",
+    "/user-management/create-user/:path*",
+    "/user-management/edit-user/:path*",
+    "/",
+    "/login",
+    "/403",
+    "/404",
   ],
 };

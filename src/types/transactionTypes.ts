@@ -60,6 +60,7 @@ export interface IOutlet {
   address: string;
   phone_number: string;
   migration_id: number;
+  npwp: string;
 }
 
 export interface IPaymentMethod {
@@ -79,7 +80,7 @@ export interface IParamTransaction {
   end_date?: string;
   limit: number;
   page: number;
-  outlet_id?: number ;
+  outlet_id?: number;
   payment_method?: string;
   type?: string;
 }
@@ -95,4 +96,3 @@ export interface IDeleteMultiTransaction {
     payment_method?: number; // optional
   };
 }
-

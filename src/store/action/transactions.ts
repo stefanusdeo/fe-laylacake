@@ -8,6 +8,9 @@ import {
 import { globalError } from "@/utils/globalErrorAxios";
 import { useTransactionStore } from "../hooks/useTransactions";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { th } from "date-fns/locale";
+import { isAxiosError } from "axios";
 
 const { base, migrate, multiDelete, print } = endpoint.transactions;
 
@@ -77,11 +80,42 @@ export const migrateTransactions = async (body: IMigrateTransactionBody) => {
     const result = response.data;
     const resp = {
       status: response.status,
-      message: result.message,
-      data: null,
+      message: result.data.status,
+      data: { id: result.data.id },
     };
+    localStorage.setItem("tiketId", result.data.id);
     return resp;
   } catch (error) {
+     if (isAxiosError(error)) {
+       const errorResponse = error.response?.data;
+       return errorResponse;
+     } else {
+       return error;
+     }
+  }
+};
+
+export const checkMigration = async () => {
+  try {
+    const tiketId = localStorage.getItem("tiketId");
+    if (!tiketId) {
+      toast.error("Ticket not found");
+      throw new Error("Ticket not found");
+    }
+    const response = await API.get(`${migrate}/${tiketId}`);
+    const result = response.data;
+    const resp = {
+      status: result.data.code,
+      message: result.data.status,
+      data: null,
+    };
+    if (result.data.code === 200) {
+      localStorage.removeItem("tiketId");
+      useTransactionStore.getState().setStatusMigration(false);
+    }
+    return resp;
+  } catch (error) {
+    localStorage.removeItem("tiketId");
     globalError(error);
   }
 };
@@ -111,16 +145,6 @@ export const deleteMultiTrx = async (body: IDeleteMultiTransaction) => {
       data: null,
     };
     return resp;
-  } catch (error) {
-    globalError(error);
-  }
-};
-
-export const printTransaction = async (trxId: number) => {
-  try {
-    const response = await API.get(`${print}/${trxId}`);
-    const result = response.data;
-    return result;
   } catch (error) {
     globalError(error);
   }

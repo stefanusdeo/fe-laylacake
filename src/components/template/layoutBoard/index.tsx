@@ -7,12 +7,16 @@ import { useRouter } from 'next/router'
 import { useAuthStore } from '@/store/hooks/useAuth'
 import { useProfileStore } from '@/store/hooks/useProfile'
 import { getProfile } from '@/store/action/profile'
+import { useTransactionStore } from '@/store/hooks/useTransactions'
+import { toast } from 'sonner'
+import { checkMigration } from '@/store/action/transactions'
 
 function LayoutBoard({ children }: { children: React.ReactNode }) {
     const router = useRouter()
+    const { profile } = useProfileStore()
+
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
-    const { profile } = useProfileStore()
     async function fetchProfile() {
         try {
             await getProfile()
@@ -20,6 +24,7 @@ function LayoutBoard({ children }: { children: React.ReactNode }) {
             console.error('Failed to fetch profile:', error)
         }
     }
+
     useEffect(() => {
         if (profile) return
         fetchProfile()

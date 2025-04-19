@@ -1,210 +1,142 @@
-import type React from "react"
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
-import { format, parseISO } from "date-fns"
 import type { ITransactionDetail } from "@/types/transactionTypes"
+import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer"
+import { format, parseISO } from "date-fns"
+import type React from "react"
 
-// Create styles
 const styles = StyleSheet.create({
     page: {
-        padding: 5,
-        fontFamily: "Helvetica",
-        fontSize: 8,
-        width: 226.8,  // Ukuran A7
+        padding: 4,
+        fontSize: 9, // Increased from 7 to 9
+        fontFamily: "Times-Roman",
+        width: 136, // 48mm ≈ 136pt
     },
-    header: {
-        marginBottom: 5,
+    center: {
         textAlign: "center",
     },
-    title: {
-        fontSize: 10,
+    bold: {
         fontWeight: "bold",
-        textTransform: "uppercase",
     },
-    address: {
-        fontSize: 7,
-        marginTop: 1,
-    },
-    infoSection: {
-        borderTop: "1 dotted #000",
-        borderBottom: "1 dotted #000",
-        paddingVertical: 4,
-        marginBottom: 5,
-        flexDirection: "row",
-        flexWrap: "wrap",
-    },
-    infoRow: {
-        flexDirection: "row",
-        width: "100%",
+    section: {
         marginBottom: 2,
     },
-    infoLabel: {
-        width: "40%",
-        fontSize: 7,
-    },
-    infoValue: {
-        width: "60%",
-        fontSize: 7,
-        textAlign: "right",
-    },
-    sectionTitle: {
-        fontSize: 8,
-        fontWeight: "bold",
-        marginBottom: 3,
-        textTransform: "uppercase",
-    },
-    itemRow: {
-        marginBottom: 4,
-    },
-    itemHeader: {
+    row: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
+        gap: 3,
+        textAlign: "left", // Added center alignment for all rows
     },
-    itemName: {
-        fontSize: 8,
-        fontWeight: "bold",
-    },
-    itemCalc: {
-        fontSize: 7,
-        textAlign: "right",
-    },
-    itemPrice: {
-        fontSize: 7,
-    },
-    itemDiscount: {
-        fontSize: 6,
-        color: "#666",
-        marginLeft: 5,
-    },
-    summarySection: {
-        borderTop: "1 dotted #000",
-        paddingTop: 5,
-        marginBottom: 5,
-    },
-    totalRow: {
+    product: {
         flexDirection: "row",
-        justifyContent: "space-between",
-        borderTop: "1 dotted #000",
-        borderBottom: "1 dotted #000",
-        paddingVertical: 3,
-        marginVertical: 3,
-        fontWeight: "bold",
+        justifyContent: "center",
+        gap: 1,
+        textAlign: "left", // Added center alignment for all rows
     },
-    footer: {
-        borderTop: "1 dotted #000",
-        paddingTop: 4,
+    hr: {
+        borderBottomWidth: 0.5,
+        marginVertical: 2,
+    },
+    smallText: {
+        fontSize: 8, // Increased from 6 to 8
+    },
+    title: {
+        fontSize: 12, // Increased from 9 to 12
+        fontWeight: "bold",
         textAlign: "center",
-    },
-    footerText: {
-        fontSize: 8,
-        fontWeight: "bold",
-    },
-    footerSubText: {
-        fontSize: 6,
-        marginTop: 2,
+        marginBottom: 2,
     },
 })
 
 interface TransactionPDFProps {
     transaction: ITransactionDetail
-    forPrint?: boolean
 }
 
-const TransactionPDF: React.FC<TransactionPDFProps> = ({ transaction, forPrint = false }) => {
-    // Format date
-    const formattedDate = format(parseISO(transaction.created_at), "dd MMM yyyy")
-
-    // Calculate total discount
+const TransactionPDF: React.FC<TransactionPDFProps> = ({ transaction }) => {
+    const formattedDate = format(parseISO(transaction.created_at), "yyyy-MM-dd")
     const totalDiscount = transaction.transaction_items.reduce((sum, item) => sum + item.discount_nominal, 0)
-
-    // Calculate total items
-    const totalItems = transaction.transaction_items.reduce((sum, item) => sum + item.quantity, 0)
 
     return (
         <Document>
-            <Page size={"A7"} style={styles.page}>
+            <Page size={{ width: 136, height: 500 }} style={styles.page}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <Text style={styles.title}>{transaction.outlet.name}</Text>
-                    <Text style={styles.address}>{transaction.outlet.address}</Text>
+                <View style={[styles.section, { marginBottom: 5 }]}>
+                    <Text style={styles.title}>Layla Cake</Text>
+                    <Text style={[styles.bold, styles.center]}>{transaction.outlet.npwp}</Text>
                 </View>
 
-                {/* Transaction Info */}
-                <View style={styles.infoSection}>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Receipt:</Text>
-                        <Text style={styles.infoValue}>{transaction.code}</Text>
+                {/* Info */}
+                <View style={styles.section}>
+                    <View style={styles.row}>
+                        <Text style={{ width: "30%", textAlign: "center", }}>Code</Text>
+                        <Text style={{ width: "70%", textAlign: "center", }}>{transaction.code}</Text>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Date:</Text>
-                        <Text style={styles.infoValue}>{formattedDate}</Text>
+                    <View style={styles.row}>
+                        <Text style={{ width: "30%", textAlign: "center", }}>Date</Text>
+                        <Text style={[styles.bold, { width: "70%", textAlign: "center", }]}>
+                            {formattedDate} ({transaction.time || ""})
+                        </Text>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Time:</Text>
-                        <Text style={styles.infoValue}>{transaction.time}</Text>
+                    <View style={styles.row}>
+                        <Text style={{ width: "30%", textAlign: "center", }}>Outlet</Text>
+                        <Text style={{ width: "70%", textAlign: "center", }}>{transaction.outlet.name}</Text>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Cashier:</Text>
-                        <Text style={styles.infoValue}>{transaction.staff.name}</Text>
+                    <View style={styles.row}>
+                        <Text style={{ width: "30%", textAlign: "center", }}>Telp</Text>
+                        <Text style={{ width: "70%", textAlign: "center", }}>{transaction.outlet.phone_number}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={{ width: "30%", textAlign: "center", }}>Staff</Text>
+                        <Text style={{ width: "70%", textAlign: "center", }}>{transaction.staff.name}</Text>
                     </View>
                 </View>
 
-                {/* Items */}
-                <View>
-                    <Text style={styles.sectionTitle}>Items</Text>
-                    {transaction.transaction_items.map((item, index) => (
-                        <View key={index} style={styles.itemRow}>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemName}>{item.item_name}</Text>
-                                <Text style={styles.itemCalc}>
-                                    {item.quantity} x {item.price.toLocaleString("id-ID")}
-                                </Text>
-                            </View>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemPrice}>{item.sub_total.toLocaleString("id-ID")}</Text>
-                                {item.discount_nominal > 0 && (
-                                    <Text style={styles.itemDiscount}>Discount: -{item.discount_nominal.toLocaleString("id-ID")}</Text>
-                                )}
-                            </View>
+                <View style={styles.hr} />
+
+                {/* Items List */}
+                <View style={styles.section}>
+                    {transaction.transaction_items.map((item, i) => (
+                        <View key={i} style={styles.product}>
+                            <Text style={{ width: "65%", textAlign: "center", }}>{item.item_name}</Text>
+                            <Text style={{ width: "10%", textAlign: "center", }}>{item.quantity}</Text>
+                            <Text style={{ width: "25%", textAlign: "right", }}>
+                                {(item.price - (item.discount_nominal || 0)).toLocaleString("id-ID")}
+                            </Text>
                         </View>
                     ))}
                 </View>
 
+                <View style={styles.hr} />
+
                 {/* Summary */}
-                <View style={styles.summarySection}>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Items:</Text>
-                        <Text style={styles.infoValue}>{totalItems}</Text>
+                <View style={styles.section}>
+                    <View style={styles.row}>
+                        <Text style={{ width: "65%", textAlign: "center", }}>Potongan</Text>
+                        <Text style={{ width: "35%", textAlign: "center", }}>{totalDiscount.toLocaleString("id-ID")}</Text>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Subtotal:</Text>
-                        <Text style={styles.infoValue}>{(transaction.total_price + totalDiscount).toLocaleString("id-ID")}</Text>
+                    <View style={styles.row}>
+                        <Text style={{ width: "65%", textAlign: "center", }}>Total</Text>
+                        <Text style={{ width: "35%", textAlign: "center", }}>{transaction.total_price.toLocaleString("id-ID")}</Text>
                     </View>
-                    {totalDiscount > 0 && (
-                        <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Discount:</Text>
-                            <Text style={styles.infoValue}>-{totalDiscount.toLocaleString("id-ID")}</Text>
-                        </View>
-                    )}
+                </View>
 
-                    <View style={styles.totalRow}>
-                        <Text>TOTAL</Text>
-                        <Text>Rp {transaction.total_price.toLocaleString("id-ID")}</Text>
-                    </View>
+                <View style={styles.hr} />
 
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>{transaction.payment_method.name}:</Text>
-                        <Text style={styles.infoValue}>{transaction.pay.toLocaleString("id-ID")}</Text>
+                {/* Payment */}
+                <View style={styles.section}>
+                    <View style={styles.row}>
+                        <Text style={{ width: "65%", textAlign: "center", }}>Uang diterima</Text>
+                        <Text style={{ width: "35%", textAlign: "center", }}>{transaction.pay.toLocaleString("id-ID")}</Text>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Change:</Text>
-                        <Text style={styles.infoValue}>{transaction.money_change.toLocaleString("id-ID")}</Text>
+                    <View style={styles.row}>
+                        <Text style={{ width: "65%", textAlign: "center", }}>Kembali</Text>
+                        <Text style={[styles.bold, { width: "35%", textAlign: "center", }]}>{transaction.money_change.toLocaleString("id-ID")}</Text>
                     </View>
                 </View>
 
                 {/* Footer */}
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Thank you for your purchase</Text>
-                    <Text style={styles.footerSubText}>* Please keep this receipt for returns *</Text>
+                <View style={[styles.section, { marginTop: 10, }]}>
+                    <Text>
+                        Metode : <Text style={styles.bold}>{transaction.payment_method.name}</Text>
+                    </Text>
                 </View>
             </Page>
         </Document>

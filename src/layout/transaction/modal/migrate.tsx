@@ -8,6 +8,7 @@ import { getPaymentInternal } from '@/store/action/payment-method'
 import { migrateTransactions } from '@/store/action/transactions'
 import { useOutletStore } from '@/store/hooks/useOutlets'
 import { usePaymentStore } from '@/store/hooks/usePayment'
+import { useTransactionStore } from '@/store/hooks/useTransactions'
 import { OutletData } from '@/types/outletTypes'
 import { PaymentMethodData } from '@/types/paymentTypes'
 import { IMigrateTransactionBody } from '@/types/transactionTypes'
@@ -66,19 +67,30 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
                 outlet_id: Number(outletDestinationSelect),
                 payment_method: Number(methodSelect)
             }
-            migrateTransactions(body).then((res) => {
-                if (res?.status === 200) {
-                    resolve(res)
-                    onClose(false)
-                } else {
-                    reject(res)
-                }
-            })
+            migrateTransactions(body)
+                .then((res) => {
+                    console.log(res)
+                    if (res?.status === 200) {
+                        resolve(res)
+                        useTransactionStore.getState().setStatusMigration(true)
+                        onClose(false)
+                    } else {
+                        // Properly format the error object before rejecting
+                        const errorMessage = res?.message || 'Unknown error occurred'
+                        reject({ message: errorMessage, originalResponse: res })
+                    }
+                })
+                .catch((err) => {
+                    // Handle network or unexpected errors
+                    const errorMessage = err?.message || 'Transaction transfer failed: Please try again'
+                    reject({ message: errorMessage, originalError: err })
+                })
         })
+        
         toast.promise(resp, {
-            loading: "Transferring transactions...",
-            success: "Transactions transferred successfully.",
-            error: (err: any) => `Failed to transfer transactions: ${err?.message || 'Please try again.'}`
+            loading: "Processing transaction transfer...",
+            success: "Transfer request sent successfully, now being processed...",
+            error: (err: any) => `${err?.message || 'Transaction transfer failed: Please try again.'}`
         });
     }
 
