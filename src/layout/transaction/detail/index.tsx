@@ -25,7 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
 import Text from "@/components/ui/text"
-import { getDetailTrx, printTransaction } from "@/store/action/transactions"
+import { getDetailTrx } from "@/store/action/transactions"
 import { useTransactionStore } from "@/store/hooks/useTransactions"
 import type { ITransactionDetail, ITransactionItem } from "@/types/transactionTypes"
 import { useRouter } from "next/navigation"
@@ -131,11 +131,7 @@ export default function TransactionDetails() {
 
         setIsPrinting(true)
 
-        try {
-            // First call the API to log the print action or send to a physical printer if needed
-            const res = await printTransaction(trxId)
-
-            // Generate PDF with react-pdf
+        try {            // Generate PDF with react-pdf
             const pdfDoc = <TransactionPDF transaction={transactionData} />
 
             // Generate blob
@@ -152,6 +148,9 @@ export default function TransactionDetails() {
                     setTimeout(() => {
                         printWindow.print()
                         setIsPrinting(false)
+                        toast.success("Transaction sent to printer successfully", {
+                            duration: 5000,
+                        })
                     }, 500)
                 }
             } else {
@@ -159,13 +158,11 @@ export default function TransactionDetails() {
                 URL.revokeObjectURL(blobUrl)
                 window.print()
                 setIsPrinting(false)
-            }
-
-            if (res?.status === 200) {
-                toast.success("Transaction printed successfully", {
+                toast.success("Transaction sent to printer successfully", {
                     duration: 5000,
                 })
             }
+
         } catch (error) {
             setIsPrinting(false)
             toast.error("Failed to print transaction", {
