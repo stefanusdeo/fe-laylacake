@@ -1,3 +1,4 @@
+import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccessOultetUser'
 import TrigerSidebar from '@/components/organizm/trigerSidebar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,8 @@ function MainComponent({ children }: { children: React.ReactNode }) {
     const { profile } = useProfileStore()
     const { widthDevice } = useWithDevice()
 
+    const [outletNow, setOutletNow] = React.useState<any>(null)
+
     const nameUser = getInitialsName(profile?.name || "")
 
     const widthTab = widthDevice >= 768 && widthDevice <= 832
@@ -23,9 +26,10 @@ function MainComponent({ children }: { children: React.ReactNode }) {
     const styleShape = "before:bg-white  before:size-2.5 before:rotate-45 before:absolute before:-top-1.5 before:right-3 before:border-l before:border-t before:border-border"
     return (
         <main className='relative w-full overflow-hidden'>
-            <header className={` ${open  ? "w-[calc(100%-18rem)]" : "w-[calc(100%-4rem)]"} ${isMobile && "w-full"} z-50 backdrop-blur-sm px-4 md:px-10 py-5 fixed flex justify-between items-center gap-10`}>
+            <header className={` ${open ? "w-[calc(100%-18rem)]" : "w-[calc(100%-4rem)]"} ${isMobile && "w-full"} z-50 backdrop-blur-sm px-4 md:px-10 py-5 fixed flex justify-between items-center gap-10`}>
                 <TrigerSidebar />
-                <div>
+                <div className='flex gap-3 items-center'>
+                    <SearchAccessOutlets setValue={setOutletNow} value={outletNow} />
                     <Popover>
                         <PopoverTrigger>
                             <Avatar className='size-10'>

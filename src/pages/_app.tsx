@@ -1,10 +1,9 @@
 import LayoutBoard from "@/components/template/layoutBoard";
 import { Toaster } from "@/components/ui/sonner";
-import { checkMigration } from "@/store/action/transactions";
+import { checkMigration, getListTransactions } from "@/store/action/transactions";
 import { useAuthStore } from "@/store/hooks/useAuth";
 import { useTransactionStore } from "@/store/hooks/useTransactions";
 import "@/styles/globals.css";
-import { el } from "date-fns/locale";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -24,10 +23,13 @@ export default function App({ Component, pageProps }: AppProps) {
       const checkResult = await checkMigration();
       if (checkResult?.status === 200) {
         clearInterval(intervalCheking);
+        localStorage.removeItem("tiketId");
+        getListTransactions({ page: 1, limit: 10 })
         toast.success("Transfer is completed.");
       } else if (checkResult?.status === 102) {
         toast.info(checkResult?.message || "Transfer is still in progress. Please wait.");
       } else {
+        localStorage.removeItem("tiketId");
         toast.error(checkResult?.message || "Failed to check transfer status. Please try again.");
         clearInterval(intervalCheking);
       }

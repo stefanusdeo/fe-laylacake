@@ -4,7 +4,7 @@ import { IParamUsers } from "@/types/userTypes";
 import { isAxiosError } from "axios";
 import { useUserStore } from "../hooks/useUsers";
 
-const { user, role, deleteAll } = endpoint.user_management;
+const { user, role, deleteAll, accessOutlet } = endpoint.user_management;
 
 export type UserFormBody = {
   email: string;
@@ -130,6 +130,26 @@ export const updateUser = async (userId: number, body: UserFormBody) => {
       message: response.data.message,
       data: null,
     };
+    return result;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
+  }
+};
+
+export const getAccessOutlet = async () => {
+  try {
+    const response = await API.get(accessOutlet);
+    const result = {
+      status: response.status,
+      message: response.data.message,
+      data: response.data.data,
+    };
+    useUserStore.getState().setMyOutlet(result.data);
     return result;
   } catch (error) {
     if (isAxiosError(error)) {

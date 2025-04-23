@@ -1,4 +1,3 @@
-
 export const endpoint = {
   auth: {
     login: "/auth/login",
@@ -17,6 +16,7 @@ export const endpoint = {
     role: "/roles",
     user: "/users",
     deleteAll: "/users/delete-bulk",
+    accessOutlet: "/users/outlets",
   },
   payment_method: {
     external: "/external/payment-methods",
@@ -30,6 +30,12 @@ export const endpoint = {
     multiDelete: "/transactions/delete-bulk",
     print: "/transactions/print",
     create_manual: "/transactions-manual",
+  },
+  cashier: {
+    base: "/transactions",
+    manual: "/transactions-manual",
+    product: "/products",
+    discount: "/discounts/events",
   },
 };
 

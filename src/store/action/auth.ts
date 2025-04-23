@@ -40,6 +40,7 @@ export const logoutAccount = async () => {
   useProfileStore.getState().resetProfile();
   Cookie.remove("access_token");
   Cookie.remove("role");
+  Cookie.remove("tiketId")
   delete API.defaults.headers.common["Authorization"];
 };
 
