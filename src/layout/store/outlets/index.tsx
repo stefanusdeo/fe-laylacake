@@ -21,10 +21,10 @@ function Outlets() {
                     <LiaStoreAltSolid /> My Outlets
                 </TabsTrigger>
             </TabsList>
-            <TabsContent className='my-5 md:my-10 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'external'}>
+            <TabsContent className='my-5 md:my-8 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'external'}>
                 <OutletExternal/>
             </TabsContent>
-            <TabsContent className='my-5 md:my-10 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'internal'}>
+            <TabsContent className='my-5 md:my-8 p-2.5 md:p-5 rounded-lg shadow-md shadow-accent border border-accent' value={'internal'}>
                 <OutletInternal/>
             </TabsContent>
         </Tabs>

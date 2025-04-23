@@ -1,7 +1,6 @@
 import { getFilteredMenu, MenuItem, MenuSection } from '@/constant/base'
-import { cn } from '@/lib/utils'
+import { cn, getInitialsName } from '@/lib/utils'
 import { useProfileStore } from '@/store/hooks/useProfile'
-import { getInitialsName } from '@/utils/getInitialName'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'

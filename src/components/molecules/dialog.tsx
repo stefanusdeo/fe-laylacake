@@ -22,9 +22,9 @@ type DialogProps = {
 function Dialog({ children, onClose, open, title, description, className }: DialogProps) {
     return (
         <Base onOpenChange={onClose} open={open} >
-            <DialogContent className={cn("w-auto", className)} style={{ maxHeight: "85vh" }}>
-                <DialogTitle className="sr-only"/>
-                <DialogDescription className="sr-only"/>
+            <DialogContent className={cn("w-auto", className)}>
+                <DialogTitle className="sr-only" />
+                <DialogDescription className="sr-only" />
                 {title || description && (
                     <DialogHeader>
                         <DialogTitle>{title}</DialogTitle>
@@ -36,7 +36,7 @@ function Dialog({ children, onClose, open, title, description, className }: Dial
                         }
                     </DialogHeader>
                 )}
-                <div>
+                <div className="overflow-y-auto px-2 scrollbar" style={{ maxHeight: "calc(85svh - 120px)" }}>
                     {children}
                 </div>
             </DialogContent>

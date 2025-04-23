@@ -35,3 +35,19 @@ export const useWithDevice = () => {
 
   return { widthDevice };
 };
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+export function getInitialsName(fullName: string | undefined = "Layla Cake") {
+  const words = fullName.trim().split(" ");
+  const firstInitial = words[0].charAt(0);
+  const lastInitial = words[words.length - 1].charAt(0);
+  return firstInitial + lastInitial;
+}
