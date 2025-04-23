@@ -1,7 +1,7 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
 import { IParamUsers } from "@/types/userTypes";
-import { globalError } from "@/utils/globalErrorAxios";
+import { isAxiosError } from "axios";
 import { useUserStore } from "../hooks/useUsers";
 
 const { user, role, deleteAll } = endpoint.user_management;
@@ -33,7 +33,12 @@ export const getListUsers = async (params: IParamUsers) => {
     useUserStore.getState().setUsers(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -47,7 +52,12 @@ export const createUsers = async (body: UserFormBody) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -65,7 +75,12 @@ export const deleteAllUsers = async (userIds: number[], type: string) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -79,7 +94,12 @@ export const deleteUser = async (userId: number) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -93,7 +113,12 @@ export const getDetailUser = async (userId: number) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -107,6 +132,11 @@ export const updateUser = async (userId: number, body: UserFormBody) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };

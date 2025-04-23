@@ -1,8 +1,8 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
-import { useOutletStore } from "../hooks/useOutlets";
-import { globalError } from "@/utils/globalErrorAxios";
 import { IParamsOutlet } from "@/types/outletTypes";
+import { isAxiosError } from "axios";
+import { useOutletStore } from "../hooks/useOutlets";
 
 const { external, internal, multiDelete } = endpoint.outlet;
 
@@ -20,7 +20,12 @@ export const migrateOutlets = async (outlietId: string[] | number[]) => {
     };
     return resp;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -42,7 +47,12 @@ export const getOutletsExternal = async (params: IParamsOutlet) => {
     useOutletStore.getState().setOutletExternal(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -62,7 +72,12 @@ export const getOutletsInternal = async (params: IParamsOutlet) => {
     useOutletStore.getState().setOutletInternal(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -76,7 +91,12 @@ export const deletedSpesificOutlets = async (outletId: number) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -95,6 +115,11 @@ export const deletedMultipleOutlets = async (outletId: number[], type: string) =
     console.log(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };

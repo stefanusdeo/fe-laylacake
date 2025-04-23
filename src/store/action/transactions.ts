@@ -5,12 +5,10 @@ import {
   IMigrateTransactionBody,
   IParamTransaction,
 } from "@/types/transactionTypes";
-import { globalError } from "@/utils/globalErrorAxios";
-import { useTransactionStore } from "../hooks/useTransactions";
+import { isAxiosError } from "axios";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { th } from "date-fns/locale";
-import { isAxiosError } from "axios";
+import { useTransactionStore } from "../hooks/useTransactions";
 
 const { base, migrate, multiDelete, print } = endpoint.transactions;
 
@@ -51,7 +49,12 @@ export const getListTransactions = async (params: IParamTransaction) => {
     useTransactionStore.getState().setTransactions(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -65,7 +68,12 @@ export const getDetailTrx = async (trxId: number) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -86,12 +94,12 @@ export const migrateTransactions = async (body: IMigrateTransactionBody) => {
     localStorage.setItem("tiketId", result.data.id);
     return resp;
   } catch (error) {
-     if (isAxiosError(error)) {
-       const errorResponse = error.response?.data;
-       return errorResponse;
-     } else {
-       return error;
-     }
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -116,7 +124,12 @@ export const checkMigration = async () => {
     return resp;
   } catch (error) {
     localStorage.removeItem("tiketId");
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -131,7 +144,12 @@ export const delTransaction = async (trxId: number) => {
     };
     return resp;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -146,6 +164,11 @@ export const deleteMultiTrx = async (body: IDeleteMultiTransaction) => {
     };
     return resp;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };

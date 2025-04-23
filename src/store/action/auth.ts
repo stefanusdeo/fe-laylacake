@@ -1,12 +1,11 @@
 // actions/auth.ts
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
-import { useAuthStore } from "../hooks/useAuth";
-import { useUserStore } from "../hooks/useUsers";
-import { useProfileStore } from "../hooks/useProfile";
-import { globalError } from "@/utils/globalErrorAxios";
 import { isAxiosError } from "axios";
 import Cookie from "js-cookie";
+import { useAuthStore } from "../hooks/useAuth";
+import { useProfileStore } from "../hooks/useProfile";
+import { useUserStore } from "../hooks/useUsers";
 
 export const loginAccount = async (email: string, password: string) => {
   try {
@@ -40,7 +39,7 @@ export const logoutAccount = async () => {
   useUserStore.getState().resetUser();
   useProfileStore.getState().resetProfile();
   Cookie.remove("access_token");
-  Cookie.remove("role")
+  Cookie.remove("role");
   delete API.defaults.headers.common["Authorization"];
 };
 
@@ -58,6 +57,11 @@ export const refreshTokenAccount = async () => {
 
     return result.message;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };

@@ -1,7 +1,7 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
-import { globalError } from "@/utils/globalErrorAxios";
 import { IParamsPayment } from "@/types/paymentTypes";
+import { isAxiosError } from "axios";
 import { usePaymentStore } from "../hooks/usePayment";
 
 const { external, internal, multiDelete } = endpoint.payment_method;
@@ -20,7 +20,12 @@ export const migratePayment = async (paymentId: string[] | number[]) => {
     };
     return resp;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -42,7 +47,12 @@ export const getPaymentExternal = async (params: IParamsPayment) => {
     usePaymentStore.getState().setPaymentExternal(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -62,7 +72,12 @@ export const getPaymentInternal = async (params: IParamsPayment) => {
     usePaymentStore.getState().setPaymentInternal(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -76,7 +91,12 @@ export const deletedSpesificPaymentMethod = async (paymentMethodId: number) => {
     };
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -95,6 +115,11 @@ export const deletedMultiplePaymentMethods = async (paymentMethodId: number[], t
     console.log(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };

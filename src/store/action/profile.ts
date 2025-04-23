@@ -1,8 +1,8 @@
 import { API } from "@/config/axios";
 import { endpoint } from "@/constant/endpoint";
-import { useProfileStore } from "../hooks/useProfile";
-import { globalError } from "@/utils/globalErrorAxios";
+import { isAxiosError } from "axios";
 import Cookie from "js-cookie";
+import { useProfileStore } from "../hooks/useProfile";
 
 const { profile, password } = endpoint;
 
@@ -19,7 +19,12 @@ export const getProfile = async () => {
     useProfileStore.getState().setProfile(result);
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -30,7 +35,12 @@ export const updateProfile = async (body: BodyProfile) => {
     useProfileStore.getState().setProfile(result);
     return response.data;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
 
@@ -40,6 +50,11 @@ export const updatePassword = async (body: any) => {
     const result = response.data;
     return result;
   } catch (error) {
-    globalError(error);
+    if (isAxiosError(error)) {
+      const errorResponse = error.response?.data;
+      return errorResponse;
+    } else {
+      return error;
+    }
   }
 };
