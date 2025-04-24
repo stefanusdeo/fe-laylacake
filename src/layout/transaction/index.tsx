@@ -32,6 +32,9 @@ import Cookie from "js-cookie"
 import { useProfileStore } from '@/store/hooks/useProfile';
 import { TbListDetails } from 'react-icons/tb';
 import Breadcrums from '@/components/molecules/breadcrums';
+import { useUserStore } from '@/store/hooks/useUsers';
+import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccessOultetUser';
+import { getAccessOutlet } from '@/store/action/user-management';
 
 export default function Transactions() {
   const { profile } = useProfileStore()
@@ -41,6 +44,7 @@ export default function Transactions() {
 
   const { outletInternal } = useOutletStore()
   const { paymentInternal } = usePaymentStore()
+  const { myOutlet } = useUserStore()
   const { transactions, setIdTransaction } = useTransactionStore()
 
   const [page, setPage] = useState(1)
@@ -62,7 +66,7 @@ export default function Transactions() {
   const isDateRangeComplete = dateRange?.from && dateRange?.to
 
   const [outletSelect, setOutletSelect] = useState<string>("")
-  const [outletOptions, setOutletOptions] = useState<SelectOption[]>(outletInternal?.data?.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+  const [outletOptions, setOutletOptions] = useState<SelectOption[]>(myOutlet?.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })) ?? [])
   const [isLoadingOutlet, setIsLoadingOutlet] = useState(false)
 
   const [methodSelect, setMethodSelect] = useState<string>("")
@@ -72,7 +76,7 @@ export default function Transactions() {
   const fetchOutlet = async () => {
     setIsLoadingOutlet(true)
     try {
-      const res = await getOutletsInternal({ page: 0, limit: 0 })
+      const res = await getAccessOutlet()
       setOutletOptions(res.data.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })))
       setIsLoadingOutlet(false)
     }
@@ -124,7 +128,7 @@ export default function Transactions() {
 
   // fetch data filter
   useEffect(() => {
-    if (outletInternal?.data?.length === 0 || !outletInternal?.data || outletOptions.length === 0 || !outletOptions) {
+    if (myOutlet?.length === 0 || !myOutlet || outletOptions.length === 0 || !outletOptions) {
       fetchOutlet()
     }
 
@@ -142,6 +146,13 @@ export default function Transactions() {
       fetchTransactions()
     }
   }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, openModalMigrate])
+
+  useEffect(() => {
+    if (isDateRangeComplete || methodSelect || outletSelect || openModalMigrate === false) {
+      setPage(1)
+      setSelectedTrx([])
+    }
+  }, [isDateRangeComplete, methodSelect, outletSelect, openModalMigrate])
 
   const handleChecked = (id: number) => {
     setSelectedTrx((prevSelected) =>
