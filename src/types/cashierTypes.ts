@@ -31,3 +31,15 @@ export interface ICreateTransactionBody {
   discount_code?: string;
   pay: number;
 }
+export interface ICustomProduct {
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface ICreateManualTransactionBody {
+  outlet_id: number;
+  payment_method: number;
+  product: ICustomProduct;
+  pay: number;
+}

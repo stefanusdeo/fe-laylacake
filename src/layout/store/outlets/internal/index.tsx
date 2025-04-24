@@ -52,6 +52,13 @@ function OutletInternal() {
         })
     }, [page, limit, search])
 
+    useEffect(() => {
+        if (search || openModalDelete === false || openModalMultiOutlets === false ) {
+            setPage(1)
+            setSelectedOutlet([])
+        }
+    }, [search, openModalDelete, openModalMultiOutlets])
+
     const handleSearch = (value: string, filter: string) => {
         setSearchInput(value)
         setFilter(filter)

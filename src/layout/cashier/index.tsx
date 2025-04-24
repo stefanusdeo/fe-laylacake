@@ -17,7 +17,7 @@ import { PiShoppingCart } from "react-icons/pi"
 import FormManual from "./modal/FormManual"
 import SearchProduct from "./modal/searchProduct"
 import { toast } from "sonner"
-import { getDiscount } from "@/store/action/cashier"
+import { createTransaction, getDiscount } from "@/store/action/cashier"
 // Enhanced discount interface with more details
 interface IDiscount {
     productId: number
@@ -216,7 +216,23 @@ function Cashier() {
             carts: cart,
         }
 
-        console.log(bodyRequest)
+        try {
+            const resp = await createTransaction(bodyRequest)
+            if (resp.status === 200) {
+                toast.success("Transaction created successfully")
+                setCart([])
+                setCartItems([])
+                setProductDiscounts([])
+                setCartDiscount(null)
+                setPaymentMethod("")
+                setPaymentAmount(0)
+                setSelectedMember(null)
+            } else {
+                toast.error(resp.message || "Error creating transaction")
+            }
+        } catch (error) {
+            toast.error("Error creating transaction")
+        }
     }
 
     // Calculate subtotal (before any discounts)
@@ -332,6 +348,7 @@ function Cashier() {
                 }
                 return (
                     <DiscountInput
+                        className=" min-w-40"
                         value={existingDiscount?.discountCode || tempDiscountCode}
                         onChange={(e) => handleChange(e)}
                         onApply={() => handleApplyProductDiscount(id)}

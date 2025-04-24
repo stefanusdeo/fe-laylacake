@@ -65,6 +65,13 @@ function UserList() {
         })
     }, [page, limit, search, openModalDelete, openModalEdit, openModalCreate])
 
+    useEffect(() => {
+        if (search || openModalDelete === false || openModalEdit === false || openModalCreate === false) {
+            setPage(1)
+            setSelectedUser([])
+        }
+    }, [search, openModalDelete, openModalEdit, openModalCreate])
+
     const handleSearch = (value: string, filter: string) => {
         setSearchInput(value)
         setFilter(filter)
