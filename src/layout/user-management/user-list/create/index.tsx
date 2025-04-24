@@ -39,7 +39,7 @@ async function handleCreateUser(prevState: State, formData: FormData): Promise<S
             confirm_password: formData.get("PasswordConfirmation") as string,
         }
 
-        if (data.role_id === 3) {
+        if (data.role_id === 3 || data.role_id === 2) {
             const outletIdsStr = formData.get("outlet_ids") as string;
             data["outlet_ids"] = outletIdsStr ? JSON.parse(outletIdsStr) as number[] : undefined;
         }
@@ -94,6 +94,9 @@ function CreatedUser() {
             form.reset()
         }
     }, [state.success])
+
+    console.log(form.watch("role"))
+
     return (
         <div className="flex flex-col gap-5 md:gap-7">
             <div className="flex flex-col gap-3">
@@ -209,8 +212,8 @@ function CreatedUser() {
                             />
                         </div>
 
-                        {/* Outlet Section (role == 3) */}
-                        {form.watch("role") === "3" && (
+                        {/* Outlet Section (role == 3 , 2) */}
+                        {(form.watch("role") === "2" || form.watch("role") === "3") && (
                             <div className="my-6 border-t border-slate-300 py-5 flex flex-col gap-2">
                                 <div className="flex flex-wrap gap-3 justify-between items-center">
                                     <Text variant="span" className="font-semibold">
@@ -264,7 +267,7 @@ function CreatedUser() {
                         {/* Submit Button */}
                         <div className="flex justify-end items-center mt-6">
                             <Button
-                                disabled={state.loading || !form.formState.isValid}
+                                disabled={state.loading || !form.formState.isValid || ((form.watch("role") === "2" || form.watch("role") === "3") && outlets.length === 0)}
                                 type="submit"
                                 className="w-full sm:w-fit flex items-center justify-center"
                             >

@@ -62,7 +62,7 @@ function EditUser() {
             confirm_password: form.getValues("PasswordConfirmation") as string,
         }
 
-        if (data.role_id === 3) {
+        if (data.role_id === 3 || data.role_id === 2) {
             data["outlet_ids"] = form.getValues("outlet_ids") as number[];
         }
 
@@ -184,10 +184,10 @@ function EditUser() {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                <FormField control={form.control} name="role" render={({ field }) => (
+                                <FormField disabled control={form.control} name="role" render={({ field }) => (
                                     <FormItem className='w-full'>
                                         <FormLabel className="text-sm md:text-base">Role</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
+                                        <Select disabled onValueChange={field.onChange} value={field.value}>
                                             <FormControl className='w-full text-sm md:text-base'>
                                                 <SelectTrigger className="text-sm md:text-base">
                                                     <SelectValue placeholder="Select a role user" />
@@ -223,7 +223,7 @@ function EditUser() {
                                 )} />
                             </div>
 
-                            {form.watch("role") === "3" && (
+                            {form.watch("role") !== "1" && (
                                 <div className='my-6 border-t border-slate-300 py-4 sm:py-5 flex flex-col gap-3 sm:gap-4'>
                                     <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4'>
                                         <span className='font-semibold text-sm md:text-base'>My Outlets</span>
@@ -275,7 +275,7 @@ function EditUser() {
 
                             <div className='flex justify-end items-center mt-6'>
                                 <Button
-                                    disabled={!isFormChanged}
+                                    disabled={!isFormChanged || ((form.watch("role") === "2" || form.watch("role") === "3") && outlets.length === 0)}
                                     type="submit"
                                     className="w-full md:w-fit flex items-center justify-center text-sm md:text-base px-4 py-2"
                                 >
