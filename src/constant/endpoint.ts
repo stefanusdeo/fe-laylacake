@@ -35,7 +35,7 @@ export const endpoint = {
     base: "/transactions",
     manual: "/transactions-manual",
     product: "/products",
-    discount: "/discounts/events",
+    discount: "/discounts/events/apply",
   },
 };
 

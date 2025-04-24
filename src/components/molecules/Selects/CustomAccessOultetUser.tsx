@@ -17,13 +17,12 @@ export function SearchAccessOutlets({ value, setValue }: ISearchOutlets) {
     const [outletSelect, setOutletSelect] = useState<string>("")
     const [isLoadingOutlet, setIsLoadingOutlet] = useState(false)
 
-    console.log(outletSelect)
-
     const fetchOutlet = async () => {
         setIsLoadingOutlet(true)
         try {
             const res = await getAccessOutlet()
             setOutletOptions(res.data.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })))
+            setOutletSelect(res.data[0].id.toString())
             setIsLoadingOutlet(false)
         }
         catch (err) {
@@ -38,7 +37,7 @@ export function SearchAccessOutlets({ value, setValue }: ISearchOutlets) {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("outletId", outletSelect)
+        localStorage.setItem("outletId", outletSelect[0])
     }, [outletSelect])
 
     return (

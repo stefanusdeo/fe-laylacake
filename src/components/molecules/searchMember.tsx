@@ -18,6 +18,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import ClipLoader from "react-spinners/ClipLoader"
 
 interface MemberData {
     id: number
@@ -96,8 +97,7 @@ export function SearchMember({
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center gap-2 py-3 px-4 text-sm md:text-base">
-                                <span className="animate-spin rounded-full border-2 border-gray-300 border-t-transparent h-4 w-4" /> 
-                                Searching member...
+                                <ClipLoader loading={isLoading} size={15} /> Please wait...
                             </div>
                         ) : members.length === 0 ? (
                             <CommandEmpty className="text-sm md:text-base p-3">Member not found.</CommandEmpty>

@@ -13,7 +13,7 @@ const DiscountInput = forwardRef<HTMLInputElement, DiscountInputProps>(({ classN
     const disabled = props.value === "" || props.value === undefined || props.disabled
 
     const handleApply = () => {
-        if (onApply && props.value && !disabled) {
+        if (onApply) {
             onApply(props.value as string)
         }
     }
@@ -27,7 +27,7 @@ const DiscountInput = forwardRef<HTMLInputElement, DiscountInputProps>(({ classN
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-orange-400 hover:text-orange-500 font-medium"
                 onClick={handleApply}
-                disabled={disabled}
+                // disabled={disabled}
             >
                 Apply
             </Button>

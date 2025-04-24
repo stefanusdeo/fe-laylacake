@@ -14,3 +14,20 @@ export interface IProductItems {
   price: number;
   stock: number;
 }
+export interface IDiscountItem {
+  id: number;
+  code: string;
+  name: string;
+  nominal: number;
+  percentage: number;
+  outlet_id: number;
+  quantity: number;
+}
+
+export interface ICreateTransactionBody {
+  outlet_id: number;
+  payment_method: number;
+  carts: ICartItem[];
+  discount_code?: string;
+  pay: number;
+}
