@@ -31,7 +31,7 @@ export const listMenu: MenuSection[] = [
       {
         title: "Cashier",
         href: "/cashier",
-        permission: ["Kasir", "Super Admin", "Admin"],
+        permission: ["Kasir"],
         show: true,
       },
       {

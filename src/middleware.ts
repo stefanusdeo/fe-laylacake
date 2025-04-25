@@ -25,7 +25,7 @@ const pathPermissions: Record<string, Role[]> = {
   // Transaction section
   "/transaction": ["Kasir", "Admin", "Super Admin"],
   "/transaction/detail": ["Kasir", "Admin", "Super Admin"],
-  "/cashier": ["Kasir", "Admin", "Super Admin"],
+  "/cashier": ["Kasir"],
   "/payment-method": ["Super Admin"],
 
   // Store section
