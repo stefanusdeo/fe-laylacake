@@ -22,10 +22,12 @@ export type TransactionsResponse = {
 export interface ITransactionDetail {
   id: number;
   code: string;
-  created_at: string; // ISO format date
+  created_at: string;
   status: number;
-  time: string; // HH:mm format
-  discount: number;
+  time: string;
+  discount_nominal: number;
+  discount_percentage: number;
+  total_discount: number;
   total_price: number;
   money_change: number;
   pay: number;

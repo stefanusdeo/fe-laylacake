@@ -2,6 +2,7 @@ import {
     Dialog as Base,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog"
@@ -17,9 +18,10 @@ type DialogProps = {
     title?: string
     description?: string
     className?: string
+    footer?: React.ReactNode
 }
 
-function Dialog({ children, onClose, open, title, description, className }: DialogProps) {
+function Dialog({ children, onClose, open, title, description, className, footer }: DialogProps) {
     return (
         <Base onOpenChange={onClose} open={open} >
             <DialogContent className={cn("w-auto", className)}>
@@ -39,6 +41,11 @@ function Dialog({ children, onClose, open, title, description, className }: Dial
                 <div className="overflow-y-auto px-2 scrollbar" style={{ maxHeight: "calc(85svh - 120px)" }}>
                     {children}
                 </div>
+                {footer && (
+                    <DialogFooter>
+                        {footer}
+                    </DialogFooter>
+                )}
             </DialogContent>
         </Base>
     )

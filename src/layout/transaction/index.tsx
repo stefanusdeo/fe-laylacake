@@ -35,6 +35,7 @@ import Breadcrums from '@/components/molecules/breadcrums';
 import { useUserStore } from '@/store/hooks/useUsers';
 import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccessOultetUser';
 import { getAccessOutlet } from '@/store/action/user-management';
+import ModalDetail from './modal/detail';
 
 export default function Transactions() {
   const router = useRouter()
@@ -56,6 +57,7 @@ export default function Transactions() {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalMultiTrx, setOpenModalMultiTrx] = useState(false);
   const [openModalMigrate, setOpenModalMigrate] = useState(false);
+  const [openModalDetail, setOpenModalDetail] = useState(false);
 
   const [trxlist, setTrxlist] = useState<TTransactionData[]>([])
   const [selectedTrx, setSelectedTrx] = useState<number[]>([])
@@ -273,11 +275,7 @@ export default function Transactions() {
 
   const handleGetRouteDetail = (id: number) => {
     setIdTransaction(id)
-    if (id) {
-      router.push(`/transaction/detail`)
-    } else {
-      toast.error("Failed get route edit: missing transactions")
-    }
+    setOpenModalDetail(true)
   }
 
   const handleResetFilter = () => {
@@ -290,7 +288,11 @@ export default function Transactions() {
     const intervalCheking = setInterval(async () => {
       const checkResult = await checkMigration();
       if (checkResult?.status === 200) {
-        fetchTransactions()
+        if (isDateRangeComplete) {
+          fetchTransactions(dateRange?.from?.toISOString(), dateRange?.to?.toISOString())
+        } else {
+          fetchTransactions()
+        }
         clearInterval(intervalCheking);
         localStorage.removeItem("tiketId");
         toast.success("Transfer is completed.");
@@ -385,6 +387,12 @@ export default function Transactions() {
       return <ModalMigrate onClose={setOpenModalMigrate} open={openModalMigrate} />
     }
   }, [openModalMigrate])
+
+  const memoModalDetail = useMemo(() => {
+    if (openModalDetail) {
+      return <ModalDetail onClose={setOpenModalDetail} open={openModalDetail} />
+    }
+  }, [openModalDetail])
 
   const memoModalDelete = useMemo(() => {
     if (openModalDelete) {
@@ -497,6 +505,7 @@ export default function Transactions() {
           )}
         </div>
         {memoModalMigrate}
+        {memoModalDetail}
         {memoModalDelete}
         {memoModalMultiTrx}
       </div>
