@@ -12,7 +12,7 @@ import Text from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { getOutletsInternal } from '@/store/action/outlets';
 import { getPaymentInternal } from '@/store/action/payment-method';
-import { deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
+import { checkMigration, deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
 import { useOutletStore } from '@/store/hooks/useOutlets';
 import { usePaymentStore } from '@/store/hooks/usePayment';
 import { useTransactionStore } from '@/store/hooks/useTransactions';
@@ -37,8 +37,10 @@ import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccess
 import { getAccessOutlet } from '@/store/action/user-management';
 
 export default function Transactions() {
-  const { profile } = useProfileStore()
   const router = useRouter()
+  const { profile } = useProfileStore()
+  const { statusMigration } = useTransactionStore()
+
 
   const roleUser = Cookie.get('role') ?? profile?.role_name
 
@@ -148,11 +150,11 @@ export default function Transactions() {
   }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, openModalMigrate])
 
   useEffect(() => {
-    if (isDateRangeComplete || methodSelect || outletSelect || openModalMigrate === false) {
+    if (isDateRangeComplete || methodSelect || outletSelect || limit || openModalMigrate === false) {
       setPage(1)
       setSelectedTrx([])
     }
-  }, [isDateRangeComplete, methodSelect, outletSelect, openModalMigrate])
+  }, [isDateRangeComplete, methodSelect, outletSelect, limit, openModalMigrate])
 
   const handleChecked = (id: number) => {
     setSelectedTrx((prevSelected) =>
@@ -284,6 +286,30 @@ export default function Transactions() {
     setMethodSelect("")
   }
 
+  const checkMigrationStatus = () => {
+    const intervalCheking = setInterval(async () => {
+      const checkResult = await checkMigration();
+      if (checkResult?.status === 200) {
+        fetchTransactions()
+        clearInterval(intervalCheking);
+        localStorage.removeItem("tiketId");
+        toast.success("Transfer is completed.");
+      } else if (checkResult?.status === 102) {
+        toast.info(checkResult?.message || "Transfer is still in progress. Please wait.");
+      } else {
+        localStorage.removeItem("tiketId");
+        toast.error("Failed to check transfer status. Please try again.");
+        clearInterval(intervalCheking);
+      }
+    }, 1000);
+  };
+
+  useEffect(() => {
+    if (statusMigration) {
+      checkMigrationStatus()
+    }
+  }, [statusMigration])
+
   const columnsTrxList: Column<TTransactionData>[] = [
     {
       label: roleUser && roleUser !== "Kasir" ? (
@@ -305,11 +331,6 @@ export default function Transactions() {
           )}
         </div>
       ),
-      className: cn("text-center justify-center"),
-    },
-    {
-      label: "No",
-      renderCell: () => null,
       className: cn("text-center justify-center"),
     },
     {

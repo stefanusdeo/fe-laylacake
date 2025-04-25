@@ -71,7 +71,8 @@ export interface IPaymentMethod {
 export interface IMigrateTransactionBody {
   start_date: string;
   end_date: string;
-  outlet_id: number;
+  from_outlet: number;
+  to_outlet: number;
   payment_method: number;
 }
 

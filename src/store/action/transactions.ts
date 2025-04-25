@@ -111,12 +111,21 @@ export const checkMigration = async () => {
       throw new Error("Ticket not found");
     }
     const response = await API.get(`${migrate}/${tiketId}`);
+
     const result = response.data;
     const resp = {
       status: result.data.code,
       message: result.data.status,
       data: null,
     };
+
+    if (result.data.code === 500){
+      toast.error(result.data.message);
+      localStorage.removeItem("tiketId");
+      useTransactionStore.getState().setStatusMigration(false);
+      throw new Error(result.data.message);
+    }
+    
     if (result.data.code === 200) {
       localStorage.removeItem("tiketId");
       useTransactionStore.getState().setStatusMigration(false);
