@@ -8,24 +8,18 @@ import { PasswordInput } from '@/components/ui/passwordInput';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Text from '@/components/ui/text';
 import { userUpdateSchema } from '@/schema/yup-validation';
-import { createUsers, getDetailUser, updateUser, UserFormBody } from '@/store/action/user-management';
+import { getDetailUser, updateUser, UserFormBody } from '@/store/action/user-management';
 import { useUserStore } from '@/store/hooks/useUsers';
 import { OutletUsers } from '@/types/userTypes';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Plus, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/router';
-import React, { useActionState, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import BeatLoader from 'react-spinners/BeatLoader';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
 import { SearchOutlets } from '../searchOutlets';
-
-interface State {
-    loading: boolean
-    success: boolean
-    error: string | null
-}
 
 function EditUser() {
     const router = useRouter();
@@ -51,43 +45,6 @@ function EditUser() {
     const [isFormChanged, setIsFormChanged] = useState(false);
     const [findOutlet, setFindOutlet] = React.useState<{ id: number; name: string } | null>(null)
 
-    const handleChangeUser = async () => {
-        setLoading(true);
-        const data: UserFormBody = {
-            name: form.getValues("fullname") as string,
-            email: form.getValues("email") as string,
-            phone_number: form.getValues("phone") as string,
-            role_id: Number(form.getValues("role")),
-            password: form.getValues("password") as string,
-            confirm_password: form.getValues("PasswordConfirmation") as string,
-        }
-
-        if (data.role_id === 3 || data.role_id === 2) {
-            data["outlet_ids"] = form.getValues("outlet_ids") as number[];
-        }
-
-        const resp = new Promise((resolve, reject) => {
-            id_user ? updateUser(id_user, data)
-                .then((res: any) => {
-                    if (res?.status === 200) {
-                        resolve(res);
-                        form.reset()
-                        router.push("/user-management/user-list")
-                    }
-                })
-                .catch((err) => reject(err))
-                .finally(() => {
-                    setLoading(false);
-                }) : toast.error("Update User Failed : missing user");
-        });
-
-        toast.promise(resp, {
-            loading: "Loading...",
-            success: "Edit User Success",
-            error: (err: any) => `Edit User Failed: ${err?.message || 'Please try again'}`,
-        });
-    };
-
     const handleAddOutlet = () => {
         if (findOutlet) {
             const outletExists = outlets.some(outlet => outlet.id === findOutlet.id);
@@ -105,10 +62,10 @@ function EditUser() {
     }
 
     useEffect(() => {
+        setLoading(true);
         if (id_user) {
             const getUser = async () => {
                 try {
-                    setLoading(true);
                     const res = await getDetailUser(id_user);
                     if (res?.status === 200) {
                         const userData = {
@@ -132,8 +89,53 @@ function EditUser() {
                 }
             };
             getUser();
+        } else {
+            toast.error("User not found", {
+                description: "Redirecting to the previous page...",
+                duration: 5000,
+            })
+            router.back()
         }
     }, [id_user, form]);
+
+    const handleChangeUser = async () => {
+        setLoading(true);
+
+        const data: UserFormBody = {
+            name: form.getValues("fullname") as string,
+            email: form.getValues("email") as string,
+            phone_number: form.getValues("phone") as string,
+            password: form.getValues("password") as string,
+            confirm_password: form.getValues("PasswordConfirmation") as string,
+        }
+
+        if (form.getValues("role") === "3" || form.getValues("role") === "2") {
+            data["outlet_ids"] = form.getValues("outlet_ids") as number[];
+        }
+
+        const resp = new Promise((resolve, reject) => {
+            id_user ? updateUser(id_user, data)
+                .then((res: any) => {
+                    if (res?.status === 200) {
+                        resolve(res);
+                        form.reset()
+                        router.push("/user-management/user-list")
+                    } else {
+                        reject(res);
+                    }
+                })
+                .catch((err) => reject(err))
+                .finally(() => {
+                    setLoading(false);
+                }) : toast.error("Update User Failed : missing user");
+        });
+
+        toast.promise(resp, {
+            loading: "Loading...",
+            success: "Edit User Success",
+            error: (err: any) => `Edit User Failed: ${err?.message || 'Please try again'}`,
+        });
+    };
 
     useEffect(() => {
         if (!originalValues) return;
@@ -184,22 +186,28 @@ function EditUser() {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                <FormField disabled control={form.control} name="role" render={({ field }) => (
+                                <FormField control={form.control} name="role" render={({ field }) => (
                                     <FormItem className='w-full'>
                                         <FormLabel className="text-sm md:text-base">Role</FormLabel>
-                                        <Select disabled onValueChange={field.onChange} value={field.value}>
+                                        <Select onValueChange={() => null} value={field.value} defaultValue={field.value}>
                                             <FormControl className='w-full text-sm md:text-base'>
-                                                <SelectTrigger className="text-sm md:text-base">
+                                                <SelectTrigger className="text-sm md:text-base" tabIndex={-1} style={{ pointerEvents: "none", backgroundColor: "#f3f4f6" }}>
                                                     <SelectValue placeholder="Select a role user" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="text-sm md:text-base">
-                                                <SelectItem value="1">Super Admin</SelectItem>
-                                                <SelectItem value="2">Admin</SelectItem>
-                                                <SelectItem value="3">Kasir</SelectItem>
+                                                {field.value === "1" &&
+                                                    <SelectItem value="1" disabled>Super Admin</SelectItem>
+                                                }
+                                                {field.value === "2" &&
+                                                    <SelectItem value="2">Admin</SelectItem>
+                                                }
+                                                {field.value === "3" &&
+                                                    <SelectItem value="3">Kasir</SelectItem>
+                                                }
                                             </SelectContent>
                                         </Select>
-                                        <input type="hidden" name="role" value={field.value} />
+                                        <input type="hidden" name="role" value={field.value} readOnly />
                                         <FormMessage />
                                     </FormItem>
                                 )} />

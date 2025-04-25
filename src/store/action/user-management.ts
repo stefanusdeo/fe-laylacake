@@ -12,7 +12,7 @@ export type UserFormBody = {
   password: string;
   confirm_password: string;
   phone_number: string;
-  role_id: number; // 1: Superadmin, 2: Admin, 3: Kasir
+  role_id?: number; // 1: Superadmin, 2: Admin, 3: Kasir
   outlet_ids?: number[]; // Wajib jika role_id = 3 (Kasir), opsional untuk role lainnya
 };
 
