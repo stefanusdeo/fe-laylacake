@@ -22,12 +22,12 @@ export const listMenu: MenuSection[] = [
         permission: ["Kasir", "Admin", "Super Admin"],
         show: true,
       },
-      {
-        title: "Transaction Detail",
-        href: "/transaction/detail",
-        permission: ["hidden"],
-        show: false,
-      },
+      // {
+      //   title: "Transaction Detail",
+      //   href: "/transaction/detail",
+      //   permission: ["hidden"],
+      //   show: false,
+      // },
       {
         title: "Cashier",
         href: "/cashier",

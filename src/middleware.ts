@@ -24,7 +24,7 @@ const roleMapping: Record<number, Role> = {
 const pathPermissions: Record<string, Role[]> = {
   // Transaction section
   "/transaction": ["Kasir", "Admin", "Super Admin"],
-  "/transaction/detail": ["Kasir", "Admin", "Super Admin"],
+  // "/transaction/detail": ["Kasir", "Admin", "Super Admin"],
   "/cashier": ["Kasir"],
   "/payment-method": ["Super Admin"],
 
