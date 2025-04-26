@@ -4,7 +4,7 @@ import { CustomCalendar } from '@/components/molecules/customCalendar'
 import Dialog from '@/components/molecules/dialog'
 import { Button } from '@/components/ui/button'
 import { getOutletsExternal, getOutletsInternal } from '@/store/action/outlets'
-import { getPaymentInternal } from '@/store/action/payment-method'
+import { getPaymentExternal, getPaymentInternal } from '@/store/action/payment-method'
 import { migrateTransactions } from '@/store/action/transactions'
 import { useOutletStore } from '@/store/hooks/useOutlets'
 import { usePaymentStore } from '@/store/hooks/usePayment'
@@ -24,7 +24,7 @@ interface ModalMigrateProps {
 
 export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const { outletInternal, outletExternal } = useOutletStore()
-    const { paymentInternal, paymentExternal } = usePaymentStore()
+    const { paymentExternal } = usePaymentStore()
 
     const [dateRange, setDateRange] = useState<DateRange | any>("")
 
@@ -40,9 +40,9 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const [paymentOptions, setPaymentOptions] = useState<SelectOption[]>(paymentExternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
     const [isLoadingPayment, setIsLoadingPayment] = useState(false)
 
-    const [methodSelect, setMethodSelect] = useState<string>("")
-    const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
-    const [isLoadingMethod, setIsLoadingMethod] = useState(false)
+    // const [methodSelect, setMethodSelect] = useState<string>("")
+    // const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    // const [isLoadingMethod, setIsLoadingMethod] = useState(false)
 
     const fetchOutletSource = async () => {
         setIsLoadingOutletSource(true)
@@ -71,7 +71,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const fetchPayment = async () => {
         setIsLoadingPayment(true)
         try {
-            const res = await getPaymentInternal({ page: 0, limit: 0 })
+            const res = await getPaymentExternal({ page: 0, limit: 0 })
             setPaymentOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
             setIsLoadingPayment(false)
         } catch (err) {
@@ -79,16 +79,16 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
         }
     }
     //internal  
-    const fetchMethod = async () => {
-        setIsLoadingMethod(true)
-        try {
-            const res = await getPaymentInternal({ page: 0, limit: 0 })
-            setMethodOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
-            setIsLoadingMethod(false)
-        } catch (err) {
-            setIsLoadingMethod(false)
-        }
-    }
+    // const fetchMethod = async () => {
+    //     setIsLoadingMethod(true)
+    //     try {
+    //         const res = await getPaymentInternal({ page: 0, limit: 0 })
+    //         setMethodOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
+    //         setIsLoadingMethod(false)
+    //     } catch (err) {
+    //         setIsLoadingMethod(false)
+    //     }
+    // }
 
     const handleMigrate = async () => {
         const resp = new Promise((resolve, reject) => {

@@ -19,7 +19,6 @@ import { useTransactionStore } from '@/store/hooks/useTransactions';
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
 import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
-import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { DateRange } from 'react-day-picker';
@@ -36,6 +35,7 @@ import { useUserStore } from '@/store/hooks/useUsers';
 import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccessOultetUser';
 import { getAccessOutlet } from '@/store/action/user-management';
 import ModalDetail from './modal/detail';
+import { Plus, FileDown } from 'lucide-react';
 
 export default function Transactions() {
   const router = useRouter()
@@ -306,6 +306,71 @@ export default function Transactions() {
     }, 1000);
   };
 
+  const handleExportExcel = async () => {
+    setLoading(true)
+    try {
+      const params: IParamTransaction = {
+        page: 0,
+        limit: 0,
+      }
+
+      if (dateRange?.from && dateRange?.to) {
+        params.start_date = dateRange?.from?.toISOString()
+        params.end_date = dateRange?.to?.toISOString()
+      }
+
+      if (outletSelect) {
+        params.outlet_id = Number(outletSelect)
+      }
+
+      if (methodSelect) {
+        params.payment_method = methodSelect
+      }
+
+      const res = await getListTransactions(params)
+      const allTransactions = res?.data || []
+
+      if (allTransactions.length === 0) {
+        toast.warning("No transaction data to export")
+        setLoading(false)
+        return
+      }
+
+      // Membuat workbook dan worksheet
+      const XLSX = await import('xlsx')
+      const workbook = XLSX.utils.book_new()
+
+      // Menyiapkan data untuk Excel
+      const excelData = allTransactions.map((trx: TTransactionData) => ({
+        'Code': trx.code,
+        'Outlet': trx.outlet_name,
+        'Staff': trx.staff_name,
+        'Amount': trx.price,
+        'Payment Method': trx.payment_method,
+        'Date Time': trx.time
+      }))
+
+      // Membuat worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData)
+
+      // Menambahkan worksheet ke workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions')
+
+      // Membuat nama file dengan timestamp
+      const fileName = `trx_${new Date().toISOString().split('T')[0]}.xlsx`
+
+      // Mengekspor file Excel
+      XLSX.writeFile(workbook, fileName)
+
+      toast.success("Transaction data successfully exported to Excel")
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+      toast.error("Failed to export transaction data")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (statusMigration) {
       checkMigrationStatus()
@@ -431,9 +496,23 @@ export default function Transactions() {
           <Text variant='h2' className=' max-sm:text-2xl'>Transaction List</Text>
           <Breadcrums />
         </div>
-        {roleUser && roleUser === "Super Admin" && (
-          <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:w-full'><Plus /> <span className=''>Add Transaction</span></Button>
-        )}
+        <div className="flex gap-2 max-sm:w-full">
+          <Button 
+            onClick={handleExportExcel} 
+            variant="outline" 
+            className='max-sm:flex-1'
+            disabled={loading}
+          >
+            <FileDown className="mr-1 h-4 w-4" /> 
+            <span className=''>Export Excel</span>
+          </Button>
+          {roleUser && roleUser === "Super Admin" && (
+            <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:flex-1'>
+              <Plus className="mr-1 h-4 w-4" /> 
+              <span className=''>Add Transaction</span>
+            </Button>
+          )}
+        </div>
       </div>
       <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-7">
         <div id='filter' className="flex max-sm:flex-col md:justify-between items-start gap-2.5 md:gap-5 select-none">
