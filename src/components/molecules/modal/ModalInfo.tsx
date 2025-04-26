@@ -14,7 +14,7 @@ type ModalInfoProps = {
 
 function ModalInfo({ open, onClose, description, title, onConfirm, onCancel }: ModalProps & ModalInfoProps) {
     return (
-        <Dialog onClose={onClose} open={open}>
+        <Dialog onClose={onClose} open={open} className='min-w-xs w-full max-w-xs'>
             <div className=' flex flex-col gap-5 items-center justify-center'>
                 <PiWarningCircle className='text-5xl text-green-600' />
                 <div className=' flex flex-col gap-2'>
