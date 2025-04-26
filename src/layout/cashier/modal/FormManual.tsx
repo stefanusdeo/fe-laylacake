@@ -159,33 +159,31 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
             outlet_id: Number(outletId),
         }
 
-        console.log("Body Request", bodyRequest);
-
-        // try {
-        //     const response = await createManualTransaction(bodyRequest);
-        //     if (response.status === 200) {
-        //         console.log("Checkout clicked", response);
-        //         await printPDF(
-        //             <TransactionPDF transaction={response.data} />,
-        //             () => {
-        //                 toast.success("Transaction sent to printer successfully", { duration: 5000 })
-        //                 setPay("");
-        //                 setMethod("");
-        //                 setProducts([{ id: generateId(), name: "", price: 0, qty: 0, total: 0 }]);
-        //                 onClose(false);
-        //             },
-        //             (error) => {
-        //                 toast.error("Failed to print transaction", { duration: 5000 })
-        //                 console.error("Print error:", error)
-        //             }
-        //         )
-        //     } else {
-        //         toast.error(response.message || "Failed to create transaction", { duration: 5000 })
-        //     }
-        // } catch (error) {
-        //     console.error("Error creating transaction:", error);
-        //     toast.error("Failed to create transaction", { duration: 5000 })
-        // }
+        try {
+            const response = await createManualTransaction(bodyRequest);
+            if (response.status === 200) {
+                console.log("Checkout clicked", response);
+                await printPDF(
+                    <TransactionPDF transaction={response.data} />,
+                    () => {
+                        toast.success("Transaction sent to printer successfully", { duration: 5000 })
+                        setPay("");
+                        setMethod("");
+                        setProducts([{ id: generateId(), name: "", price: 0, qty: 0, total: 0 }]);
+                        onClose(false);
+                    },
+                    (error) => {
+                        toast.error("Failed to print transaction", { duration: 5000 })
+                        console.error("Print error:", error)
+                    }
+                )
+            } else {
+                toast.error(response.message || "Failed to create transaction", { duration: 5000 })
+            }
+        } catch (error) {
+            console.error("Error creating transaction:", error);
+            toast.error("Failed to create transaction", { duration: 5000 })
+        }
     };
 
     function Footer() {
