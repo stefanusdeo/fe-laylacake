@@ -1,4 +1,4 @@
-import type { ITransactionDetail } from "@/types/transactionTypes"
+import type { IManualTransactionDetail, ITransactionDetail } from "@/types/transactionTypes"
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer"
 import { format, parseISO } from "date-fns"
 import type React from "react"
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
 })
 
 interface TransactionPDFProps {
-    transaction: ITransactionDetail
+    transaction: ITransactionDetail | IManualTransactionDetail
 }
 
 const TransactionPDF: React.FC<TransactionPDFProps> = ({ transaction }) => {

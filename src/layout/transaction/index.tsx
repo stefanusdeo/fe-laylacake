@@ -9,7 +9,7 @@ import ModalDelete from '@/components/molecules/modal/ModalDelete';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Text from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { getOutletsInternal } from '@/store/action/outlets';
 import { getPaymentInternal } from '@/store/action/payment-method';
 import { checkMigration, deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
@@ -352,7 +352,7 @@ export default function Transactions() {
     },
     {
       label: "Amount",
-      renderCell: (row) => <p>{row.price}</p>,
+      renderCell: (row) => <p>{formatCurrency(row.price)}</p>,
       className: "",
     },
     {

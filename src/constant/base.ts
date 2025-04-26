@@ -25,7 +25,7 @@ export const listMenu: MenuSection[] = [
       {
         title: "Transaction Detail",
         href: "/transaction/detail",
-        permission: ["Kasir", "Admin", "Super Admin"],
+        permission: ["hidden"],
         show: false,
       },
       {

@@ -40,6 +40,6 @@ export interface ICustomProduct {
 export interface ICreateManualTransactionBody {
   outlet_id: number;
   payment_method: number;
-  product: ICustomProduct;
+  product: ICustomProduct[] | ICustomProduct;
   pay: number;
 }

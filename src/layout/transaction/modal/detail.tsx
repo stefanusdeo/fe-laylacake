@@ -20,6 +20,7 @@ import { formatCurrency } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Download, Printer } from "lucide-react"
 import { Separator } from "@radix-ui/react-select"
+import { printPDF, downloadPDF } from "@/utils/pdfUtils"
 
 interface ModalDetailProps {
     open: boolean
@@ -35,17 +36,8 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
     const [isPrinting, setIsPrinting] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
 
-    const [isProductsOpen, setIsProductsOpen] = useState(true)
-    const [isPaymentOpen, setIsPaymentOpen] = useState(true)
-    const [isDetailsOpen, setIsDetailsOpen] = useState(true)
-
     // Format date
     const formattedDate = transactionData ? format(parseISO(transactionData?.created_at ?? ""), "dd MMMM yyyy") : ""
-
-    // Calculate total items
-    const totalItems = transactionData
-        ? transactionData?.transaction_items.reduce((sum, item) => sum + item.quantity, 0)
-        : 0
 
     // Calculate total discount
     const totalDiscount = transactionData
@@ -92,48 +84,19 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
             })
             return
         }
-
         setIsPrinting(true)
-
-        try {            // Generate PDF with react-pdf
-            const pdfDoc = <TransactionPDF transaction={transactionData} />
-
-            // Generate blob
-            const blob = await pdf(pdfDoc).toBlob()
-
-            // Create object URL from blob
-            const blobUrl = URL.createObjectURL(blob)
-
-            // Open PDF in new window and print it
-            const printWindow = window.open(blobUrl)
-
-            if (printWindow) {
-                printWindow.onload = () => {
-                    setTimeout(() => {
-                        printWindow.print()
-                        setIsPrinting(false)
-                        toast.success("Transaction sent to printer successfully", {
-                            duration: 5000,
-                        })
-                    }, 500)
-                }
-            } else {
-                // If popup blocked, fallback to traditional print
-                URL.revokeObjectURL(blobUrl)
-                window.print()
+        await printPDF(
+            <TransactionPDF transaction={transactionData} />,
+            () => {
                 setIsPrinting(false)
-                toast.success("Transaction sent to printer successfully", {
-                    duration: 5000,
-                })
+                toast.success("Transaction sent to printer successfully", { duration: 5000 })
+            },
+            (error) => {
+                setIsPrinting(false)
+                toast.error("Failed to print transaction", { duration: 5000 })
+                console.error("Print error:", error)
             }
-
-        } catch (error) {
-            setIsPrinting(false)
-            toast.error("Failed to print transaction", {
-                duration: 5000,
-            })
-            console.error("Print error:", error)
-        }
+        )
     }
 
     const handleDownload = async () => {
@@ -143,33 +106,20 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
             })
             return
         }
-
         setIsDownloading(true)
-
-        try {
-            // Generate PDF with react-pdf
-            const filename = `receipt-${transactionData.code}.pdf`
-
-            // Create PDF document
-            const pdfDoc = <TransactionPDF transaction={transactionData} />
-
-            // Generate blob
-            const blob = await pdf(pdfDoc).toBlob()
-
-            // Save file using FileSaver
-            saveAs(blob, filename)
-
-            setIsDownloading(false)
-            toast.success("Receipt downloaded successfully", {
-                duration: 5000,
-            })
-        } catch (error) {
-            setIsDownloading(false)
-            toast.error("Failed to download receipt", {
-                duration: 5000,
-            })
-            console.error("Download error:", error)
-        }
+        await downloadPDF(
+            <TransactionPDF transaction={transactionData} />,
+            `receipt-${transactionData.code}.pdf`,
+            () => {
+                setIsDownloading(false)
+                toast.success("Receipt downloaded successfully", { duration: 5000 })
+            },
+            (error) => {
+                setIsDownloading(false)
+                toast.error("Failed to download receipt", { duration: 5000 })
+                console.error("Download error:", error)
+            }
+        )
     }
 
     useEffect(() => {
@@ -222,20 +172,28 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
 
     function Footer() {
         return (
-            <div className="mt-5 flex">
+            <div className="mt-5 w-full flex max-sm:flex-col flex-row-reverse gap-2 justify-start items-center">
                 <Button
-                    className="flex items-center gap-1"
+                    className=" max-sm:w-full flex items-center gap-1"
+                    onClick={handlePrint}
+                >
+                    <ClipLoader loading={isPrinting} size={14} />
+                    <span className="sm:inline">{isPrinting ? "Printing..." : "Print Reciept"}</span>
+                </Button>
+                <Button
+                    variant={"ghost"}
+                    className=" max-sm:w-full flex items-center gap-1"
                     onClick={() => onClose(false)}
                 >
                     <ClipLoader loading={isPrinting} size={14} />
-                    <span className="hidden sm:inline">{isPrinting ? "Printing..." : "Close"}</span>
+                    <span className="sm:inline text-red-500">{"Close"}</span>
                 </Button>
             </div>
         )
     }
 
     return (
-        <Dialog open={open} onClose={onClose} title={`Transaction`} className="min-w-xs w-full sm:max-w-lg md:max-w-xl" footer={Footer()}>
+        <Dialog open={open} onClose={onClose} title={`Transaction`} className="min-w-xs w-full sm:max-w-lg md:max-w-xl" footer={loading ? "" : Footer()}>
             {loading ? (
                 <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
                     <ClipLoader loading={loading} size={15} /> Please wait...

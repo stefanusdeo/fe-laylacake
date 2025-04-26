@@ -18,6 +18,8 @@ import FormManual from "./modal/FormManual"
 import SearchProduct from "./modal/searchProduct"
 import { toast } from "sonner"
 import { createTransaction, getDiscount } from "@/store/action/cashier"
+import { printPDF } from "@/utils/pdfUtils"
+import TransactionPDF from "@/components/template/pdf/transaction-pdf"
 // Enhanced discount interface with more details
 interface IDiscount {
     productId: number
@@ -220,13 +222,25 @@ function Cashier() {
             const resp = await createTransaction(bodyRequest)
             if (resp.status === 200) {
                 toast.success("Transaction created successfully")
-                setCart([])
-                setCartItems([])
-                setProductDiscounts([])
-                setCartDiscount(null)
-                setPaymentMethod("")
-                setPaymentAmount(0)
-                setSelectedMember(null)
+                // Process print the transaction PDF
+                await printPDF(
+                    <TransactionPDF transaction={resp.data} />,
+                    () => {
+                        toast.success("Transaction sent to printer successfully", { duration: 5000 })
+                        setCart([])
+                        setCartItems([])
+                        setProductDiscounts([])
+                        setCartDiscount(null)
+                        setPaymentMethod("")
+                        setPaymentAmount(0)
+                        setSelectedMember(null)
+                        setCartDiscountCode("")
+                    },
+                    (error) => {
+                        toast.error("Failed to print transaction", { duration: 5000 })
+                        console.error("Print error:", error)
+                    }
+                )
             } else {
                 toast.error(resp.message || "Error creating transaction")
             }

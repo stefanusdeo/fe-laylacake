@@ -34,6 +34,7 @@ import ClipLoader from "react-spinners/ClipLoader"
 import { toast } from "sonner"
 import TransactionPDF from "@/components/template/pdf/transaction-pdf"
 import Badge from "@/components/atoms/Badge"
+import { printPDF, downloadPDF } from "@/utils/pdfUtils"
 
 interface Column<T> {
     label: string
@@ -123,89 +124,43 @@ export default function TransactionDetails() {
 
     const handlePrint = async () => {
         if (!transactionData || !trxId) {
-            toast.error("Transaction not found", {
-                duration: 5000,
-            })
+            toast.error("Transaction not found", { duration: 5000 })
             return
         }
-
         setIsPrinting(true)
-
-        try {            // Generate PDF with react-pdf
-            const pdfDoc = <TransactionPDF transaction={transactionData} />
-
-            // Generate blob
-            const blob = await pdf(pdfDoc).toBlob()
-
-            // Create object URL from blob
-            const blobUrl = URL.createObjectURL(blob)
-
-            // Open PDF in new window and print it
-            const printWindow = window.open(blobUrl)
-
-            if (printWindow) {
-                printWindow.onload = () => {
-                    setTimeout(() => {
-                        printWindow.print()
-                        setIsPrinting(false)
-                        toast.success("Transaction sent to printer successfully", {
-                            duration: 5000,
-                        })
-                    }, 500)
-                }
-            } else {
-                // If popup blocked, fallback to traditional print
-                URL.revokeObjectURL(blobUrl)
-                window.print()
+        await printPDF(
+            <TransactionPDF transaction={transactionData} />,
+            () => {
                 setIsPrinting(false)
-                toast.success("Transaction sent to printer successfully", {
-                    duration: 5000,
-                })
+                toast.success("Transaction sent to printer successfully", { duration: 5000 })
+            },
+            (error) => {
+                setIsPrinting(false)
+                toast.error("Failed to print transaction", { duration: 5000 })
+                console.error("Print error:", error)
             }
-
-        } catch (error) {
-            setIsPrinting(false)
-            toast.error("Failed to print transaction", {
-                duration: 5000,
-            })
-            console.error("Print error:", error)
-        }
+        )
     }
 
     const handleDownload = async () => {
         if (!transactionData) {
-            toast.error("Transaction not found", {
-                duration: 5000,
-            })
+            toast.error("Transaction not found", { duration: 5000 })
             return
         }
-
         setIsDownloading(true)
-
-        try {
-            // Generate PDF with react-pdf
-            const filename = `receipt-${transactionData.code}.pdf`
-
-            // Create PDF document
-            const pdfDoc = <TransactionPDF transaction={transactionData} />
-
-            // Generate blob
-            const blob = await pdf(pdfDoc).toBlob()
-
-            // Save file using FileSaver
-            saveAs(blob, filename)
-
-            setIsDownloading(false)
-            toast.success("Receipt downloaded successfully", {
-                duration: 5000,
-            })
-        } catch (error) {
-            setIsDownloading(false)
-            toast.error("Failed to download receipt", {
-                duration: 5000,
-            })
-            console.error("Download error:", error)
-        }
+        await downloadPDF(
+            <TransactionPDF transaction={transactionData} />,
+            `receipt-${transactionData.code}.pdf`,
+            () => {
+                setIsDownloading(false)
+                toast.success("Receipt downloaded successfully", { duration: 5000 })
+            },
+            (error) => {
+                setIsDownloading(false)
+                toast.error("Failed to download receipt", { duration: 5000 })
+                console.error("Download error:", error)
+            }
+        )
     }
 
     useEffect(() => {

@@ -99,3 +99,18 @@ export interface IDeleteMultiTransaction {
     payment_method?: number; // optional
   };
 }
+
+export interface IManualTransactionDetail {
+  id: number;
+  code: string;
+  created_at: string;
+  time: string;
+  discount: number;
+  total_price: number;
+  money_change: number;
+  pay: number;
+  transaction_items: ITransactionItem[];
+  staff: IStaff;
+  outlet: IOutlet;
+  payment_method: IPaymentMethod;
+}

@@ -6,6 +6,12 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency } from '../../../lib/utils';
 import PaymentMethodSelect from "@/components/molecules/Selects/CustomPaymentMethodSelect";
+import { ICreateManualTransactionBody } from "@/types/cashierTypes";
+import { printPDF } from "@/utils/pdfUtils";
+import TransactionPDF from "@/components/template/pdf/transaction-pdf";
+import { IManualTransactionDetail, ITransactionDetail } from "@/types/transactionTypes";
+import { toast } from "sonner";
+import { createManualTransaction } from "@/store/action/cashier";
 
 // Tambahkan tipe data untuk produk manual
 type ManualProduct = {
@@ -65,6 +71,8 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
     const total = products.reduce((sum, p) => sum + p.total, 0);
     const moneyChanges = pay ? Math.max(0, Number(pay) - total) : 0;
 
+    const disabled = !pay || !method || total === 0 || moneyChanges < 0 || products.length === 0;
+
     // Kolom untuk tabel manual transaction
     const columnsManual: Column<ManualProduct>[] = [
         {
@@ -73,7 +81,7 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
             className: "text-center w-10",
         },
         {
-            label: "Nama Produk",
+            label: "Product Name",
             renderCell: (row) => (
                 <Input
                     placeholder="Name"
@@ -84,7 +92,7 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
             className: "min-w-52",
         },
         {
-            label: "Harga",
+            label: "Price",
             renderCell: (row) => (
                 <Input
                     type="number"
@@ -129,8 +137,68 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
         },
     ];
 
+    const handleCheckout = async () => {
+        // Lakukan proses checkout
+        const outletId = localStorage.getItem("outletId");
+
+        if (!outletId) {
+            toast.error("Please select an outlet", { duration: 5000 })
+            return;
+        }
+
+        const bodyRequest: ICreateManualTransactionBody = {
+            payment_method: Number(method),
+            pay: Number(pay),
+            product: products.map((product) => (
+                {
+                    name: product.name,
+                    price: product.price,
+                    quantity: product.qty,
+                }
+            )),
+            outlet_id: Number(outletId),
+        }
+
+        console.log("Body Request", bodyRequest);
+
+        // try {
+        //     const response = await createManualTransaction(bodyRequest);
+        //     if (response.status === 200) {
+        //         console.log("Checkout clicked", response);
+        //         await printPDF(
+        //             <TransactionPDF transaction={response.data} />,
+        //             () => {
+        //                 toast.success("Transaction sent to printer successfully", { duration: 5000 })
+        //                 setPay("");
+        //                 setMethod("");
+        //                 setProducts([{ id: generateId(), name: "", price: 0, qty: 0, total: 0 }]);
+        //                 onClose(false);
+        //             },
+        //             (error) => {
+        //                 toast.error("Failed to print transaction", { duration: 5000 })
+        //                 console.error("Print error:", error)
+        //             }
+        //         )
+        //     } else {
+        //         toast.error(response.message || "Failed to create transaction", { duration: 5000 })
+        //     }
+        // } catch (error) {
+        //     console.error("Error creating transaction:", error);
+        //     toast.error("Failed to create transaction", { duration: 5000 })
+        // }
+    };
+
+    function Footer() {
+        return (
+            <div className="flex justify-end gap-2 mt-6">
+                <Button type="button" variant="outline" onClick={() => onClose(false)}>Close</Button>
+                <Button type="button" variant="default" disabled={disabled} onClick={handleCheckout}>Create</Button>
+            </div>
+        );
+    }
+
     return (
-        <Dialog open={open} onClose={onClose} title="Form Add Manual Transaction" className="min-w-xs w-full md:max-w-3xl lg:max-w-5xl">
+        <Dialog open={open} onClose={onClose} title="Form Add Manual Transaction" footer={Footer()}  className="min-w-xs w-full md:max-w-3xl lg:max-w-5xl">
             <div className="w-full">
                 <Tables columns={columnsManual} data={products} />
                 <div className="flex justify-between items-center mt-2">
@@ -139,7 +207,7 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
                 </div>
                 <div className="flex flex-col md:flex-row gap-4 mt-4">
                     <div className="flex-1 flex flex-col gap-2">
-                        {/* <Button type="button" variant="outline" onClick={handleAddRow} className="w-fit">+ Add Product</Button> */}
+                        <Button type="button" variant="outline" onClick={handleAddRow} className="w-fit">+ Add Product</Button>
                     </div>
                     <div className="flex-1 flex flex-col gap-3">
                         <Input
@@ -162,10 +230,6 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
                             <span className="font-bold text-orange-500">{formatCurrency(moneyChanges)}</span>
                         </div>
                     </div>
-                </div>
-                <div className="flex justify-end gap-2 mt-6">
-                    <Button type="button" variant="outline" onClick={() => onClose(false)}>Close</Button>
-                    <Button type="button" variant="default" disabled className="bg-gray-200 text-gray-400">Create</Button>
                 </div>
             </div>
         </Dialog>
