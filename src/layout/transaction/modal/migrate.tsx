@@ -24,7 +24,7 @@ interface ModalMigrateProps {
 
 export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const { outletInternal, outletExternal } = useOutletStore()
-    const { paymentExternal } = usePaymentStore()
+    const { paymentExternal, paymentInternal } = usePaymentStore()
 
     const [dateRange, setDateRange] = useState<DateRange | any>("")
 
@@ -36,13 +36,13 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const [outletDestinationOptions, setOutletDestinationOptions] = useState<SelectOption[]>(outletInternal?.data?.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })) ?? [])
     const [isLoadingOutletDestination, setIsLoadingOutletDestination] = useState(false)
 
-    const [paymentSelect, setPaymentSelect] = useState<string>("")
-    const [paymentOptions, setPaymentOptions] = useState<SelectOption[]>(paymentExternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
-    const [isLoadingPayment, setIsLoadingPayment] = useState(false)
+    // const [paymentSelect, setPaymentSelect] = useState<string>("")
+    // const [paymentOptions, setPaymentOptions] = useState<SelectOption[]>(paymentExternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    // const [isLoadingPayment, setIsLoadingPayment] = useState(false)
 
-    // const [methodSelect, setMethodSelect] = useState<string>("")
-    // const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
-    // const [isLoadingMethod, setIsLoadingMethod] = useState(false)
+    const [methodSelect, setMethodSelect] = useState<string>("")
+    const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    const [isLoadingMethod, setIsLoadingMethod] = useState(false)
 
     const fetchOutletSource = async () => {
         setIsLoadingOutletSource(true)
@@ -68,27 +68,27 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
         }
     }
     //external
-    const fetchPayment = async () => {
-        setIsLoadingPayment(true)
-        try {
-            const res = await getPaymentExternal({ page: 0, limit: 0 })
-            setPaymentOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
-            setIsLoadingPayment(false)
-        } catch (err) {
-            setIsLoadingPayment(false)
-        }
-    }
-    //internal  
-    // const fetchMethod = async () => {
-    //     setIsLoadingMethod(true)
+    // const fetchPayment = async () => {
+    //     setIsLoadingPayment(true)
     //     try {
-    //         const res = await getPaymentInternal({ page: 0, limit: 0 })
-    //         setMethodOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
-    //         setIsLoadingMethod(false)
+    //         const res = await getPaymentExternal({ page: 0, limit: 0 })
+    //         setPaymentOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
+    //         setIsLoadingPayment(false)
     //     } catch (err) {
-    //         setIsLoadingMethod(false)
+    //         setIsLoadingPayment(false)
     //     }
     // }
+    // internal  
+    const fetchMethod = async () => {
+        setIsLoadingMethod(true)
+        try {
+            const res = await getPaymentInternal({ page: 0, limit: 0 })
+            setMethodOptions(res.data.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })))
+            setIsLoadingMethod(false)
+        } catch (err) {
+            setIsLoadingMethod(false)
+        }
+    }
 
     const handleMigrate = async () => {
         const resp = new Promise((resolve, reject) => {
@@ -97,7 +97,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
                 end_date: dateRange?.to?.toISOString() || "",
                 from_outlet: Number(outletSourceSelect),
                 to_outlet: Number(outletDestinationSelect),
-                payment_method: Number(paymentSelect),
+                payment_method: methodSelect ? Number(methodSelect) : 0,
             }
             migrateTransactions(body)
                 .then((res) => {
@@ -134,13 +134,13 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
             fetchOutletDestination()
         }
 
-        if (paymentExternal?.data?.length === 0 || !paymentExternal?.data || paymentOptions.length === 0 || !paymentOptions) {
-            fetchPayment()
-        }
-
-        // if (paymentInternal?.data?.length === 0 || !paymentInternal?.data || methodOptions.length === 0 || !methodOptions) {
-        //     fetchMethod()
+        // if (paymentExternal?.data?.length === 0 || !paymentExternal?.data || paymentOptions.length === 0 || !paymentOptions) {
+        //     fetchPayment()
         // }
+
+        if (paymentInternal?.data?.length === 0 || !paymentInternal?.data || methodOptions.length === 0 || !methodOptions) {
+            fetchMethod()
+        }
     }, [])
 
     return (
@@ -173,6 +173,18 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
                         <div className='w-full'>
                             <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Payment Method</label>
                             <CustomSelect
+                                options={methodOptions}
+                                label="Method"
+                                placeholder={methodOptions.length > 0 ? "Select a method" : "No data available"}
+                                isLoading={isLoadingMethod}
+                                value={methodSelect}
+                                onChange={setMethodSelect}
+                                className='!h-10 !w-full'
+                            />
+                        </div>
+                        {/* <div className='w-full'>
+                            <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Payment Method</label>
+                            <CustomSelect
                                 options={paymentOptions}
                                 label="Transaction Method"
                                 placeholder={paymentOptions.length > 0 ? "Select a method" : "No data available"}
@@ -181,7 +193,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
                                 onChange={setPaymentSelect}
                                 className='!h-10 !w-full'
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
@@ -202,18 +214,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
                             className='!h-10 !w-full'
                         />
                     </div>
-                    {/* <div className='w-full'>
-                        <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>Payment Method</label>
-                        <CustomSelect
-                            options={methodOptions}
-                            label="Method"
-                            placeholder={methodOptions.length > 0 ? "Select a method" : "No data available"}
-                            isLoading={isLoadingMethod}
-                            value={methodSelect}
-                            onChange={setMethodSelect}
-                            className='!h-10 !w-full'
-                        />
-                    </div> */}
+
                 </div>
                 <div className='w-full mt-2'>
                     <div className='block mb-1 text-xs font-medium text-gray-900 dark:text-white'>Note:</div>
@@ -223,7 +224,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
             <Button
                 onClick={handleMigrate}
                 className='mt-4 w-full'
-                disabled={!dateRange || !paymentSelect || !outletDestinationSelect || !outletSourceSelect}
+                disabled={!dateRange || !methodSelect || !outletDestinationSelect || !outletSourceSelect}
             >
                 Transfer Transactions
             </Button>

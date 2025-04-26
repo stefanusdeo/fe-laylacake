@@ -1,14 +1,11 @@
 import LayoutBoard from "@/components/template/layoutBoard";
 import { Toaster } from "@/components/ui/sonner";
-import { checkMigration, getListTransactions } from "@/store/action/transactions";
 import { useAuthStore } from "@/store/hooks/useAuth";
-import { useTransactionStore } from "@/store/hooks/useTransactions";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const publicPaths = ["/login", "/", "/403", "/404"]
 

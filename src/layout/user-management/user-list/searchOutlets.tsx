@@ -23,6 +23,7 @@ import { IParamsOutlet, OutletData } from "@/types/outletTypes"
 import { getOutletsInternal } from "@/store/action/outlets"
 import ClipLoader from "react-spinners/ClipLoader"
 import Text from "@/components/ui/text"
+import { getAccessOutlet } from "@/store/action/user-management"
 
 interface ISearchOutlets {
     value: { id: number; name: string } | null
@@ -39,11 +40,10 @@ export function SearchOutlets({ value, setValue }: ISearchOutlets) {
 
     const [_isPending, startTransition] = React.useTransition();
 
-    const getInternalOutlets = async () => {
+    const getOutletAccess = async () => {
         setIsLoading(true);
         try {
-            const params: IParamsOutlet = { page: 0, limit: 7, filter: "name", search };
-            const res = await getOutletsInternal(params);
+            const res = await getAccessOutlet();
             setOutlet(res?.data || []);
         } finally {
             setIsLoading(false);
@@ -53,7 +53,7 @@ export function SearchOutlets({ value, setValue }: ISearchOutlets) {
     React.useEffect(() => {
         if (!open) return;
         startTransition(() => {
-            getInternalOutlets();
+            getOutletAccess();
         });
     }, [open, search]);
 

@@ -3,6 +3,7 @@ import { CustomSelect, SelectOption } from '@/components/atoms/Selects';
 import PaginationInfo from '@/components/atoms/Table/TableInfo';
 import TablePagination from '@/components/atoms/Table/TablePagination';
 import Tables from '@/components/atoms/Table/Tables';
+import Breadcrums from '@/components/molecules/breadcrums';
 import ButtonAction from '@/components/molecules/buttonAction';
 import { CustomCalendar } from '@/components/molecules/customCalendar';
 import ModalDelete from '@/components/molecules/modal/ModalDelete';
@@ -10,38 +11,34 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Text from '@/components/ui/text';
 import { cn, formatCurrency } from '@/lib/utils';
-import { getOutletsInternal } from '@/store/action/outlets';
 import { getPaymentInternal } from '@/store/action/payment-method';
 import { checkMigration, deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
+import { getAccessOutlet } from '@/store/action/user-management';
 import { useOutletStore } from '@/store/hooks/useOutlets';
 import { usePaymentStore } from '@/store/hooks/usePayment';
+import { useProfileStore } from '@/store/hooks/useProfile';
 import { useTransactionStore } from '@/store/hooks/useTransactions';
+import { useUserStore } from '@/store/hooks/useUsers';
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
 import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
+import Cookie from "js-cookie";
+import { FileDown, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { DateRange } from 'react-day-picker';
 import { MdOutlineClear } from 'react-icons/md';
 import { PiTrashDuotone } from 'react-icons/pi';
+import { TbListDetails } from 'react-icons/tb';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'sonner';
-import ModalMigrate from './modal/migrate';
-import Cookie from "js-cookie"
-import { useProfileStore } from '@/store/hooks/useProfile';
-import { TbListDetails } from 'react-icons/tb';
-import Breadcrums from '@/components/molecules/breadcrums';
-import { useUserStore } from '@/store/hooks/useUsers';
-import { SearchAccessOutlets } from '@/components/molecules/Selects/CustomAccessOultetUser';
-import { getAccessOutlet } from '@/store/action/user-management';
 import ModalDetail from './modal/detail';
-import { Plus, FileDown } from 'lucide-react';
+import ModalMigrate from './modal/migrate';
 
 export default function Transactions() {
   const router = useRouter()
   const { profile } = useProfileStore()
   const { statusMigration } = useTransactionStore()
-
 
   const roleUser = Cookie.get('role') ?? profile?.role_name
 
@@ -76,6 +73,14 @@ export default function Transactions() {
   const [methodSelect, setMethodSelect] = useState<string>("")
   const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
   const [isLoadingMethod, setIsLoadingMethod] = useState(false)
+
+  const [typeOptions, setTypeOptions] = useState<SelectOption[]>([
+    { value: "0", label: "All Transactions" },
+    { value: "1", label: "Basic Transactions" },
+    { value: "2", label: "Manual Transactions" },]
+  )
+  const [typeSelect, setTypeSelect] = useState<string>("0")
+
 
   const fetchOutlet = async () => {
     setIsLoadingOutlet(true)
@@ -120,6 +125,10 @@ export default function Transactions() {
       params.payment_method = methodSelect
     }
 
+    if (typeSelect !== "0") {
+      params.type = typeSelect
+    }
+
     const res = await getListTransactions(params).finally(() => setLoading(false))
     if (res?.pagination) {
       if (res?.pagination.total_page === 1) {
@@ -149,14 +158,14 @@ export default function Transactions() {
     } else if (openModalMigrate === false) {
       fetchTransactions()
     }
-  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, openModalMigrate])
+  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, typeSelect, openModalMigrate])
 
   useEffect(() => {
-    if (isDateRangeComplete || methodSelect || outletSelect || limit || openModalMigrate === false) {
+    if (isDateRangeComplete || methodSelect || outletSelect || limit || typeSelect || openModalMigrate === false) {
       setPage(1)
       setSelectedTrx([])
     }
-  }, [isDateRangeComplete, methodSelect, outletSelect, limit, openModalMigrate])
+  }, [isDateRangeComplete, methodSelect, outletSelect, typeSelect, limit, openModalMigrate])
 
   const handleChecked = (id: number) => {
     setSelectedTrx((prevSelected) =>
@@ -186,6 +195,11 @@ export default function Transactions() {
         if (methodSelect) {
           params.payment_method = methodSelect
         }
+
+        if (typeSelect !== "0") {
+          params.type = typeSelect
+        }
+
         startTransition(async () => {
           const res = await getListTransactions(params)
           const allTransactions = res?.data || []
@@ -282,6 +296,7 @@ export default function Transactions() {
     setDateRange(undefined)
     setOutletSelect("")
     setMethodSelect("")
+    setTypeSelect("0")
   }
 
   const checkMigrationStatus = () => {
@@ -325,6 +340,10 @@ export default function Transactions() {
 
       if (methodSelect) {
         params.payment_method = methodSelect
+      }
+
+      if (typeSelect !== "0") {
+        params.type = typeSelect
       }
 
       const res = await getListTransactions(params)
@@ -497,18 +516,18 @@ export default function Transactions() {
           <Breadcrums />
         </div>
         <div className="flex gap-2 max-sm:w-full">
-          <Button 
-            onClick={handleExportExcel} 
-            variant="outline" 
+          <Button
+            onClick={handleExportExcel}
+            variant="outline"
             className='max-sm:flex-1'
             disabled={loading}
           >
-            <FileDown className="mr-1 h-4 w-4" /> 
+            <FileDown className="mr-1 h-4 w-4" />
             <span className=''>Export Excel</span>
           </Button>
           {roleUser && roleUser === "Super Admin" && (
             <Button onClick={() => setOpenModalMigrate(true)} className='max-sm:flex-1'>
-              <Plus className="mr-1 h-4 w-4" /> 
+              <Plus className="mr-1 h-4 w-4" />
               <span className=''>Add Transaction</span>
             </Button>
           )}
@@ -540,6 +559,14 @@ export default function Transactions() {
               isLoading={isLoadingMethod}
               value={methodSelect}
               onChange={setMethodSelect}
+              className='!h-10 max-sm:w-full'
+            />
+            <CustomSelect
+              options={typeOptions}
+              label="Type Transaction"
+              placeholder={typeOptions.length > 0 ? "Select a type" : "No data available"}
+              value={typeSelect}
+              onChange={setTypeSelect}
               className='!h-10 max-sm:w-full'
             />
             {isDateRangeComplete || outletSelect || methodSelect ? (
