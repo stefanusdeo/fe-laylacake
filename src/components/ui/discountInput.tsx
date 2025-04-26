@@ -25,7 +25,7 @@ const DiscountInput = forwardRef<HTMLInputElement, DiscountInputProps>(({ classN
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-orange-400 hover:text-orange-500 font-medium"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-green-500 hover:text-green-600 font-medium"
                 onClick={handleApply}
                 // disabled={disabled}
             >

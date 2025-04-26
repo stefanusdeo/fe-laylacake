@@ -225,7 +225,7 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
                         />
                         <div className="flex justify-between items-center">
                             <span className="font-medium">Money changes</span>
-                            <span className="font-bold text-orange-500">{formatCurrency(moneyChanges)}</span>
+                            <span className="font-bold text-green-600">{formatCurrency(moneyChanges)}</span>
                         </div>
                     </div>
                 </div>

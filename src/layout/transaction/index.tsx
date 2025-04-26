@@ -476,8 +476,8 @@ export default function Transactions() {
           ) : (
             <div>
               {selectedTrx.length > 0 ? (
-                <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
-                  <Text variant='h5' className='text-orange-500'>Selected {selectedTrx.length} {selectedTrx.length > 1 ? "transactions" : "transaction"}</Text>
+                <div className="flex w-full py-4 px-10 rounded-t-lg bg-green-100 justify-between items-center">
+                  <Text variant='h5' className='text-green-600'>Selected {selectedTrx.length} {selectedTrx.length > 1 ? "transactions" : "transaction"}</Text>
                   {selectedTrx.length > 1 && (
                     <Button size="sm" variant={"outline"} onClick={() => setOpenModalMultiTrx(true)}>
                       <PiTrashDuotone /> Delete All

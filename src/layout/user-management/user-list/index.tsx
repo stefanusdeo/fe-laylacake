@@ -295,8 +295,8 @@ function UserList() {
                 ) : (
                     <div>
                         {selectedUser.length > 0 ? (
-                            <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
-                                <Text variant='h5' className='text-orange-500'>Selected {selectedUser.length} {selectedUser.length > 1 ? "users" : "user"}</Text>
+                            <div className="flex w-full py-4 px-10 rounded-t-lg bg-green-100 justify-between items-center">
+                                <Text variant='h5' className='text-green-600'>Selected {selectedUser.length} {selectedUser.length > 1 ? "users" : "user"}</Text>
                                 {selectedUser.length > 1 && (
                                     <Button size="sm" variant={"outline"} onClick={() => setOpenModalMultiUser(true)}>
                                         <PiTrashDuotone /> Delete All

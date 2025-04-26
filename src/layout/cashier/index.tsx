@@ -487,7 +487,7 @@ function Cashier() {
                         <hr />
                         <div className="flex justify-between">
                             <span className="font-medium">Total</span>
-                            <span className="font-medium text-orange-500">{formatCurrency(total)}</span>
+                            <span className="font-medium text-green-600">{formatCurrency(total)}</span>
                         </div>
                     </div>
                     <div className="flex flex-col w-full gap-5">
@@ -519,7 +519,7 @@ function Cashier() {
                         />
                         <div className="flex justify-between pb-4">
                             <span className="font-medium">Money Changes</span>
-                            <span className="font-medium text-orange-500">{formatCurrency(changeAmount)}</span>
+                            <span className="font-medium text-green-600">{formatCurrency(changeAmount)}</span>
                         </div>
                     </div>
                 </div>

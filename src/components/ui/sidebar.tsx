@@ -516,7 +516,7 @@ function SidebarMenuButton({
       data-size={size}
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }),
-        isActive ? "data-[active=true]:bg-orange-300/40 data-[active=true]:text-orange-500 data-[active=true]:hover:bg-orange-300/25" : "text-gray-500 hover:text-gray-500 hover:bg-slate-100",
+        isActive ? "data-[active=true]:bg-green-300/40 data-[active=true]:text-green-600 data-[active=true]:hover:bg-green-300/25" : "text-gray-500 hover:text-gray-500 hover:bg-slate-100",
         className)}
       {...props}
     />

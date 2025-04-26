@@ -1,5 +1,6 @@
 import Text from '@/components/ui/text'
 import { useAuthStore } from '@/store/hooks/useAuth'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 type LayoutAuthProps = {
@@ -23,7 +24,7 @@ function LayoutAuth({ children, restricted = false }: LayoutAuthProps) {
   return (
     <div className='select-none'>
       <div className=' absolute w-full mt-10 px-10 flex items-center'>
-        <Text variant='h4' className='text-white size-10 p-1.5 bg-orange-400 flex items-center justify-center rounded-md'>PT</Text>
+        <Image alt='logo' src={"/logo_single.svg"} width={0} height={0} layout='responsive' className='min-w-10 w-full h-auto max-w-14' />
       </div>
       <div className='flex p-5 gap-2 sm:gap-10 h-screen'>
         <div className='w-full max-w-md p-10 bg-slate-50/50 shadow-sm shadow-accent border border-accent rounded-2xl h-full flex items-center text-neutral-900 max-sm:hidden'>

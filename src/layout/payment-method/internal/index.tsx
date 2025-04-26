@@ -236,8 +236,8 @@ function PaymentMethodInternal() {
             {/* Table */}
             <div>
                 {selectedPayment.length > 0 ? (
-                    <div className="flex w-full py-4 px-10 rounded-t-lg bg-orange-100 justify-between items-center">
-                        <Text variant="h5" className="text-orange-500">
+                    <div className="flex w-full py-4 px-10 rounded-t-lg bg-green-100 justify-between items-center">
+                        <Text variant="h5" className="text-green-600">
                             Selected {selectedPayment.length} {selectedPayment.length > 1 ? "Payment Methods" : "Payment Method"}
                         </Text>
                         {selectedPayment.length > 1 && (
