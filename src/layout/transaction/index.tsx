@@ -81,6 +81,8 @@ export default function Transactions() {
   )
   const [typeSelect, setTypeSelect] = useState<string>("0")
 
+  const [isResettingFilter, setIsResettingFilter] = useState(false);
+
 
   const fetchOutlet = async () => {
     setIsLoadingOutlet(true)
@@ -152,10 +154,17 @@ export default function Transactions() {
 
   // fetch data transactions
   useEffect(() => {
-    if (openModalMigrate === false) {
-      fetchTransactions()
+    if (openModalMigrate === false && !isResettingFilter) {
+      fetchTransactions();
     }
-  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, typeSelect, openModalMigrate])
+  }, [page, limit, isDateRangeComplete ,outletSelect, methodSelect, typeSelect, openModalMigrate]);
+
+  useEffect(() => {
+    if (isResettingFilter) {
+      fetchTransactions();
+      setIsResettingFilter(false); // reset flag
+    }
+  }, [isResettingFilter]);
 
   useEffect(() => {
     if (isDateRangeComplete || methodSelect || outletSelect || limit || typeSelect || openModalMigrate === false) {
@@ -290,10 +299,13 @@ export default function Transactions() {
   }
 
   const handleResetFilter = () => {
-    setDateRange(undefined)
-    setOutletSelect("")
-    setMethodSelect("")
-    setTypeSelect("0")
+    setIsResettingFilter(true);
+    setDateRange(undefined);
+    setOutletSelect("");
+    setMethodSelect("");
+    setTypeSelect("0");
+    setPage(1);
+    setSelectedTrx([]);
   }
 
   const checkMigrationStatus = () => {
