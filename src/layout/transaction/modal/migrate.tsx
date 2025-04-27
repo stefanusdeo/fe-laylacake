@@ -4,10 +4,8 @@ import { CustomCalendar } from '@/components/molecules/customCalendar'
 import Dialog from '@/components/molecules/dialog'
 import { Button } from '@/components/ui/button'
 import { getOutletsExternal, getOutletsInternal } from '@/store/action/outlets'
-import { getPaymentExternal, getPaymentInternal } from '@/store/action/payment-method'
+import { getPaymentInternal } from '@/store/action/payment-method'
 import { migrateTransactions } from '@/store/action/transactions'
-import { useOutletStore } from '@/store/hooks/useOutlets'
-import { usePaymentStore } from '@/store/hooks/usePayment'
 import { useTransactionStore } from '@/store/hooks/useTransactions'
 import { OutletData } from '@/types/outletTypes'
 import { PaymentMethodData } from '@/types/paymentTypes'
@@ -23,9 +21,6 @@ interface ModalMigrateProps {
 }
 
 export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
-    const { outletInternal, outletExternal } = useOutletStore()
-    const { paymentExternal, paymentInternal } = usePaymentStore()
-
     const [dateRange, setDateRange] = useState<DateRange | any>("")
 
     const [outletSourceSelect, setOutletSourceSelect] = useState<string>("")
@@ -67,6 +62,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
             setIsLoadingOutletDestination(false)
         }
     }
+    
     //external
     // const fetchPayment = async () => {
     //     setIsLoadingPayment(true)
@@ -78,6 +74,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     //         setIsLoadingPayment(false)
     //     }
     // }
+    
     // internal  
     const fetchMethod = async () => {
         setIsLoadingMethod(true)
