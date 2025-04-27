@@ -20,6 +20,7 @@ import { toast } from 'sonner'
 function OutletInternal() {
     const { outletInternal } = useOutletStore()
 
+    const [isLoading, setIsLoading] = useState(false)
     const [outlets, setOutlets] = useState<OutletData[]>(outletInternal?.data || [])
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
@@ -37,7 +38,7 @@ function OutletInternal() {
 
     const getInternalOutlets = async () => {
         const params: IParamsOutlet = { page, limit, search, filter }
-        const res = await getOutletsInternal(params)
+        const res = await getOutletsInternal(params).finally(() => setIsLoading(false))
         if (res?.pagination) {
             if (res?.pagination.total_page === 1) {
                 setPage(1)
@@ -48,16 +49,18 @@ function OutletInternal() {
 
     useEffect(() => {
         startTransition(() => {
+            if (openModalDelete || openModalMultiOutlets) return
+            setIsLoading(true)
             getInternalOutlets()
         })
-    }, [page, limit, search])
+    }, [page, limit, search, openModalDelete, openModalMultiOutlets])
 
     useEffect(() => {
-        if (search || openModalDelete === false || openModalMultiOutlets === false ) {
+        if (search) {
             setPage(1)
             setSelectedOutlet([])
         }
-    }, [search, openModalDelete, openModalMultiOutlets])
+    }, [search])
 
     const handleSearch = (value: string, filter: string) => {
         setSearchInput(value)
@@ -229,14 +232,6 @@ function OutletInternal() {
         }
     }, [openModalMultiOutlets]);
 
-    if (isPending) {
-        return (
-            <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
-                <ClipLoader loading={isPending} size={15} /> Getting outlet list...
-            </Text>
-        );
-    }
-
     return (
         <div className="w-full space-y-7">
             {/* Search Input */}
@@ -248,28 +243,35 @@ function OutletInternal() {
                 onSearch={handleSearch}
             />
 
-            {/* Table */}
-            <div>
-                {selectedOutlet.length > 0 ? (
-                    <div className="flex w-full py-4 px-10 rounded-t-lg bg-green-100 justify-between items-center">
-                        <Text variant="h5" className="text-green-600">
-                            Selected {selectedOutlet.length} {selectedOutlet.length > 1 ? "outlets" : "outlet"}
-                        </Text>
-                        {selectedOutlet.length > 1 && (
-                            <Button size="sm" variant="outline" onClick={() => setOpenModalMultiOutlets(true)}>
-                                <Trash2 className="h-4 w-4 mr-2" /> Delete All
-                            </Button>
-                        )}
+            {isLoading ? (
+                <Text variant="span" className="flex items-center justify-center gap-2 py-3 px-4">
+                    <ClipLoader loading={isPending} size={15} /> Getting outlet list...
+                </Text>
+            ) : (
+                <div>
+                    {selectedOutlet.length > 0 ? (
+                        <div className="flex w-full py-4 px-10 rounded-t-lg bg-green-100 justify-between items-center">
+                            <Text variant="h5" className="text-green-600">
+                                Selected {selectedOutlet.length} {selectedOutlet.length > 1 ? "outlets" : "outlet"}
+                            </Text>
+                            {selectedOutlet.length > 1 && (
+                                <Button size="sm" variant="outline" onClick={() => setOpenModalMultiOutlets(true)}>
+                                    <Trash2 className="h-4 w-4 mr-2" /> Delete All
+                                </Button>
+                            )}
+                        </div>
+                    ) : null}
+                    <Tables columns={columnsOutletList} data={outlets} />
+                    <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
+                        {/* Pagination Info */}
+                        <PaginationInfo displayed={limit} total={outletInternal?.pagination.total_records ?? 0} onChangeDisplayed={setLimit} className="w-auto" />
+                        {/* Pagination */}
+                        <TablePagination limit={limit} page={page} onPageChange={setPage} totalItems={outletInternal?.pagination.total_records ?? 1} />
                     </div>
-                ) : null}
-                <Tables columns={columnsOutletList} data={outlets} />
-                <div className="flex flex-wrap justify-center md:justify-between items-center gap-2.5 p-2.5 md:p-4 border-slate-100 border-t-[2px]">
-                    {/* Pagination Info */}
-                    <PaginationInfo displayed={limit} total={outletInternal?.pagination.total_records ?? 0} onChangeDisplayed={setLimit} className="w-auto" />
-                    {/* Pagination */}
-                    <TablePagination limit={limit} page={page} onPageChange={setPage} totalItems={outletInternal?.pagination.total_records ?? 1} />
                 </div>
-            </div>
+            )}
+
+            {/* Table */}
             {memoModalDeleteSpesific}
             {memoModalDeleteMultiOutlets}
         </div>

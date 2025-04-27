@@ -112,7 +112,6 @@ export const deletedMultipleOutlets = async (outletId: number[], type: string) =
       message: response.data.message,
       data: null,
     };
-    console.log(result);
     return result;
   } catch (error) {
     if (isAxiosError(error)) {

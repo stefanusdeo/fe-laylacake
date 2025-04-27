@@ -162,7 +162,6 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
         try {
             const response = await createManualTransaction(bodyRequest);
             if (response.status === 200) {
-                console.log("Checkout clicked", response);
                 await printPDF(
                     <TransactionPDF transaction={response.data} />,
                     () => {

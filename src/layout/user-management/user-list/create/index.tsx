@@ -95,8 +95,6 @@ function CreatedUser() {
         }
     }, [state.success])
 
-    console.log(form.watch("role"))
-
     return (
         <div className="flex flex-col gap-5 md:gap-7">
             <div className="flex flex-col gap-3">

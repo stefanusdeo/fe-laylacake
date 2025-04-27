@@ -112,7 +112,6 @@ export const deletedMultiplePaymentMethods = async (paymentMethodId: number[], t
       message: response.data.message,
       data: null,
     };
-    console.log(result);
     return result;
   } catch (error) {
     if (isAxiosError(error)) {
