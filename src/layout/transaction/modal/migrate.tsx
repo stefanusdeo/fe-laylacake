@@ -29,11 +29,11 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     const [dateRange, setDateRange] = useState<DateRange | any>("")
 
     const [outletSourceSelect, setOutletSourceSelect] = useState<string>("")
-    const [outletSourceOptions, setOutletSourceOptions] = useState<SelectOption[]>(outletExternal?.data?.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    const [outletSourceOptions, setOutletSourceOptions] = useState<SelectOption[]>([])
     const [isLoadingOutletSource, setIsLoadingOutletSource] = useState(false)
 
     const [outletDestinationSelect, setOutletDestinationSelect] = useState<string>("")
-    const [outletDestinationOptions, setOutletDestinationOptions] = useState<SelectOption[]>(outletInternal?.data?.map((item: OutletData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    const [outletDestinationOptions, setOutletDestinationOptions] = useState<SelectOption[]>([])
     const [isLoadingOutletDestination, setIsLoadingOutletDestination] = useState(false)
 
     // const [paymentSelect, setPaymentSelect] = useState<string>("")
@@ -41,7 +41,7 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     // const [isLoadingPayment, setIsLoadingPayment] = useState(false)
 
     const [methodSelect, setMethodSelect] = useState<string>("")
-    const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
+    const [methodOptions, setMethodOptions] = useState<SelectOption[]>([])
     const [isLoadingMethod, setIsLoadingMethod] = useState(false)
 
     const fetchOutletSource = async () => {
@@ -126,21 +126,10 @@ export default function ModalMigrate({ open, onClose }: ModalMigrateProps) {
     }
 
     useEffect(() => {
-        if (outletExternal?.data?.length === 0 || !outletExternal?.data || outletSourceOptions.length === 0 || !outletSourceOptions) {
-            fetchOutletSource()
-        }
-
-        if (outletInternal?.data?.length === 0 || !outletInternal?.data || outletDestinationOptions.length === 0 || !outletDestinationOptions) {
-            fetchOutletDestination()
-        }
-
-        // if (paymentExternal?.data?.length === 0 || !paymentExternal?.data || paymentOptions.length === 0 || !paymentOptions) {
-        //     fetchPayment()
-        // }
-
-        if (paymentInternal?.data?.length === 0 || !paymentInternal?.data || methodOptions.length === 0 || !methodOptions) {
-            fetchMethod()
-        }
+        fetchOutletSource()
+        fetchOutletDestination()
+        fetchMethod()
+        //fetchPayment()
     }, [])
 
     return (
