@@ -37,7 +37,7 @@ export function SearchAccessOutlets({ value, setValue }: ISearchOutlets) {
     }, [])
 
     useEffect(() => {
-        localStorage.setItem("outletId", outletSelect[0])
+        localStorage.setItem("outletId", outletSelect)
     }, [outletSelect])
 
     return (
