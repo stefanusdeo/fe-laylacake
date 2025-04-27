@@ -152,10 +152,7 @@ export default function Transactions() {
 
   // fetch data transactions
   useEffect(() => {
-    if (dateRange?.from && dateRange?.to) {
-      fetchTransactions(dateRange?.from?.toISOString(), dateRange?.to?.toISOString())
-      return
-    } else if (openModalMigrate === false) {
+    if (openModalMigrate === false) {
       fetchTransactions()
     }
   }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, typeSelect, openModalMigrate])

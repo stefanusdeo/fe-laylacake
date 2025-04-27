@@ -1,7 +1,6 @@
-import React, { JSX, ReactNode } from "react";
 import { pdf } from "@react-pdf/renderer";
-import { on } from "events";
 import { saveAs } from "file-saver";
+import { JSX } from "react";
 
 export async function printPDF(
   pdfDoc: JSX.Element,

@@ -95,7 +95,7 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
                 setIsPrinting(false)
                 toast.error("Failed to print transaction", { duration: 5000 })
                 console.error("Print error:", error)
-            }
+            },
         )
     }
 
@@ -175,10 +175,9 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
             <div className="mt-5 w-full flex max-sm:flex-col flex-row-reverse gap-2 justify-start items-center">
                 <Button
                     className=" max-sm:w-full flex items-center gap-1"
-                    onClick={handlePrint}
+                    onClick={handleDownload}
                 >
-                    <ClipLoader loading={isPrinting} size={14} />
-                    <span className="sm:inline">{isPrinting ? "Printing..." : "Print Reciept"}</span>
+                    <span className="sm:inline">{"Print Reciept"}</span>
                 </Button>
                 <Button
                     variant={"ghost"}
@@ -205,7 +204,7 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
                             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">Transaction Details</h1>
                             <p className="text-muted-foreground">Transaction #{transactionData?.code ?? ""}</p>
                         </div>
-                        <div className="flex gap-2 md:mt-0">
+                        {/* <div className="flex gap-2 md:mt-0">
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -226,7 +225,7 @@ export default function ModalDetail({ open, onClose }: ModalDetailProps) {
                                 {isDownloading ? <ClipLoader loading={true} size={14} /> : <Download className="h-4 w-4" />}
                                 <span className="hidden sm:inline">{isDownloading ? "Downloading..." : "Download"}</span>
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
                     <Text className="mt-5 mb-1">Staff: {transactionData?.staff.name ?? ""}</Text>
                     <Text>Date: {formattedDate}</Text>

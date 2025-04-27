@@ -7,7 +7,7 @@ import { useState } from "react";
 import { formatCurrency } from '../../../lib/utils';
 import PaymentMethodSelect from "@/components/molecules/Selects/CustomPaymentMethodSelect";
 import { ICreateManualTransactionBody } from "@/types/cashierTypes";
-import { printPDF } from "@/utils/pdfUtils";
+import { downloadPDF, printPDF } from "@/utils/pdfUtils";
 import TransactionPDF from "@/components/template/pdf/transaction-pdf";
 import { IManualTransactionDetail, ITransactionDetail } from "@/types/transactionTypes";
 import { toast } from "sonner";
@@ -162,17 +162,18 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
         try {
             const response = await createManualTransaction(bodyRequest);
             if (response.status === 200) {
-                await printPDF(
+                await downloadPDF(
                     <TransactionPDF transaction={response.data} />,
+                    `receipt-${response.data.code}.pdf`,
                     () => {
-                        toast.success("Transaction sent to printer successfully", { duration: 5000 })
+                        toast.success("Receipt downloaded successfully", { duration: 5000 })
                         setPay("");
                         setMethod("");
                         setProducts([{ id: generateId(), name: "", price: 0, qty: 0, total: 0 }]);
                         onClose(false);
                     },
                     (error) => {
-                        toast.error("Failed to print transaction", { duration: 5000 })
+                        toast.error("Failed to download receipt", { duration: 5000 })
                         console.error("Print error:", error)
                     }
                 )
@@ -195,7 +196,7 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
     }
 
     return (
-        <Dialog open={open} onClose={onClose} title="Form Add Manual Transaction" footer={Footer()}  className="min-w-xs w-full md:max-w-3xl lg:max-w-5xl">
+        <Dialog open={open} onClose={onClose} title="Form Add Manual Transaction" footer={Footer()} className="min-w-xs w-full md:max-w-3xl lg:max-w-5xl">
             <div className="w-full">
                 <Tables columns={columnsManual} data={products} />
                 <div className="flex justify-between items-center mt-2">

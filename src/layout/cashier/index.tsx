@@ -18,7 +18,7 @@ import FormManual from "./modal/FormManual"
 import SearchProduct from "./modal/searchProduct"
 import { toast } from "sonner"
 import { createTransaction, getDiscount } from "@/store/action/cashier"
-import { printPDF } from "@/utils/pdfUtils"
+import { downloadPDF, printPDF } from "@/utils/pdfUtils"
 import TransactionPDF from "@/components/template/pdf/transaction-pdf"
 // Enhanced discount interface with more details
 interface IDiscount {
@@ -223,10 +223,11 @@ function Cashier() {
             if (resp.status === 200) {
                 toast.success("Transaction created successfully")
                 // Process print the transaction PDF
-                await printPDF(
+                await downloadPDF(
                     <TransactionPDF transaction={resp.data} />,
+                    `receipt-${resp.data.code}.pdf`,
                     () => {
-                        toast.success("Transaction sent to printer successfully", { duration: 5000 })
+                        toast.success("Receipt downloaded successfully", { duration: 5000 })
                         setCart([])
                         setCartItems([])
                         setProductDiscounts([])
@@ -237,8 +238,8 @@ function Cashier() {
                         setCartDiscountCode("")
                     },
                     (error) => {
-                        toast.error("Failed to print transaction", { duration: 5000 })
-                        console.error("Print error:", error)
+                        toast.error("Failed to download receipt", { duration: 5000 })
+                        console.error("Download error:", error)
                     }
                 )
             } else {
