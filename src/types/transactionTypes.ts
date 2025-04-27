@@ -86,6 +86,7 @@ export interface IParamTransaction {
   outlet_id?: number;
   payment_method?: string;
   type?: string;
+  only_id?: boolean;
 }
 
 export interface IDeleteMultiTransaction {

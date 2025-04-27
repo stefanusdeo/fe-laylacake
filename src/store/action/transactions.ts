@@ -21,6 +21,7 @@ export const getListTransactions = async (params: IParamTransaction) => {
     outlet_id,
     payment_method,
     type,
+    only_id,
   } = params;
 
   const queryParams: Record<string, any> = {
@@ -41,6 +42,9 @@ export const getListTransactions = async (params: IParamTransaction) => {
   }
   if (type === undefined) {
     delete queryParams.type;
+  }
+  if (only_id) {
+    queryParams.only_id = only_id;
   }
 
   try {
@@ -119,13 +123,13 @@ export const checkMigration = async () => {
       data: null,
     };
 
-    if (result.data.code === 500){
+    if (result.data.code === 500) {
       toast.error(result.data.message);
       localStorage.removeItem("tiketId");
       useTransactionStore.getState().setStatusMigration(false);
       throw new Error(result.data.message);
     }
-    
+
     if (result.data.code === 200) {
       localStorage.removeItem("tiketId");
       useTransactionStore.getState().setStatusMigration(false);

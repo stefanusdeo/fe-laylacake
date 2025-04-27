@@ -1,4 +1,18 @@
 "use client";
+import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { DateRange } from 'react-day-picker';
+import { FileDown, Plus } from 'lucide-react';
+import { MdOutlineClear } from 'react-icons/md';
+import { PiTrashDuotone } from 'react-icons/pi';
+import { TbListDetails } from 'react-icons/tb';
+import ClipLoader from 'react-spinners/ClipLoader';
+import { toast } from 'sonner';
+import Cookie from "js-cookie";
+
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import Text from '@/components/ui/text';
 import { CustomSelect, SelectOption } from '@/components/atoms/Selects';
 import PaginationInfo from '@/components/atoms/Table/TableInfo';
 import TablePagination from '@/components/atoms/Table/TablePagination';
@@ -7,9 +21,9 @@ import Breadcrums from '@/components/molecules/breadcrums';
 import ButtonAction from '@/components/molecules/buttonAction';
 import { CustomCalendar } from '@/components/molecules/customCalendar';
 import ModalDelete from '@/components/molecules/modal/ModalDelete';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import Text from '@/components/ui/text';
+import ModalDetail from './modal/detail';
+import ModalMigrate from './modal/migrate';
+
 import { cn, formatCurrency } from '@/lib/utils';
 import { getPaymentInternal } from '@/store/action/payment-method';
 import { checkMigration, deleteMultiTrx, delTransaction, getListTransactions } from '@/store/action/transactions';
@@ -19,21 +33,10 @@ import { usePaymentStore } from '@/store/hooks/usePayment';
 import { useProfileStore } from '@/store/hooks/useProfile';
 import { useTransactionStore } from '@/store/hooks/useTransactions';
 import { useUserStore } from '@/store/hooks/useUsers';
+
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
 import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
-import Cookie from "js-cookie";
-import { FileDown, Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, useTransition } from 'react';
-import { DateRange } from 'react-day-picker';
-import { MdOutlineClear } from 'react-icons/md';
-import { PiTrashDuotone } from 'react-icons/pi';
-import { TbListDetails } from 'react-icons/tb';
-import ClipLoader from 'react-spinners/ClipLoader';
-import { toast } from 'sonner';
-import ModalDetail from './modal/detail';
-import ModalMigrate from './modal/migrate';
 
 export default function Transactions() {
   const router = useRouter()
@@ -50,6 +53,7 @@ export default function Transactions() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [loading, setLoading] = useState(false)
+  const [isExporting, setIsExporting] = useState(false);
 
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalMultiTrx, setOpenModalMultiTrx] = useState(false);
@@ -74,14 +78,16 @@ export default function Transactions() {
   const [methodOptions, setMethodOptions] = useState<SelectOption[]>(paymentInternal?.data?.map((item: PaymentMethodData) => ({ value: item.id.toString(), label: item.name })) ?? [])
   const [isLoadingMethod, setIsLoadingMethod] = useState(false)
 
-  const [typeOptions, setTypeOptions] = useState<SelectOption[]>([
-    { value: "0", label: "All Transactions" },
-    { value: "1", label: "Basic Transactions" },
-    { value: "2", label: "Manual Transactions" },]
-  )
   const [typeSelect, setTypeSelect] = useState<string>("0")
 
   const [isResettingFilter, setIsResettingFilter] = useState(false);
+
+  const typeOptions = [
+    { value: "0", label: "All Transactions" },
+    { value: "1", label: "Basic Transactions" },
+    { value: "2", label: "Manual Transactions" },
+  ];
+
 
 
   const fetchOutlet = async () => {
@@ -154,10 +160,11 @@ export default function Transactions() {
 
   // fetch data transactions
   useEffect(() => {
-    if (openModalMigrate === false && !isResettingFilter) {
+    if (!openModalMigrate && !isResettingFilter) {
       fetchTransactions();
     }
-  }, [page, limit, isDateRangeComplete ,outletSelect, methodSelect, typeSelect, openModalMigrate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, isDateRangeComplete, outletSelect, methodSelect, typeSelect, openModalMigrate]);
 
   useEffect(() => {
     if (isResettingFilter) {
@@ -187,6 +194,7 @@ export default function Transactions() {
         const params: IParamTransaction = {
           page: 0,
           limit: 0,
+          only_id: true,
         }
 
         if (dateRange?.from && dateRange?.to) {
@@ -225,7 +233,7 @@ export default function Transactions() {
     }
   }
 
-  const hadleCloseModalDelete = () => {
+  const handleCloseModalDelete = () => {
     setOpenModalDelete(false)
     setTrxId(null)
     setTrxCode("")
@@ -234,26 +242,24 @@ export default function Transactions() {
   const handleDeleteSpesific = async () => {
     if (!trxId) {
       toast.error("Failed delete: missing id transactions")
-      return
+      return;
     }
-    const resp = new Promise((reslove, rejects) => {
-      delTransaction(trxId).then((res: any) => {
+    toast.promise(
+      delTransaction(trxId).then((res) => {
         if (res?.status === 200) {
-          reslove(res)
-          fetchTransactions()
-          if (selectedTrx.includes(trxId)) setSelectedTrx((prevSelected) => prevSelected.filter((val) => val !== trxId))
-          hadleCloseModalDelete()
-        } else {
-          rejects(res)
+          fetchTransactions();
+          if (selectedTrx.includes(trxId)) setSelectedTrx((prev) => prev.filter((val) => val !== trxId));
+          handleCloseModalDelete();
         }
-      })
-    })
-    toast.promise(resp, {
-      loading: "Deleting transaction...",
-      success: "Transaction deleted successfully.",
-      error: (err: any) => `Failed to delete transaction: ${err?.message || 'Please try again'}`
-    })
-  }
+      }),
+      {
+        loading: "Deleting transaction...",
+        success: "Transaction deleted successfully.",
+        error: (err) => `Failed to delete transaction: ${err?.message || 'Please try again'}`,
+      }
+    );
+  };
+
 
   const handleMultiDelete = async () => {
     const resp = new Promise((reslove, rejects) => {
@@ -331,7 +337,7 @@ export default function Transactions() {
   };
 
   const handleExportExcel = async () => {
-    setLoading(true)
+    setIsExporting(true)
     try {
       const params: IParamTransaction = {
         page: 0,
@@ -360,7 +366,7 @@ export default function Transactions() {
 
       if (allTransactions.length === 0) {
         toast.warning("No transaction data to export")
-        setLoading(false)
+        setIsExporting(false)
         return
       }
 
@@ -395,7 +401,7 @@ export default function Transactions() {
       console.error("Error exporting to Excel:", error)
       toast.error("Failed to export transaction data")
     } finally {
-      setLoading(false)
+      setIsExporting(false)
     }
   }
 
@@ -496,7 +502,7 @@ export default function Transactions() {
           title="Delete Transaction"
           description={<span>Are you sure you want to delete the transaction with code <b>{trxCode}</b>?</span>}
           onConfirm={handleDeleteSpesific}
-          onCancel={hadleCloseModalDelete}
+          onCancel={handleCloseModalDelete}
         />
       );
     }
