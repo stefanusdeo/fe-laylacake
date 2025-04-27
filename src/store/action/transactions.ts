@@ -15,8 +15,6 @@ const { base, migrate, multiDelete, print } = endpoint.transactions;
 export const getListTransactions = async (params: IParamTransaction) => {
   const { start_date, end_date, limit, page, outlet_id, payment_method, type, only_id } = params;
 
-  console.log("action:",start_date, end_date)
-
   const queryParams: Record<string, any> = {
     start_date: start_date ? format(start_date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
     end_date: end_date ? format(end_date, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
