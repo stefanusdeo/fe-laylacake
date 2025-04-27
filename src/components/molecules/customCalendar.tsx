@@ -212,7 +212,7 @@ export function CustomCalendar({
                         )}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="center">
+                <PopoverContent className="w-auto p-0 max-md:z-50" align="center">
                     {/* Custom Header - Selalu ditampilkan terlepas dari status pemilihan tanggal */}
                     <div className="p-3 w-full border-b">
                         <div className="flex items-center justify-between gap-1.5">

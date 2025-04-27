@@ -33,8 +33,6 @@ function UserList() {
 
     const [loading, setLoading] = useState(false);
 
-    const [openModalCreate, setOpenModalCreate] = useState(false);
-    const [openModalEdit, setOpenModalEdit] = useState(false);
     const [openModalDelete, setOpenModalDelete] = useState(false);
     const [openModalMultiUser, setOpenModalMultiUser] = useState(false);
 
@@ -60,17 +58,17 @@ function UserList() {
 
     useEffect(() => {
         startTransition(() => {
-            if (openModalCreate || openModalEdit || openModalDelete) return;
+            if (openModalDelete || openModalMultiUser ) return;
             getUsersList()
         })
-    }, [page, limit, search, openModalDelete, openModalEdit, openModalCreate])
+    }, [page, limit, search, openModalDelete, openModalMultiUser])
 
     useEffect(() => {
-        if (search || openModalDelete === false || openModalEdit === false || openModalCreate === false) {
+        if (search || openModalDelete === false || openModalMultiUser === false) {
             setPage(1)
             setSelectedUser([])
         }
-    }, [search, openModalDelete, openModalEdit, openModalCreate])
+    }, [search, openModalDelete, openModalMultiUser])
 
     const handleSearch = (value: string, filter: string) => {
         setSearchInput(value)
@@ -137,7 +135,7 @@ function UserList() {
 
     const handleDeleteSpesific = async () => {
         if (!userId) {
-            toast.error("Failed delete: missing id outlet")
+            toast.error("Failed delete: missing id user")
             return
         }
         const resp = new Promise((reslove, rejects) => {
@@ -153,9 +151,9 @@ function UserList() {
             })
         })
         toast.promise(resp, {
-            loading: "Deleting outlet...",
-            success: "Outlet deleted successfully",
-            error: (err: any) => `Failed to delete outlet: ${err?.message || 'Please try again'}`
+            loading: "Deleting User...",
+            success: "User deleted successfully",
+            error: (err: any) => `Failed to delete user: ${err?.message || 'Please try again'}`
         })
     }
 
