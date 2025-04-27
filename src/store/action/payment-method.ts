@@ -104,7 +104,7 @@ export const deletedMultiplePaymentMethods = async (paymentMethodId: number[], t
   try {
     const body = {
       type,
-      outlet_ids: paymentMethodId,
+      payment_method_ids: paymentMethodId,
     };
     const response = await API.post(multiDelete, body);
     const result = {
