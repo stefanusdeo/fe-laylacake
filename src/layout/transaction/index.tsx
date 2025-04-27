@@ -88,8 +88,6 @@ export default function Transactions() {
     { value: "2", label: "Manual Transactions" },
   ];
 
-
-
   const fetchOutlet = async () => {
     setIsLoadingOutlet(true)
     try {
@@ -113,7 +111,7 @@ export default function Transactions() {
     }
   }
 
-  const fetchTransactions = async (start_date?: string, end_date?: string) => {
+  const fetchTransactions = async () => {
     setLoading(true)
     const params: IParamTransaction = {
       page,
@@ -121,8 +119,8 @@ export default function Transactions() {
     }
 
     if (dateRange?.from && dateRange?.to) {
-      params.start_date = start_date
-      params.end_date = end_date
+      params.start_date = dateRange?.from?.toISOString()
+      params.end_date = dateRange?.to?.toISOString()
     }
 
     if (outletSelect) {
@@ -195,11 +193,8 @@ export default function Transactions() {
           page: 0,
           limit: 0,
           only_id: true,
-        }
-
-        if (dateRange?.from && dateRange?.to) {
-          params.start_date = dateRange?.from?.toISOString()
-          params.end_date = dateRange?.to?.toISOString()
+          start_date: dateRange?.from?.toISOString(),
+          end_date: dateRange?.to?.toISOString(),
         }
 
         if (outletSelect) {
@@ -319,7 +314,7 @@ export default function Transactions() {
       const checkResult = await checkMigration();
       if (checkResult?.status === 200) {
         if (isDateRangeComplete) {
-          fetchTransactions(dateRange?.from?.toISOString(), dateRange?.to?.toISOString())
+          fetchTransactions()
         } else {
           fetchTransactions()
         }
