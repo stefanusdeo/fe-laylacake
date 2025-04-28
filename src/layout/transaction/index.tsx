@@ -64,6 +64,7 @@ export default function Transactions() {
   const [selectedTrx, setSelectedTrx] = useState<number[]>([])
   const [trxId, setTrxId] = useState<number | null>(null)
   const [trxCode, setTrxCode] = useState<string | null>(null)
+  const [income, setIncome] = useState<number>(0)
 
   const [isPending, startTransition] = useTransition()
 
@@ -141,6 +142,11 @@ export default function Transactions() {
         setPage(1)
       }
     }
+
+    if (res?.total_income) {
+      setIncome(res.total_income)
+    }
+
     setTrxlist(res?.data || [])
 
   };
@@ -543,7 +549,7 @@ export default function Transactions() {
           )}
         </div>
       </div>
-      <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-7">
+      <div className="w-full min-h-5/6 shadow-md shadow-accent border-accent border rounded-lg p-2.5 md:px-5 md:py-5 space-y-5">
         <div id='filter' className="flex max-sm:flex-col md:justify-between items-start gap-2.5 md:gap-5 select-none">
           <div className='w-full flex flex-wrap gap-2.5 items-center'>
             <CustomCalendar
@@ -583,6 +589,9 @@ export default function Transactions() {
               <Button size={"default"} variant={"outline"} onClick={handleResetFilter} className='max-sm:w-full'><MdOutlineClear /> <span className='md:hidden block'>Clear</span></Button>
             ) : null}
           </div>
+        </div>
+        <div className='w-full'>
+          <Text>Income: <b>{formatCurrency(income)}</b></Text>
         </div>
         <div id='table'>
           {loading ? (
