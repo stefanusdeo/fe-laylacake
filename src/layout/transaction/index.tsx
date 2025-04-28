@@ -114,6 +114,7 @@ export default function Transactions() {
 
   const fetchTransactions = async () => {
     setLoading(true)
+    setIncome(0)
     const params: IParamTransaction = {
       page,
       limit,
@@ -313,6 +314,7 @@ export default function Transactions() {
     setTypeSelect("0");
     setPage(1);
     setSelectedTrx([]);
+    setIncome(0)
   }
 
   const checkMigrationStatus = () => {
