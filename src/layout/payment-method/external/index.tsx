@@ -90,11 +90,6 @@ function PaymentMethodsExternal() {
     // Columns Payment List
     const columnsPaymentList: Column<PaymentMethodData>[] = [
         {
-            label: "No",
-            renderCell: () => null,
-            className: cn("text-center justify-center"),
-        },
-        {
             label: "Name",
             renderCell: (row) => <p>{row.name}</p>,
             className: "md:w-full text-left",

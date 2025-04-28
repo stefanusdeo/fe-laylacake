@@ -76,11 +76,6 @@ function FormManual({ open, onClose }: { open: boolean; onClose: (open: boolean)
     // Kolom untuk tabel manual transaction
     const columnsManual: Column<ManualProduct>[] = [
         {
-            label: "No",
-            renderCell: () => null,
-            className: "text-center w-10",
-        },
-        {
             label: "Product Name",
             renderCell: (row) => (
                 <Input

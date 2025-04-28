@@ -188,11 +188,6 @@ function UserList() {
             className: cn("text-center justify-center"),
         },
         {
-            label: "No",
-            renderCell: () => null,
-            className: cn("text-center justify-center"),
-        },
-        {
             label: "Name",
             renderCell: (row) => <p>{row.name}</p>,
             className: "w-fit text-left",

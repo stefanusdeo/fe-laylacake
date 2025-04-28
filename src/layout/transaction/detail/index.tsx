@@ -71,11 +71,6 @@ export default function TransactionDetails() {
 
     const columnsItemList: Column<ITransactionItem>[] = [
         {
-            label: "No",
-            renderCell: () => null,
-            className: "text-center",
-        },
-        {
             label: "Kode Item",
             renderCell: (row) => <p>{row.code_item}</p>,
             className: "text-left",
