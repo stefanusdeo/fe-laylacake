@@ -6,6 +6,7 @@ export type TTransactionData = {
   price: number;
   payment_method: string;
   staff_name: string;
+  created_at: string;
 };
 
 export type TransactionsResponse = {

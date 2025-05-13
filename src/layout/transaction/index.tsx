@@ -37,6 +37,7 @@ import { useUserStore } from '@/store/hooks/useUsers';
 import { OutletData } from '@/types/outletTypes';
 import { PaymentMethodData } from '@/types/paymentTypes';
 import { IDeleteMultiTransaction, IParamTransaction, TTransactionData } from '@/types/transactionTypes';
+import { format } from 'date-fns';
 
 export default function Transactions() {
   const router = useRouter()
@@ -384,7 +385,8 @@ export default function Transactions() {
         'Staff': trx.staff_name,
         'Amount': trx.price,
         'Payment Method': trx.payment_method,
-        'Date Time': trx.time
+        'Date Time': trx.time,
+        'Created At': trx.created_at,
       }))
 
       // Membuat worksheet
@@ -393,8 +395,11 @@ export default function Transactions() {
       // Menambahkan worksheet ke workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions')
 
+      const fromDate = format(dateRange?.from, 'dd-MM-yyyy')
+      const toDate = format(dateRange?.to, 'dd-MM-yyyy')
+
       // Membuat nama file dengan timestamp
-      const fileName = `trx_${new Date().toISOString().split('T')[0]}.xlsx`
+      const fileName = isDateRangeComplete ? `trx_${fromDate}_${toDate}.xlsx` : `trx_${new Date().toISOString().split('T')[0]}.xlsx`
 
       // Mengekspor file Excel
       XLSX.writeFile(workbook, fileName)
