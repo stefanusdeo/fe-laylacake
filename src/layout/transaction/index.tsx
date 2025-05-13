@@ -385,8 +385,8 @@ export default function Transactions() {
         'Staff': trx.staff_name,
         'Amount': trx.price,
         'Payment Method': trx.payment_method,
-        'Date Time': trx.time,
-        'Created At': trx.created_at,
+        'Date': format(trx.created_at,"dd-MM-yyyy"),
+        'Time': trx.time,
       }))
 
       // Membuat worksheet
