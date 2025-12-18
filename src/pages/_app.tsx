@@ -1,43 +1,50 @@
+import LayoutBoard from "@/components/template/layoutBoard";
 import { Toaster } from "@/components/ui/sonner";
+import { useAuthStore } from "@/store/hooks/useAuth";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+const publicPaths = ["/login", "/", "/403", "/404"]
+
 export default function App({ Component, pageProps }: AppProps) {
-  const publicRoutes = ["/login"]
-  const [loading, setLoading] = useState(true)
-  const route = useRouter()
-  const path = usePathname()
-  const isPublicRoute = publicRoutes.includes(path)
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const handleStart = () => setLoading(true)
-    const handleComplete = () => setLoading(false)
+    if (useAuthStore.persist.hasHydrated()) {
+      setIsLoading(false);
+    } else {
+      const unsubscribe = useAuthStore.persist.onHydrate(() => {
+        setIsLoading(false);
+      });
 
-    route.events.on("routeChangeStart", handleStart)
-    route.events.on("routeChangeComplete", handleComplete)
-    route.events.on("routeChangeError", handleComplete)
-
-    return () => {
-      route.events.off("routeChangeStart", handleStart)
-      route.events.off("routeChangeComplete", handleComplete)
-      route.events.off("routeChangeError", handleComplete)
+      return () => {
+        unsubscribe();
+      };
     }
-  }, [route])
+  }, []);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>
+  }
+
+  const isPublicPath = publicPaths.some((path) => router.pathname === path || router.pathname.startsWith(`${path}/`))
 
   return (
     <>
       <Head>
-        <title>Website</title>
+        <title>Laylacake</title>
       </Head>
       <Toaster position="top-right" richColors />
-      {isPublicRoute ? (
+      {isPublicPath ? (
         <Component {...pageProps} />
       ) : (
-        <Component {...pageProps} />
+        <LayoutBoard>
+          <Component {...pageProps} />
+        </LayoutBoard>
       )}
     </>
   );

@@ -1,19 +1,22 @@
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { on } from 'events'
 import React, { useState } from 'react'
-import { AiOutlineUserDelete } from 'react-icons/ai'
+import { AiOutlineDelete } from 'react-icons/ai'
+import { MdOutlineEditNote } from "react-icons/md"
 import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi'
-import { TbUserEdit } from 'react-icons/tb'
-
+import { TbListDetails, TbPackageExport } from 'react-icons/tb'
 type ButtonActionProps = {
-    className?: string,
-    onClick?: () => void,
     onDelete?: () => void,
     onEdit?: () => void,
+    onDetail?: () => void,
+    onMigrate?: () => void,
+    iconsDetail?: React.ReactNode,
+    iconsEdit?: React.ReactNode,
+    iconsDelete?: React.ReactNode,
+    iconsMigrate?: React.ReactNode
 }
 
-function ButtonAction({ onDelete, onEdit }: ButtonActionProps) {
+function ButtonAction({ onDelete, onEdit, onDetail, onMigrate,iconsDelete,iconsDetail,iconsEdit,iconsMigrate }: ButtonActionProps) {
     const [open, setOpen] = useState(false)
 
     const onDeleteUser = () => {
@@ -45,23 +48,49 @@ function ButtonAction({ onDelete, onEdit }: ButtonActionProps) {
                 arrowPadding={10}
                 className={`max-w-40 relative px-2 py-2.5 space-y-2 divide-y divide-border`}
             >
-                <Button
-                    onClick={onEditUser}
-                    size={"sm"}
-                    className='border-0 w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
-                    variant={'ghost'}>
-                    <TbUserEdit />
-                    Edit
-                </Button>
+                {onEdit && (
+                    <Button
+                        onClick={onEditUser}
+                        size={"sm"}
+                        className='border-0 w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
+                        variant={'ghost'}>
+                        {iconsEdit ?? <MdOutlineEditNote />}
+                        Edit
+                    </Button>
+                )}
 
-                <Button
-                    onClick={onDeleteUser}
-                    size={"sm"}
-                    className='w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
-                    variant={'ghost'}>
-                    <AiOutlineUserDelete />
-                    Delete
-                </Button>
+                {onDetail && (
+                    <Button
+                        onClick={onDetail}
+                        size={"sm"}
+                        className='border-0 w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
+                        variant={'ghost'}>
+                        {iconsDetail ?? <TbListDetails />}
+                        Detail
+                    </Button>
+                )}
+
+                {onMigrate && (
+                    <Button
+                        onClick={onMigrate}
+                        size={"sm"}
+                        className='border-0 w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
+                        variant={'ghost'}>
+                        {iconsMigrate ?? <TbPackageExport />}
+                        Moving
+                    </Button>
+                )}
+
+                {onDelete && (
+                    <Button
+                        onClick={onDeleteUser}
+                        size={"sm"}
+                        className='w-full px-2.5 text-slate-600 flex font-normal text-sm justify-start hover:font-semibold hover:text-slate-600'
+                        variant={'ghost'}>
+                        {iconsDelete ?? <AiOutlineDelete />}
+                        Delete
+                    </Button>
+                )}
             </PopoverContent>
         </Popover>
     )

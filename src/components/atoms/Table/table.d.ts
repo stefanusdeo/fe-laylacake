@@ -1,5 +1,5 @@
 type Column<T> = {
-  label: string;
+  label: string | React.ReactNode;
   renderCell: (row: T) => React.ReactNode;
   className?: string;
 };

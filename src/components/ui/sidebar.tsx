@@ -26,7 +26,7 @@ import {
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "18rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH_MOBILE = "20rem"
 const SIDEBAR_WIDTH_ICON = "4rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -516,7 +516,7 @@ function SidebarMenuButton({
       data-size={size}
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }),
-        isActive ? "data-[active=true]:bg-amber-300/40 data-[active=true]:text-amber-500 data-[active=true]:hover:bg-amber-300/25" : "text-gray-500 hover:text-gray-500 hover:bg-slate-100",
+        isActive ? "data-[active=true]:bg-green-300/40 data-[active=true]:text-green-600 data-[active=true]:hover:bg-green-300/25" : "text-gray-500 hover:text-gray-500 hover:bg-slate-100",
         className)}
       {...props}
     />

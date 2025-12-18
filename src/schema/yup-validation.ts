@@ -13,11 +13,8 @@ const emailSchema = yup
   .max(50, `Email ${long}`)
   .matches(emailRegex, "Invalid email format");
 
-const passwordSchema = yup
-  .string()
-  .min(8, `Password ${short}`)
-  .max(30, `Password ${long}`)
-  // .matches(passwordRegex, `Invalid password format`);
+const passwordSchema = yup.string().min(8, `Password ${short}`).max(30, `Password ${long}`);
+// .matches(passwordRegex, `Invalid password format`);
 
 const phoneSchema = yup
   .string()
@@ -38,9 +35,15 @@ export const editAccountSchema = yup.object().shape({
 });
 
 export const editPasswordSchema = yup.object().shape({
-  // OldPassword: passwordSchema.required(`Old password ${req}`),
   NewPassword: passwordSchema
     .required(`New password ${req}`)
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
+    .matches(
+      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
+      "Password must contain at least one special character"
+    )
     .notOneOf([yup.ref(`OldPassword`)], `Please create a new password`),
   PasswordConfirmation: yup
     .string()
@@ -58,4 +61,18 @@ export const userSchema = yup.object().shape({
     .string()
     .required(`Password confirmation is required`)
     .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
+  outlet_ids: yup.mixed().optional(),
+});
+
+export const userUpdateSchema = yup.object().shape({
+  fullname: yup.string().required(`Name ${req}`),
+  email: emailSchema.required("Email is required"),
+  phone: phoneSchema,
+  password: passwordSchema.optional(), // Password tidak wajib diisi
+  role: yup.string().required(`Role ${req}`),
+  PasswordConfirmation: yup
+    .string()
+    .optional() // Password confirmation juga tidak wajib diisi
+    .oneOf([yup.ref(`password`)], `Password confirmation do not match`),
+  outlet_ids: yup.mixed().optional(),
 });

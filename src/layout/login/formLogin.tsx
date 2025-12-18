@@ -36,21 +36,22 @@ function FormLogin() {
     const password = data.password;
     const resp = new Promise((resolve, reject) => {
       loginAccount(email, password)
-        .then((res) => {
-          if (res.data && res.message === "success") {
+        .then((res: any) => {
+          if (res?.message === "success" || res?.data) {
             resolve(res);
           } else {
             reject(res);
           }
-        }).finally(() => {
+        })
+        .finally(() => {
           setLoading(false);
         })
     })
 
     toast.promise(resp, {
       loading: "Loading...",
-      success: "Login Success",
-      error: "Login Failed",
+      success: (res: any) => `Login Success`,
+      error: (err: any) => `Login Failed: ${err?.message || 'Please try again'}`,
     });
 
   };

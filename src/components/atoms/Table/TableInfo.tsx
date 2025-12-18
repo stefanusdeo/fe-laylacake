@@ -1,43 +1,48 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
-import { PiCaretDown } from "react-icons/pi";
+import { cn } from "@/lib/utils"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-interface Props {
-  total: number;
-  displayed: number;
-  onChangeDisplayed: (value: number) => void;
-  className?: string;
-  list?: number[];
+interface PaginationInfoProps {
+  total: number
+  displayed: number
+  onChangeDisplayed?: (value: number) => void
+  className?: string
+  list?: number[]
 }
 
-const PaginationInfo: React.FC<Props> = ({
+const PaginationInfo = ({
   list = [10, 15, 20, 25],
-  total,
-  displayed,
-  onChangeDisplayed,
+  total = 0,
+  displayed = 10,
+  onChangeDisplayed = () => { },
   className,
-}) => {
+}: PaginationInfoProps) => {
+  const handleValueChange = (value: string) => {
+    if (typeof onChangeDisplayed === "function") {
+      onChangeDisplayed(Number(value))
+    }
+  }
+
   return (
     <div className={cn("flex items-center space-x-2 w-full", className)}>
-      <span className="text-sm">Displaying</span>
-      <div className="relative">
-        <select
-          value={displayed}
-          onChange={(e) => onChangeDisplayed(Number(e.target.value))}
-          className="appearance-none border text-sm rounded px-4 py-1 pr-8 focus:outline-none focus:border-border"
-        >
+      <span className="text-sm text-neutral-800">Displaying</span>
+      <Select value={String(displayed)} onValueChange={handleValueChange}>
+        <SelectTrigger className="!h-10 w-[70px] text-sm py-0 focus-visible:border-border focus-visible:outline-0 focus-visible:ring-0 ">
+          <SelectValue placeholder={String(displayed)} />
+        </SelectTrigger>
+        <SelectContent className="w-fit min-w-fit">
           {list.map((num) => (
-            <option key={num} value={num}>
+            <SelectItem key={num} value={String(num)}>
               {num}
-            </option>
+            </SelectItem>
           ))}
-        </select>
-        <PiCaretDown className="pointer-events-none absolute inset-y-0 right-2 flex items-center my-auto" />
-      </div>
-      <span className="text-sm">of {total} datas</span>
+        </SelectContent>
+      </Select>
+      <span className="text-sm text-neutral-800">
+        of {total} {total === 1 ? "item" : "items"}
+      </span>
     </div>
-  );
-};
+  )
+}
 
-export default PaginationInfo;
+export default PaginationInfo
+

@@ -1,3 +1,9 @@
+export interface IParamUsers {
+  page: number;
+  limit: number;
+  search?: string;
+  filter?: string;
+}
 export interface Role {
   id: number;
   name: string;
@@ -5,34 +11,34 @@ export interface Role {
   updated_at: string | null;
 }
 
-export interface Outlet {
+export interface OutletUsers {
   id: number;
   name: string;
-  alamat: string;
-  no_hp: string;
-  created_at: string | null;
-  updated_at: string | null;
 }
 
 export interface UserOutlet {
   id: number;
-  user_id: number;
-  outlet_id: number;
-  created_at: string | null;
-  updated_at: string | null;
-  outlet: Outlet;
+  name: string;
 }
 
 export interface User {
   id: number;
-  name: string;
   email: string;
-  email_verified_at: string | null;
-  no_hp: string;
-  created_at: string | null;
-  updated_at: string;
+  name: string;
+  phone_number: string;
+  role_name: string;
   role_id: number;
-  is_active: number;
-  role: Role;
-  outlets: UserOutlet[];
+  status: number;
+  outlets: OutletUsers[];
 }
+
+export type UsersResponse = {
+  data: User[];
+  message: string;
+  pagination: {
+    total_records: number;
+    total_page: number;
+    next: number;
+    previous: number;
+  };
+};

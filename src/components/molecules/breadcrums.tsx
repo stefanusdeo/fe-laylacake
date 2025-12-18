@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
-import { ChevronDown, Slash } from "lucide-react";
+import { usePathname } from "next/navigation"
+import { ChevronDown } from "lucide-react"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,47 +9,72 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { listMenu } from "@/constant/base";
-import { LuDot } from "react-icons/lu";
+} from "@/components/ui/breadcrumb"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { listMenu } from "@/constant/base"
+import { LuDot } from "react-icons/lu"
+import { useEffect, useState } from "react"
 
 export function BreadcrumbWithDropdown() {
-    const pathname = usePathname(); // Ambil path saat ini
-    const pathSegments = pathname.split("/").filter(Boolean); // Pisahkan path menjadi array
+    const pathname = usePathname()
+    const pathSegments = pathname.split("/").filter(Boolean)
+    const [userRole, setUserRole] = useState<string | null>(null)
 
-    let matchedMenuItem = null;
-    let matchedMenuSection = null;
+    // Get user role from cookies when component mounts
+    useEffect(() => {
+        const getCookie = (name: string) => {
+            const value = `; ${document.cookie}`
+            const parts = value.split(`; ${name}=`)
+            if (parts.length === 2) return parts.pop()?.split(";").shift() || null
+            return null
+        }
 
-    // Cari menu yang cocok dengan path saat ini
+        const role = getCookie("user_role")
+        setUserRole(role)
+    }, [])
+
+    let matchedMenuItem = null
+    let matchedMenuSection = null
+
+    // Find menu that matches current path
     for (const section of listMenu) {
         for (const item of section.items) {
             if (item.href === pathname) {
-                matchedMenuItem = item;
-                matchedMenuSection = section;
-                break;
+                matchedMenuItem = item
+                matchedMenuSection = section
+                break
             }
         }
-        if (matchedMenuItem) break;
+        if (matchedMenuItem) break
     }
+
+    // Filter menu items based on user role and visibility
+    const getAccessibleMenuItems = (section: any) => {
+        if (!section || !userRole) return []
+
+        return section.items.filter(
+            (item: any) =>
+                item.show && // Item must be visible
+                item.permission.includes(userRole), // User must have permission
+        )
+    }
+
+    // Get accessible menu items for the current section
+    const accessibleMenuItems = matchedMenuSection ? getAccessibleMenuItems(matchedMenuSection) : []
 
     return (
         <Breadcrumb>
-            <BreadcrumbList>
+            <BreadcrumbList className="max-sm:text-xs">
                 <BreadcrumbItem>
                     <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
 
                 <BreadcrumbSeparator>
-                    <LuDot className="text-2xl"/>
+                    <LuDot className="text-2xl" />
                 </BreadcrumbSeparator>
 
-                {matchedMenuSection && matchedMenuSection.items.length > 1 ? (
+                {matchedMenuSection && accessibleMenuItems.length > 1 ? (
+                    // Show dropdown if there are multiple accessible items
                     <BreadcrumbItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger className="flex items-center gap-1 focus-visible:outline-0">
@@ -57,7 +82,7 @@ export function BreadcrumbWithDropdown() {
                                 <ChevronDown className="w-4 h-4" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                                {matchedMenuSection.items.map((item) => (
+                                {accessibleMenuItems.map((item:any) => (
                                     <DropdownMenuItem key={item.href}>
                                         <BreadcrumbLink href={item.href}>{item.title}</BreadcrumbLink>
                                     </DropdownMenuItem>
@@ -66,6 +91,7 @@ export function BreadcrumbWithDropdown() {
                         </DropdownMenu>
                     </BreadcrumbItem>
                 ) : (
+                    // Show regular breadcrumb if there's only one accessible item or none
                     matchedMenuSection && (
                         <BreadcrumbItem>
                             <BreadcrumbLink href="#">{matchedMenuSection.title}</BreadcrumbLink>
@@ -76,7 +102,7 @@ export function BreadcrumbWithDropdown() {
                 {matchedMenuItem && (
                     <>
                         <BreadcrumbSeparator>
-                            <LuDot className="text-2xl"/>
+                            <LuDot className="text-2xl" />
                         </BreadcrumbSeparator>
                         <BreadcrumbItem>
                             <BreadcrumbPage>{matchedMenuItem.title}</BreadcrumbPage>
@@ -85,7 +111,7 @@ export function BreadcrumbWithDropdown() {
                 )}
             </BreadcrumbList>
         </Breadcrumb>
-    );
+    )
 }
 
-export default BreadcrumbWithDropdown;
+export default BreadcrumbWithDropdown
