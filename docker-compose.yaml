@@ -1,32 +1,63 @@
-version: '3.8'
+version: "3.8"
+
 services:
-  fe-laylacak:
-    image: fe-laylacake
-    restart: unless-stopped
+  next_app:
+    container_name: laylacake2-fe
     build:
       context: .
       dockerfile: Dockerfile
-    # volumes:
-    #     - .:/app
-    #     - /app/node_modules
-    #     - /app/.next
     env_file:
       - .env
-    # environment:
-    #   - NEXT_PUBLIC_IMG_URL=https://s3.hoppasc.com/ecomkopi/
-    #   - NEXT_PUBLIC_BASE_URL=https://devkopi.hoppasc.com
-    #   - NEXT_PUBLIC_BASE_API_URL=https://devkopiapi.hoppasc.com
-    #   - NEXT_PUBLIC_AUTH_SECRET=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRhA0gEIMjcwNGowajeoAgCwAgA
-    #   - NEXT_TELEMETRY_DISABLED=1
+
     ports:
-      - "3011:3000"
+      - "8010:3000"
+
+    restart: unless-stopped
+
+    # =========================
+    # RESOURCE LIMIT (KETAT)
+    # =========================
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"        # MAX 50% 1 core
+          memory: 512M        # HARD LIMIT
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+    # =========================
+    # SECURITY HARDENING
+    # =========================
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    pids_limit: 100
+
+    ulimits:
+      nproc: 256
+      nofile:
+        soft: 1024
+        hard: 2048
+
+    # =========================
+    # FILESYSTEM (WAJIB TULIS)
+    # =========================
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+
+    # =========================
+    # NETWORK
+    # =========================
     networks:
-      - layla-network
-      - mysql-layla-network
+      - frontend-net
 
 
 networks:
-  layla-network:
-    external: true
-  mysql-layla-network:
-    external: true
+  frontend-net:
+    driver: bridge
